@@ -1,0 +1,33 @@
+{
+	basic:{
+		name:"basic actor",
+		stats:{
+			// vitality designates starting health
+			vit:10,
+			// strength is a multiplier for attacks
+			str:5,
+			// dexterity determines how many ActionPoints you get
+			dex:5,
+			// speed determines how many MovementPoints you get
+			spd:3
+		}
+	},
+	scout:{
+		parent:'basic',
+		name:"scout",
+		stats:{
+			vit:6,
+			dex:3,
+			spd:10
+		}
+	},
+	heavy:{
+		parent:'basic',
+		name:"heavy",
+		stats:{
+			vit:15,
+			str:8,
+			dex:3,
+		}
+	}
+}

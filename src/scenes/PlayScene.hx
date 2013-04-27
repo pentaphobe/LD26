@@ -4,16 +4,27 @@ import com.haxepunk.Scene;
 import com.haxepunk.HXP;
 import com.haxepunk.utils.Input;
 import com.haxepunk.utils.Key;
+import com.haxepunk.Entity;
+import com.haxepunk.graphics.Image;
+import com.haxepunk.tweens.motion.LinearMotion;
+
 import ui.Menu;
 import ui.UIEntity;
 import utils.ActorFactory;
+import com.haxepunk.Tween;
 
 
 class PlayScene extends Scene {
+	//***** TEMPORARY *******
+	var testEntity:Entity;
+	//***** /TEMPORARY ******
+
 	var menu:Menu;
 	public static var instance(get_instance, set_instance):PlayScene;
 	public static var TILE_SIZE:Int = 32;
 	public static var HTILE_SIZE:Int = cast (TILE_SIZE/2);
+	// how many seconds per AI processing step
+	public static var AI_RATE:Float = 0.5;
 
 	public var levelSet:Array<String>;
 	public var startLevelName:String;
@@ -24,6 +35,7 @@ class PlayScene extends Scene {
 		menu = new Menu("ingame", menuEvent, uiEvent, cast(HXP.screen.width / 2), cast(HXP.screen.height / 2));
 
 		loadLevelSet();
+		loadActorTemplates();
 	}	
 
 	public function loadLevelSet() {
@@ -42,25 +54,33 @@ class PlayScene extends Scene {
 		HXP.log("entering game");
 
 		setLevel(startLevelName);
+
+		var debug = Image.createRect(TILE_SIZE, TILE_SIZE, 0xff00ff);
+		testEntity = new Entity(HXP.screen.width / 2, HXP.screen.height / 2, debug);
+		add(testEntity);
 		// createMap();
+
+		// Keep this for last
+		HXP.alarm(AI_RATE, doAiMove, TweenType.Looping, this);		
+	}
+
+	public function doAiMove(event:Dynamic) {
+		HXP.log("Ai update");
+		var newX:Float = testEntity.x + (Math.random()-0.5)*20;
+		var newY:Float = testEntity.y + (Math.random()-0.5)*20;
+		var tween:LinearMotion = new LinearMotion(tweenComplete, TweenType.OneShot);
+		tween.setMotion(testEntity.x, testEntity.y, newX, newY, AI_RATE);
+		testEntity.addTween(tween, true);
+	}
+
+	public function tweenComplete(event:Dynamic) {
+		HXP.log("Tween complete");
 	}
 
 	public override function update() {
 		super.update();
 		// a little special case code for in-game menu since it acts differently
-		if (Input.pressed(Key.ESCAPE)) {
-			if (menu.isActive) {
-				menu.exit();
-			} else {
-				menu.enter();
-				Assets.sfxSuwip.play();
-				menu.pushState("main");
-				// menu.enter();
-			}			
-		}				
-		if (menu.isActive) {
-			menu.update();
-		} 
+		updateMenu();
 	}
 
 	public override function render() {
@@ -75,6 +95,22 @@ class PlayScene extends Scene {
 
 	public function setLevel(name:String) {
 		HXP.log("starting " + name);
+	}
+
+	public function updateMenu() {
+		if (Input.pressed(Key.ESCAPE)) {
+			if (menu.isActive) {
+				menu.exit();
+			} else {
+				menu.enter();
+				Assets.sfxSuwip.play();
+				menu.pushState("main");
+				// menu.enter();
+			}			
+		}				
+		if (menu.isActive) {
+			menu.update();
+		} 		
 	}
 
 	public function menuEvent(action:String) {
