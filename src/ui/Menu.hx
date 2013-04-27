@@ -52,7 +52,7 @@ class MenuState extends State {
 			HXP.scene.add(entity);
 			items.add(entity);
 			actions.set(item.label, item.action);
-			HXP.log("added entity at " + entity.x + ", " + entity.y + " to scene " + Type.getClassName(Type.getClass(MenuScene)) );
+			HXP.log("added entity at " + entity.x + ", " + entity.y + " to scene " + Type.getClassName(Type.getClass(HXP.scene)) );
 			currentY += 20;
 		}		
 	}
@@ -118,17 +118,20 @@ class Menu extends StateMachine<MenuState> {
 			addState(menuState);
 		}	
 		HXP.log("fields:" + states);
-		replaceState(config.start);
+		replaceState(config.start);		
 		super.enter();		
+		isActive = true;
 	}
 
 	public override function exit() {
 		HXP.log("exiting hopefully");
+		isActive = false;
 		super.exit();
 	}
 
 	public override function update() {
-		isActive = stateStack.length > 0;
+		// [@todo this is for cascading menus - put it back eventually]
+//		isActive = stateStack.length > 0;
 	}
 
 	public override function render() {
