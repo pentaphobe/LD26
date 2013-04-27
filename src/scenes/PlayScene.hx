@@ -9,12 +9,13 @@ import ui.UIEntity;
 
 class PlayScene extends Scene {
 	var menu:Menu;
-	public static var instance(get_instance, never):PlayScene;
+	public static var instance(get_instance, set_instance):PlayScene;
 	public var levelSet:Array<String>;
 	public var startLevelName:String;
 
 	public function new() {
 		super();
+		instance = this;
 		menu = new Menu("ingame", menuEvent, uiEvent, cast(HXP.screen.width / 2), cast(HXP.screen.height / 2));
 
 		var levelsFile:Dynamic = Utils.loadJson("levels");
@@ -42,6 +43,7 @@ class PlayScene extends Scene {
 				menu.exit();
 			} else {
 				menu.enter();
+				Assets.sfxSuwip.play();
 				menu.pushState("main");
 				// menu.enter();
 			}			
@@ -60,6 +62,24 @@ class PlayScene extends Scene {
 		HXP.log("starting " + name);
 	}
 
+	public function menuEvent(action:String) {
+		HXP.log("menuEvent:" + action);
+		if (action == "exit") {
+			HXP.scene = new MenuScene();
+		} else if (action == "return") {
+			HXP.log("trying to exit menu");
+			menu.exit();
+		}
+	}
+
+	public function uiEvent(eventType:String, source:UIEntity) {
+		if (eventType == "onGotMouse") {
+			Assets.sfxHover.play();
+		} else if (eventType == "onClick") {
+			Assets.sfxClick.play();
+		}
+	}
+
 	public static function get_instance():PlayScene {
 		if (instance == null) {
 			// normally you'd spawn this for singletons, but this is unnecessary
@@ -72,17 +92,8 @@ class PlayScene extends Scene {
 		return instance;
 	}
 
-	public function menuEvent(action:String) {
-		HXP.log("menuEvent:" + action);
-		if (action == "exit") {
-			HXP.scene = new MenuScene();
-		} else if (action == "return") {
-			HXP.log("trying to exit menu");
-			menu.exit();
-		}
-	}
-
-	public function uiEvent(eventName:String, source:UIEntity) {
-
+	private static function set_instance(inst:PlayScene):PlayScene {
+		instance = inst;
+		return instance;
 	}
 }

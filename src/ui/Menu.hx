@@ -114,7 +114,7 @@ class Menu extends StateMachine<MenuState> {
 		for ( item in Reflect.fields(sections) ) {			
 			var sectionName:String = item;
 			HXP.log("creating menu state " + sectionName);
-			var menuState:MenuState = new MenuState( sectionName, Reflect.field(sections, sectionName), menuCallback, x, y );
+			var menuState:MenuState = new MenuState( sectionName, Reflect.field(sections, sectionName), menuCallback, uiCallback,  x, y );
 			addState(menuState);
 		}	
 		HXP.log("fields:" + states);
