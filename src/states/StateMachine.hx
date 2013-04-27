@@ -44,7 +44,7 @@ class StateMachine<T : State> extends State {
 	public override function render() {
 		var currentState:T = stateStack.first();
 		if (currentState == null) {
-			HXP.log(this.name + " no state to render");
+			// HXP.log(this.name + " no state to render");
 			return;
 		}
 
@@ -52,11 +52,20 @@ class StateMachine<T : State> extends State {
 
 	}
 
+	private function exitCurrent() {
+		var currentState:T = stateStack.first();
+		if (currentState == null) {
+			return;
+		}
+		currentState.exit();
+	}
+
 	public function replaceState(name:String) {
 		if (!states.exists(name)) {
 			HXP.log(this.name + ".setState : no state named " + name + ", leaving the current state");
 			return;
 		}
+		exitCurrent();
 		popState();
 		pushState(name);
 	}
@@ -66,6 +75,7 @@ class StateMachine<T : State> extends State {
 			HXP.log(this.name + ": no state named " + name);
 			return null;
 		}
+		exitCurrent();
 		return addStateAndEnter( states.get(name) );
 	}
 
@@ -84,6 +94,7 @@ class StateMachine<T : State> extends State {
 			return null;
 		}
 		addState(state);
+		exitCurrent();
 		stateStack.push(state);
 		state.enter();
 		return state;
@@ -94,10 +105,10 @@ class StateMachine<T : State> extends State {
 			HXP.log(this.name + " can't pop an empty stack");
 			return;
 		}
-		var currentState:T = stateStack.last();
-		if (currentState != null) {
-			currentState.exit();
-		}
+		exitCurrent();
 		stateStack.pop();
+		if (stateStack.length > 0) {
+			stateStack.first().enter();
+		}
 	}
 }

@@ -13,11 +13,11 @@ class State {
 		HXP.log("entering state: " + name);
 	}
 	public function update() {
-		HXP.log("updating state: " + name);
+		// HXP.log("updating state: " + name);
 	}
 
 	public function render() {
-		HXP.log("rendering state: " + name);
+		// HXP.log("rendering state: " + name);
 	}
 
 	public function exit() {

@@ -46,10 +46,16 @@ class TestScene extends Scene {
 		super.update();		
 		var shiftIsPressed:Bool = Input.check(Key.SHIFT);		
 		uiState.update();
+		if (uiState.isDone) {
+			HXP.scene = new MenuScene();
+		}
 	}
 
 	public override function render() {
 		super.render();
+		Draw.linePlus(cast(Math.random() * HXP.width), cast(Math.random() * HXP.height), 
+						cast(Math.random() * HXP.width), cast(Math.random() * HXP.height), 0xff0000);
+		Draw.text("This is the game rendering", cast(Math.random() * HXP.width), cast(Math.random() * HXP.height));
 		uiState.render();
 	}
 

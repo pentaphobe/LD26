@@ -5,13 +5,14 @@
  	<app file="Main" main="Main" path="bin" />
 
 	<window fps="30" background="0x333333" />
-	<window width="640" height="480" resizable="true" unless="mobile" />
+	<window width="640" height="400" resizable="true" unless="mobile" />
 	<window fullscreen="true" if="mobile" />
 
 	<source path="src" />
 
 	<haxelib name="nme" />
 	<haxelib name="HaxePunk" />
+	<haxelib name="tjson" />
 
 	<assets path="assets/graphics" rename="gfx" include="*.png|*.jpg" />
 	<assets path="assets/audio" rename="sfx" include="*.mp3" if="flash" />

@@ -30,24 +30,28 @@ class PrototypeState extends State {
 		if (customUpdate != null) {
 			customUpdate(this);
 		}
+		super.update();
 	}
 
 	public override function render() {
 		if (customRender != null) {			
 			customRender(this);
 		}
+		super.render();
 	}
 
 	public override function enter() {
 		if (customEnter != null) {
 			customEnter(this);
 		}
+		super.enter();
 	}
 
 	public override function exit() {
 		if (customExit != null) {
 			customExit(this);
 		}
+		super.exit();
 	}
 
 	public function setOverride(which:OverrideType, overrideFunc:StateOverride) {

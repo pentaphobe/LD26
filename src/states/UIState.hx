@@ -12,12 +12,9 @@ class UIState extends PrototypeState {
 	}
 	public override function update() {
 		if (Input.released(Key.ESCAPE)) {
-			// popState();
 			isDone = true;
 			return;
 		}
 		super.update();
 	}
-
-
 }

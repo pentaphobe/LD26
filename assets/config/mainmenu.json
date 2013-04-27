@@ -1,0 +1,12 @@
+{
+	title:"Main Menu",
+	sections:{
+		main:{
+			title:"main menu",
+			items:[
+				{label:"start", action:"start"},
+				{label:"about", action:"@about"}
+			]
+		}
+	}
+}
