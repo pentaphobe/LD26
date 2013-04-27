@@ -40,7 +40,7 @@ class PlayScene extends Scene {
 	public static var AI_RATE:Float = 0.5;
 	public static var AGENT_RATE:Float = 0.2;
 
-	public var levelSet:Array<String>;
+	public var levelList:Array<String>;
 	public var startLevelSetName:String;
 	public var currentLevel:Int;
 	var level:Level;
@@ -126,15 +126,16 @@ class PlayScene extends Scene {
 			return;
 		}
 		HXP.log(levelSet);
-		var levelsList:Array<Dynamic> = cast levelSet;
+		var tmpList:Array<Dynamic> = cast levelSet;
 
-		levelSet = new Array<String>();
-		for ( idx in 0...levelsList.length) {
-			levelSet[idx] = cast levelsList[idx];			
+		levelList = new Array<String>();
+		for ( idx in 0...tmpList.length) {
+			levelList[idx] = cast tmpList[idx];			
 		}		
 		HXP.log("First level set: " + startLevelSetName);
-		HXP.log("First level: " + levelSet[currentLevel]);
+		HXP.log("First level: " + levelList[currentLevel]);
 		level = new Level();
+
 	}
 
 	public override function begin() {
@@ -221,10 +222,10 @@ class PlayScene extends Scene {
 		// HXP.log(levelSet);
 		// HXP.log(levelSet[currentLevel]);
 		HXP.log(level);
-		if (levelSet == null) {
+		if (levelList == null) {
 			HXP.log("Why you no load level set?");
 		}
-		level.load(levelSet[currentLevel]);
+		level.load(levelList[currentLevel]);
 	}
 
 	public function updateMenu() {
