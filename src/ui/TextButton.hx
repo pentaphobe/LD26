@@ -10,7 +10,7 @@ import nme.text.TextFormatAlign;
 
 class TextButton extends UIEntity {
 	var text:Text;
-	public var normalColor:Int = 0x808080;
+	public var normalColor:Int = 0xc0c0c0;
 	public var hoverColor:Int = 0xffffff;
 	public function new(label:String, uiName:String, x:Float=0, y:Float=0, ?handler:String->UIEntity->Void = null) {
 		super(uiName, x, y, handler);
