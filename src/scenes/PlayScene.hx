@@ -2,14 +2,20 @@
 package scenes;
 import com.haxepunk.Scene;
 import com.haxepunk.HXP;
+import com.haxepunk.utils.Input;
+import com.haxepunk.utils.Key;
+import ui.Menu;
+import ui.UIEntity;
 
 class PlayScene extends Scene {
+	var menu:Menu;
 	public static var instance(get_instance, never):PlayScene;
 	public var levelSet:Array<String>;
 	public var startLevelName:String;
 
 	public function new() {
 		super();
+		menu = new Menu("ingame", menuEvent, uiEvent, cast(HXP.screen.width / 2), cast(HXP.screen.height / 2));
 
 		var levelsFile:Dynamic = Utils.loadJson("levels");
 		var levelsList:Array<Dynamic> = cast levelsFile.levels;
@@ -22,11 +28,31 @@ class PlayScene extends Scene {
 	}	
 
 	public override function begin() {
+		super.begin();
 		HXP.log("entering game");
 
 		setLevel(startLevelName);
-
 		// createMap();
+	}
+
+	public override function update() {
+		super.update();
+		if (Input.pressed(Key.ESCAPE)) {
+			if (menu.isActive) {
+				menu.exit();
+			} else {
+				// menu.pushState("main");
+				menu.enter();
+			}			
+		}				
+		if (menu.isActive) {
+			menu.update();
+		} 
+	}
+
+	public override function render() {
+		super.render();
+		menu.render();
 	}
 
 	public function setLevel(name:String) {
@@ -43,5 +69,18 @@ class PlayScene extends Scene {
 			return null;
 		}
 		return instance;
+	}
+
+	public function menuEvent(action:String) {
+		HXP.log("menuEvent:" + action);
+		if (action == "exit") {
+			HXP.scene = new MenuScene();
+		} else if (action == "return") {
+			menu.exit();
+		}
+	}
+
+	public function uiEvent(eventName:String, source:UIEntity) {
+
 	}
 }

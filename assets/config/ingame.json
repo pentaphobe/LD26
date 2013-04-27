@@ -4,14 +4,14 @@
 	//	@name	- jump to another section of this menu
 	//	<		- move back up in the hierarchy
 	//
-	start:"main",
+	start:"",
 	sections:{
 		main:{
-			title:"Main Menu",
-			background:"testbackground.png",
+			title:"In Game Menu",
 			items:[
-				{label:"start", action:"start"},
-				{label:"about", action:"@about"}
+				{label:"return to game", action:"return"},
+				{label:"options", action:"@options"},
+				{label:"exit game", action:"exit"}
 			]
 		}
 	}

@@ -2,6 +2,7 @@ import com.haxepunk.Engine;
 import com.haxepunk.HXP;
 import flash.events.Event;
 import scenes.TestScene;
+import scenes.MenuScene;
 
 class Main extends Engine
 {
@@ -21,7 +22,9 @@ class Main extends Engine
 		HXP.screen.color = kClearColor;
 		HXP.screen.scale = 1;
 
-		HXP.scene = new TestScene();
+		Assets.loadAssets();
+		
+		HXP.scene = new MenuScene();
 
 		HXP.stage.addEventListener(Event.ACTIVATE, function (e:Event) {
 			HXP.focused = true;

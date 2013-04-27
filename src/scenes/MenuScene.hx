@@ -4,42 +4,55 @@ import com.haxepunk.Scene;
 import com.haxepunk.HXP;
 import com.haxepunk.utils.Input;
 import com.haxepunk.utils.Key;
+import nme.text.TextFormatAlign;
+import com.haxepunk.utils.Draw;
+
 import states.UIState;
 import states.PrototypeState;
 import states.StateMachine;
 import states.State;
-import nme.text.TextFormatAlign;
-import com.haxepunk.utils.Draw;
 import ui.Menu;
+import ui.UIEntity;
 import Utils;
 
 class MenuScene extends Scene {
 	var menu:Menu;
-	var title:String;
-	var config:Dynamic;
 	public function new() {
 		super();
-		menu = new Menu("menu");
-		config = Utils.loadJson("mainmenu");
-		title = config.title;
-		var main = config.sections.main.items;
-		for ( item in cast(main, Array<Dynamic>) ) {			
-			HXP.log(item.label);
-		}
+		menu = new Menu("mainmenu", menuEvent, uiEvent, cast(HXP.screen.width / 2), cast(HXP.screen.height / 2 + HXP.screen.height / 6));
+	}
+
+	public override function begin() {
+		super.begin();
+		menu.enter();
+
 	}
 
 	public override function render() {
-		var x:Int = cast (HXP.screen.width / 4);
-		var y:Int = cast (HXP.screen.height / 2);
-		Draw.text(title, x, y, {color:0xdddddd, align:TextFormatAlign.CENTER});
-		for ( item in cast(config.sections.main.items, Array<Dynamic>)) {
-			y += 20;
-			Draw.text(item.label, x, y);
-		}
+		super.render();		
+		menu.render();
 	}
 
 	public override function update() {
-		if (Input.pressed(Key.ANY) || Input.mousePressed) {
+		// if (Input.pressed(Key.ANY) || Input.mousePressed) {
+		// 	HXP.scene = new PlayScene();
+		// }
+		menu.update();
+		super.update();
+	}
+
+	public function uiEvent(eventType:String, source:UIEntity) {
+		HXP.log("uiEvent:" + eventType + ", " + source);
+		if (eventType == "onGotMouse") {
+			Assets.sfxHover.play();
+		} else if (eventType == "onClick") {
+			Assets.sfxClick.play();
+		}
+	}
+
+	public function menuEvent(action:String) {
+		HXP.log("menuEvent:" + action);
+		if (action == "start") {
 			HXP.scene = new PlayScene();
 		}
 	}

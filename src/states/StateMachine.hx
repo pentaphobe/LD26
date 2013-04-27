@@ -52,6 +52,13 @@ class StateMachine<T : State> extends State {
 
 	}
 
+	public function clear() {
+		for (state in stateStack) {
+			state.exit();
+		}
+		stateStack.clear();
+	}
+
 	private function exitCurrent() {
 		var currentState:T = stateStack.first();
 		if (currentState == null) {
@@ -62,11 +69,11 @@ class StateMachine<T : State> extends State {
 
 	public function replaceState(name:String) {
 		if (!states.exists(name)) {
-			HXP.log(this.name + ".setState : no state named " + name + ", leaving the current state");
+			HXP.log(this.name + ".replaceState : no state named " + name + ", leaving the current state");
 			return;
 		}
 		exitCurrent();
-		popState();
+		stateStack.pop();
 		pushState(name);
 	}
 
@@ -84,7 +91,9 @@ class StateMachine<T : State> extends State {
 			HXP.log(this.name + " not pushing null state");
 			return null;
 		}
+		HXP.log("adding state " + state.name);
 		states.set(state.name, state);
+		HXP.log("  it's now here: " + states.get(state.name));
 		return state;
 	}
 
