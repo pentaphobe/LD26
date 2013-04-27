@@ -4,6 +4,7 @@ import com.haxepunk.Entity;
 import com.haxepunk.HXP;
 import com.haxepunk.graphics.Tilemap;
 import com.haxepunk.graphics.Image;
+import com.haxepunk.masks.Grid;
 
 import scenes.PlayScene;
 
@@ -32,16 +33,19 @@ class Level extends EntityGroup {
 		width = cast toScreenX(mapWidth);
 		height = cast toScreenY(mapHeight);
 		var map:Tilemap = new Tilemap(HXP.getBitmap("gfx/tiles.png"), width, height, PlayScene.TILE_SIZE, PlayScene.TILE_SIZE);
+		var mask:Grid = new Grid(width, height, PlayScene.TILE_SIZE, PlayScene.TILE_SIZE);
 		for (y in 0...mapHeight) {
 			for (x in 0...mapWidth) {
 				if ( x == 0 || x == mapWidth-1 || y == 0 || y == mapHeight-1 ) {
 					map.setTile(x, y, 1);
+					mask.setTile(x, y, true);
 				} else {
 					map.setTile(x, y, 0);
+					mask.setTile(x, y, false);
 				}
 			}
 		}
-		var e:Entity = new Entity(0, 0, map);
+		var e:Entity = new Entity(0, 0, map, mask);
 		add(e);
 		// HXP.scene.add(e);
 	}
