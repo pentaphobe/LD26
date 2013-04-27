@@ -23,6 +23,10 @@ class StateMachine<T : State> extends State {
 		}
 	}
 
+	public override function exit() {
+		clear();		
+	}
+
 	public override function update() {
 		var currentState:T = stateStack.first();
 		if (currentState == null) {

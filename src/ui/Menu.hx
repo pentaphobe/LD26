@@ -24,18 +24,23 @@ class MenuState extends State {
 	var uiCallback:UICallback;
 	var menuCallback:MenuCallback;
 	var actions:Hash<String>;
-
+	var x:Int;
+	var y:Int;
 	public function new(id:String, config:Dynamic, ?menuCallback:MenuCallback=null, ?uiCallback:UICallback=null, ?x:Int = 0, ?y:Int = 0) {
 		super(id);
 		this.config = config;
 		title = config.title;
 		this.menuCallback = menuCallback;
 		this.uiCallback = uiCallback;
+		this.x = x;
+		this.y = y;
+	}
+	public override function enter() {
 		HXP.log("creating menu state " + title);		
 		var configItems:Array<Dynamic> = cast config.items;		
 		actions = new Hash<String>();
 		items = new List<Entity>();
-
+		var currentY:Int = y;
 		if ( Reflect.hasField(config, "background") ) {
 			var bg:Stamp = new Stamp("gfx/" + config.background);
 			var ent:Entity = new Entity(0, 0, bg);
@@ -43,13 +48,13 @@ class MenuState extends State {
 			items.add(ent);
 		}
 		for ( item in configItems ) {
-			var entity:UIEntity = new TextButton(item.label, item.label, x, y, this.dispatchEvents);
+			var entity:UIEntity = new TextButton(item.label, item.label, x, currentY, this.dispatchEvents);
 			HXP.scene.add(entity);
 			items.add(entity);
 			actions.set(item.label, item.action);
 			HXP.log("added entity at " + entity.x + ", " + entity.y + " to scene " + Type.getClassName(Type.getClass(MenuScene)) );
-			y += 20;
-		}
+			currentY += 20;
+		}		
 	}
 
 	// public override function render() {
@@ -61,6 +66,7 @@ class MenuState extends State {
 	// }
 
 	public override function exit() {
+		HXP.log("removing items");
 		HXP.scene.removeList(items);
 		items.clear();
 	}
@@ -117,10 +123,8 @@ class Menu extends StateMachine<MenuState> {
 	}
 
 	public override function exit() {
-		exitCurrent();
-		if (stateStack.length == 0) {
-
-		}
+		HXP.log("exiting hopefully");
+		super.exit();
 	}
 
 	public override function update() {

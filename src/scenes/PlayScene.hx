@@ -41,8 +41,9 @@ class PlayScene extends Scene {
 			if (menu.isActive) {
 				menu.exit();
 			} else {
-				// menu.pushState("main");
 				menu.enter();
+				menu.pushState("main");
+				// menu.enter();
 			}			
 		}				
 		if (menu.isActive) {
@@ -76,6 +77,7 @@ class PlayScene extends Scene {
 		if (action == "exit") {
 			HXP.scene = new MenuScene();
 		} else if (action == "return") {
+			HXP.log("trying to exit menu");
 			menu.exit();
 		}
 	}
