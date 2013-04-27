@@ -49,7 +49,7 @@ class PlayScene extends Scene {
 		selectedEntities = new Array<Entity>();
 
 		uiStates = new StateMachine<UIState>("ui");
-		var testState:UIState = new UIState("test");
+		var testState:UIState = new UIState("select");
 		testState.setOverride(CustomUpdate, function (owner:PrototypeState) {
 			if (Input.mousePressed) {
 				startDragPoint = new Point(mouseX, mouseY);
@@ -69,6 +69,15 @@ class PlayScene extends Scene {
 			}
 		});
 		uiStates.addStateAndEnter(testState);
+
+		testState = new UIState("orderMove");
+		testState.setOverride(CustomUpdate, function (owner:PrototypeState) {
+			if (Input.mouseReleased) {
+				HXP.log("ordered movement to " + mouseX + ", " + mouseY);
+				owner.isDone = true;
+			}
+		});
+		uiStates.addState(testState);
 	}	
 
 	public function selectEntities(x:Float, y:Float, w:Float, h:Float) {
@@ -128,6 +137,9 @@ class PlayScene extends Scene {
 
 	public override function update() {
 		super.update();
+		if (Input.pressed(Key.M)) {
+			uiStates.pushState("orderMove");
+		}
 		uiStates.update();
 		// a little special case code for in-game menu since it acts differently
 		updateMenu();
