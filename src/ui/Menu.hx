@@ -49,7 +49,7 @@ class MenuState extends State {
 			var ent:Entity = new Entity(0, 0);
 			if (bgName == "!blurred") {
 				var bg:Image = HXP.screen.capture();
-				bg.applyFilter(new BlurFilter(9, 9));
+				bg.applyFilter(new BlurFilter(4, 4));
 				ent.graphic = bg;
 			} else {
 				var bg:Stamp = new Stamp("gfx/" + config.background);
@@ -70,7 +70,12 @@ class MenuState extends State {
 	}
 
 	// public override function render() {
-	// 	HXP.log("render");
+	// 	// continuosly blur the background
+	// 	var bg:Entity = items.first();
+	// 	if (Std.is(bg.graphic, Image)) {
+	// 		// cast(bg.graphic, Image).applyFilter(new BlurFilter(2, 2));
+	// 		cast(bg.graphic, Image).applyFilter(new GlowFilter(4, 4));
+	// 	}
 	// }
 
 	// public override function update() {

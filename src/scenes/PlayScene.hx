@@ -19,6 +19,7 @@ import ui.Menu;
 import ui.UIEntity;
 import entities.Actor;
 import utils.ActorFactory;
+import entities.Level;
 import com.haxepunk.Tween;
 
 
@@ -32,6 +33,7 @@ class PlayScene extends Scene {
 
 	var menu:Menu;
 	var uiStates:StateMachine<UIState>;
+	var level:Level;
 	public static var instance(get_instance, set_instance):PlayScene;
 	public static var TILE_SIZE:Int = 32;
 	public static var HTILE_SIZE:Int = cast (TILE_SIZE/2);
@@ -40,7 +42,8 @@ class PlayScene extends Scene {
 	public static var AGENT_RATE:Float = 0.2;
 
 	public var levelSet:Array<String>;
-	public var startLevelName:String;
+	public var startLevelSetName:String;
+	public var currentLevel:Int;
 
 	public function new() {
 		super();
@@ -55,7 +58,7 @@ class PlayScene extends Scene {
 		uiStates = new StateMachine<UIState>("ui");
 		var testState:UIState = new UIState("select");
 		testState.setOverride(CustomUpdate, function (owner:PrototypeState) {
-			HXP.log("updating select");
+			// HXP.log("updating select");
 			if (Input.mousePressed) {
 				startDragPoint = new Point(mouseX, mouseY);
 				if (!Input.check(Key.SHIFT)) {
@@ -115,13 +118,23 @@ class PlayScene extends Scene {
 
 	public function loadLevelSet() {
 		var levelsFile:Dynamic = Utils.loadJson("levels");
-		var levelsList:Array<Dynamic> = cast levelsFile.levels;
-		startLevelName = levelsFile.start;
+		startLevelSetName = levelsFile.start;
+		currentLevel = 0;
+		var levelSet:Dynamic = Reflect.field(levelsFile.levelSets, startLevelSetName);
+		if (levelSet == null) {
+			HXP.log("error loading level set " + startLevelSetName);
+			return;
+		}
+		HXP.log(levelSet);
+		var levelsList:Array<Dynamic> = cast levelSet;
+
 		levelSet = new Array<String>();
 		for ( idx in 0...levelsList.length) {
-			levelSet[idx] = cast levelsList[idx];
+			levelSet[idx] = cast levelsList[idx];			
 		}		
-		HXP.log("First level: " + startLevelName);
+		HXP.log("First level set: " + startLevelSetName);
+		HXP.log("First level: " + levelSet[currentLevel]);
+		level = new Level();
 	}
 
 	public override function begin() {
@@ -130,7 +143,7 @@ class PlayScene extends Scene {
 		uiStates.enter();
 		HXP.log("entering game");
 
-		setLevel(startLevelName);
+		loadLevel();
 
 
 		var bgScroller = new Backdrop("gfx/gridbg.png", true, true);
@@ -204,8 +217,14 @@ class PlayScene extends Scene {
 	}
 
 
-	public function setLevel(name:String) {
-		HXP.log("starting " + name);
+	public function loadLevel() {
+		// HXP.log(levelSet);
+		// HXP.log(levelSet[currentLevel]);
+		HXP.log(level);
+		if (levelSet == null) {
+			HXP.log("Why you no load level set?");
+		}
+		level.load(levelSet[currentLevel]);
 	}
 
 	public function updateMenu() {
