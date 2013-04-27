@@ -6,6 +6,7 @@ import com.haxepunk.utils.Input;
 import com.haxepunk.HXP;
 import com.haxepunk.graphics.Text;
 import com.haxepunk.graphics.Image;
+import com.haxepunk.graphics.Graphiclist;
 import com.haxepunk.Graphic;
 import nme.text.TextFormatAlign;
 
@@ -21,23 +22,29 @@ class TextButton extends UIEntity {
 		var background:Graphic = null;
 		if (hasShadow) {
 			shadowText = new Text(label, -2, 2, {color:0x000000,align:TextFormatAlign.LEFT});	
+			// shadowText.scrollX = shadowText.scrollY = 0;
 		}
 		this.text = new Text(label, 0, 0, {color:normalColor,align:TextFormatAlign.LEFT});
+		this.text.scrollX = this.text.scrollY = 0;
 		if (hasBackground) {
 			background = Image.createRect(text.width + boxPadding*2, text.height + boxPadding*2, 0x000000);
 			background.x -= boxPadding;
 			background.y -= boxPadding;
+			// background.scrollX = background.scrollY = 0;
 		}
 
+		var gList:Graphiclist = new Graphiclist();
+		graphic = gList;
+		gList.scrollX = gList.scrollY = 0;
 		if (hasBackground) {
-			addGraphic(background);
+			gList.add(background);
 		}
 		if (hasShadow) {
-			addGraphic(this.shadowText);		
+			gList.add(this.shadowText);		
 		}
-		addGraphic(this.text);
+		gList.add(this.text);
 		setHitboxTo(this.text);
-		// [@note not sure why this is necessary - I'm setting the color above]
+		// [@note not sure why this is necessary - I'm setting the color above, but somewhere the items are initialising to hover state]
 		onLostMouse(0, 0);
 	}
 

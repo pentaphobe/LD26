@@ -45,7 +45,10 @@
 
 ### To Do (misc QA as I find it)
 	- "back" option in About menu takes you to the game instead of back to the Main Menu
-
+	- entities aren't checking map coords properly, unify that stuff
+	- attacks
+		- melee (strength, speed, meleeBonus)
+		- ranged (dexterity, rangedBonus)
 
 ### Notes
 

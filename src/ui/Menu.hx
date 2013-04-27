@@ -47,9 +47,10 @@ class MenuState extends State {
 		if ( Reflect.hasField(config, "background") ) {
 			var bgName:String = config.background;
 			var ent:Entity = new Entity(0, 0);
-			if (bgName == "!blurred") {
+			if (bgName == "@blurred") {
 				var bg:Image = HXP.screen.capture();
 				bg.applyFilter(new BlurFilter(4, 4));
+				bg.scrollX = bg.scrollY = 0;
 				ent.graphic = bg;
 			} else {
 				var bg:Stamp = new Stamp("gfx/" + config.background);
@@ -58,6 +59,8 @@ class MenuState extends State {
 			
 			HXP.scene.add(ent);
 			items.add(ent);
+		} else {
+			
 		}
 		for ( item in configItems ) {
 			var entity:UIEntity = new TextButton(item.label, item.label, x, currentY, this.dispatchEvents);
@@ -107,7 +110,9 @@ class MenuState extends State {
 			}
 		}
 	}
-
+	public function toString():String {
+		return "MenuState{" + this.title + "}";
+	}
 }
 
 class Menu extends StateMachine<MenuState> {

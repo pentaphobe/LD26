@@ -11,12 +11,20 @@
 			background:"testbackground.png",
 			items:[
 				{label:"start", action:"start"},
-				{label:"about", action:"@about"}
+				{label:"about", action:"@about"},
+				{label:"how to play", action:"@howToPlay"}
 			]
 		},
 		about:{
 			title:"About IceBreaker",
 			background:"anotherbackground.png",
+			items:[
+				{label:"back", action:"@exit"}
+			]
+		},
+		howToPlay:{
+			title:"How to play",
+			//background:"@blurred",
 			items:[
 				{label:"back", action:"@exit"}
 			]

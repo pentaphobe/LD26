@@ -107,17 +107,17 @@ class PlayScene extends Scene {
 			h = -h;
 		}
 		var MIN_RECT_SIZE:Int = 4;
-		if (w < MIN_RECT_SIZE && h < MIN_RECT_SIZE) {
-			// this rectangle is considered a click, so we'll just choose an entity and bring it to the "back"
-			var ent:Entity = collideRect("computer", x, y, w, h);
-			if (ent == null) return;
+		// if (w < MIN_RECT_SIZE && h < MIN_RECT_SIZE) {
+		// 	// this rectangle is considered a click, so we'll just choose an entity and bring it to the "back"
+		// 	var ent:Entity = collideRect("computer", x, y, w, h);
+		// 	if (ent == null) return;
 
-			sendToBack(ent);
-			bringForward(ent);
-			selectedEntities.push(ent);
-		} else {
+		// 	sendToBack(ent);
+		// 	bringForward(ent);
+		// 	selectedEntities.push(ent);
+		// } else {
 			collideRectInto("computer", x, y, w, h, selectedEntities);
-		}
+		// }
 	}
 
 	public function loadLevelSet() {
@@ -193,6 +193,9 @@ class PlayScene extends Scene {
 	}
 
 	public override function update() {
+		// mouse scrolling scale breaks too much
+		// HXP.screen.scale = HXP.clamp(HXP.screen.scale + Input.mouseWheelDelta * 0.02, 0.5, 2);
+			
 		super.update();
 		if (!menu.isActive && BACKGROUND_AUTO_SCROLL) {
 			background.x += 0.1;
@@ -207,7 +210,10 @@ class PlayScene extends Scene {
 		uiStates.update();
 		// a little special case code for in-game menu since it acts differently
 		updateMenu();
-		updateCamera();
+
+		if (!menu.isActive) {
+			updateCamera();
+		}
 	}
 
 	public override function render() {

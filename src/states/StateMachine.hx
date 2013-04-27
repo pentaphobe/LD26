@@ -86,6 +86,7 @@ class StateMachine<T : State> extends State {
 	}
 
 	public function pushState(name:String):T {
+		HXP.log("pushing state [" + name + "] onto stack " + stateStack);
 		if (!states.exists(name)) {
 			HXP.log(this.name + ": no state named " + name);
 			return null;
@@ -125,6 +126,7 @@ class StateMachine<T : State> extends State {
 		}
 		exitCurrent();
 		stateStack.pop();
+		HXP.log("popped stack, now it's:" + stateStack);
 		if (stateStack.length > 0) {
 			stateStack.first().enter();
 		}
