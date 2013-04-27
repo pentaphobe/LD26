@@ -68,9 +68,13 @@ class PlayScene extends Scene {
 		HXP.log("Ai update");
 		var newX:Float = testEntity.x + (Math.random()-0.5)*20;
 		var newY:Float = testEntity.y + (Math.random()-0.5)*20;
-		var tween:LinearMotion = new LinearMotion(tweenComplete, TweenType.OneShot);
-		tween.setMotion(testEntity.x, testEntity.y, newX, newY, AI_RATE);
-		testEntity.addTween(tween, true);
+		// there's gotta be a better way!
+		// var tween:LinearMotion = new LinearMotion(tweenComplete, TweenType.OneShot);
+		// tween.setMotion(testEntity.x, testEntity.y, newX, newY, AI_RATE, function (v:Float):Float {
+		// 	testEntity.x = 
+		// });
+		// testEntity.addTween(tween, true);
+		testEntity.moveTo(newX, newY);
 	}
 
 	public function tweenComplete(event:Dynamic) {
