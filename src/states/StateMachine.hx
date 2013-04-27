@@ -71,6 +71,10 @@ class StateMachine<T : State> extends State {
 		currentState.exit();
 	}
 
+	public function getCurrent():State {
+		return stateStack.first();
+	}
+
 	public function replaceState(name:String) {
 		if (!states.exists(name)) {
 			HXP.log(this.name + ".replaceState : no state named " + name + ", leaving the current state");

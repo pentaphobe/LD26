@@ -19,7 +19,26 @@
 #### 9:50pm
 	- Heaps of changes, but I'll save an update for after this frantic sprint / bug finding mission
 	- Will have to do a bit of cleanup soon, as aspects of the control flow are getting fuzzy
-		
+	- STUFF I DIDN'T WRITE EARLIER
+		- menus work nicely, and are defined with json so it's pretty easy to beef 'em up
+		- adding actors
+		- constrained-time for AI player
+		- finer grained time for Agent system
+
+#### ~11:30pm
+	- added basic actor selection
+	- basic movement orders
+	- fixed some state machine issues
+	- actors tween a bit too
+	- added a scrolling background test
+
+#### 1:15am
+	- now have (proper) RTS style selection and movement
+		- had to patch HaxePunk in order to get an immediate mode non-filled rectangle, as a result this won't run without my patches
+			I'll post my version in github too
+	- tweening is going to need work as the internal tweens in HaxePunk aren't really suited to this (no pausing for example)
+		- likely just going to do easing between current tile and next tile in our path
+
 
 ### Notes
 

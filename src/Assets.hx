@@ -8,6 +8,10 @@ class Assets {
 	public static var sfxSuwip:Sfx;
 
 	public static function loadAssets() {
+		loadSounds();
+	}
+
+	public static function loadSounds() {
 		var extension:String;
 		#if flash
 			extension = "mp3";
@@ -17,7 +21,11 @@ class Assets {
 
 		sfxHover = new Sfx(nme.Assets.getSound("sfx/ui_blip." + extension));
 		sfxClick = new Sfx(nme.Assets.getSound("sfx/ui_click." + extension));				
-		sfxSuwip = new Sfx(nme.Assets.getSound("sfx/ui_suwip." + extension));
+		sfxSuwip = new Sfx(nme.Assets.getSound("sfx/ui_suwip." + extension));		
+	}
+
+	public static function loadGraphics() {
+		
 	}
 
 }
