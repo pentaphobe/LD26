@@ -97,6 +97,7 @@ class StateMachine<T : State> extends State {
 		}
 		HXP.log("adding state " + state.name);
 		states.set(state.name, state);
+		state.parent = this;
 		HXP.log("  it's now here: " + states.get(state.name));
 		return state;
 	}

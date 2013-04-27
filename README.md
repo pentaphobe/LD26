@@ -16,6 +16,11 @@
 		  art, music and balancing
 
 
+#### 9:50pm
+	- Heaps of changes, but I'll save an update for after this frantic sprint / bug finding mission
+	- Will have to do a bit of cleanup soon, as aspects of the control flow are getting fuzzy
+		
+
 ### Notes
 
 Theme this time is **Minimalist** which seems mightily redundant.

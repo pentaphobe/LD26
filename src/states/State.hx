@@ -2,8 +2,10 @@
 package states;
 import com.haxepunk.HXP;
 
+
 class State {
 	public var name:String;
+	public var parent:State;
 	public var isDone(get_isDone, set_isDone):Bool = false;
 	public function new(name:String) {
 		this.name = name;

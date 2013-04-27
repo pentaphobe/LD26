@@ -13,6 +13,13 @@
 				{label:"start", action:"start"},
 				{label:"about", action:"@about"}
 			]
+		},
+		about:{
+			title:"About IceBreaker",
+			background:"anotherbackground.png",
+			items:[
+				{label:"back", action:"@exit"}
+			]
 		}
 	}
 }

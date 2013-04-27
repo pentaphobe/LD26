@@ -6,10 +6,15 @@ import com.haxepunk.utils.Input;
 import com.haxepunk.utils.Key;
 import ui.Menu;
 import ui.UIEntity;
+import utils.ActorFactory;
+
 
 class PlayScene extends Scene {
 	var menu:Menu;
 	public static var instance(get_instance, set_instance):PlayScene;
+	public static var TILE_SIZE:Int = 32;
+	public static var HTILE_SIZE:Int = cast (TILE_SIZE/2);
+
 	public var levelSet:Array<String>;
 	public var startLevelName:String;
 
@@ -18,15 +23,19 @@ class PlayScene extends Scene {
 		instance = this;
 		menu = new Menu("ingame", menuEvent, uiEvent, cast(HXP.screen.width / 2), cast(HXP.screen.height / 2));
 
+		loadLevelSet();
+	}	
+
+	public function loadLevelSet() {
 		var levelsFile:Dynamic = Utils.loadJson("levels");
 		var levelsList:Array<Dynamic> = cast levelsFile.levels;
 		startLevelName = levelsFile.start;
 		levelSet = new Array<String>();
 		for ( idx in 0...levelsList.length) {
 			levelSet[idx] = cast levelsList[idx];
-			HXP.log(levelSet[idx]);
-		}
-	}	
+		}		
+		HXP.log("First level: " + startLevelName);
+	}
 
 	public override function begin() {
 		super.begin();
@@ -38,6 +47,7 @@ class PlayScene extends Scene {
 
 	public override function update() {
 		super.update();
+		// a little special case code for in-game menu since it acts differently
 		if (Input.pressed(Key.ESCAPE)) {
 			if (menu.isActive) {
 				menu.exit();
@@ -57,6 +67,11 @@ class PlayScene extends Scene {
 		super.render();
 		menu.render();
 	}
+
+	public function loadActorTemplates() {
+		ActorFactory.load( Utils.loadJson("actors") );
+	}
+
 
 	public function setLevel(name:String) {
 		HXP.log("starting " + name);

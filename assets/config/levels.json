@@ -1,4 +1,4 @@
 {
-	start:'level00',
-	levels:['level00']
+	start:'level_00',
+	levels:['level_00']
 }

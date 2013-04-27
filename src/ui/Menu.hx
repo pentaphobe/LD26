@@ -81,9 +81,12 @@ class MenuState extends State {
 			if (!isInternal) {
 				menuCallback( actions.get(source.uiName) );
 			} else {
-				if (action == "@exit") {
-					this.exit();
+				action = action.substr(1);
+				if (action == "exit") {
+					this.isDone = true;
+					return;
 				}
+				cast(parent, Menu).pushState(action);
 			}
 		}
 	}
