@@ -1,10 +1,13 @@
 ## My LudumDare-26 entry 
 
-### Nothing to see here
+### Journal
 
-I'm still brainstorming, but taking a break to just get the environment all set up and clean.
-
-
+#### 1:30pm 
+	- I'm still brainstorming, but taking a break to just get the environment all set up and clean.
+#### 4pm 
+	- Got a generic state machine which will be used for UI, sub-game state and Actors
+	- up next: add simple level map and a base actor for movement test
+		- skipping any pathfinding for now, it can be added as a bonus if I'm a good code monkey
 
 ### Notes
 
