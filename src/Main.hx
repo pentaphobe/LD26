@@ -10,9 +10,9 @@ class Main extends Engine
 	public static inline var kScreenHeight:Int = 400;
 	public static inline var kFrameRate:Int = 60;
 	public static inline var kClearColor:Int = 0x222222;
-
+	public static inline var kUseFixedUpdate:Bool = false;
 	public override function new() {
-		super(kScreenWidth, kScreenHeight, kFrameRate, false);
+		super(kScreenWidth, kScreenHeight, kFrameRate, kUseFixedUpdate);
 	}
 	override public function init()
 	{
@@ -21,6 +21,7 @@ class Main extends Engine
 #end
 		HXP.screen.color = kClearColor;
 		HXP.screen.scale = 1;
+
 
 		Assets.loadAssets();
 		

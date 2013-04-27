@@ -15,6 +15,15 @@ import nme.text.TextFormatAlign;
 import utils.ActorTemplate;
 import scenes.PlayScene;
 
+class MapPoint {
+	public var x:Int;
+	public var y:Int;
+	public function new(?x:Int=0, ?y:Int=0) {
+		this.x = x;
+		this.y = y;
+	}
+}
+
 class Actor extends Entity {
 	public var teamName:String;
 	public var label:Text;
@@ -22,11 +31,13 @@ class Actor extends Entity {
 	public var hitPoints:Float;
 	public var movementPoints:Float;
 	public var actionPoints:Float;
-	public var targetPos:Point;
+	public var targetPos:MapPoint;
+	public var mapPos:MapPoint;
 	public var tween:LinearMotion;
 	public function new(teamName:String, x:Float, y:Float) {
 		super(x, y);
 		var col:Int;
+		mapPos = new MapPoint( PlayScene.instance.level.toMapX(x), PlayScene.instance.level.toMapY(y) );
 		if (teamName == "human") {
 			col = 0x00ff00;
 		} else {
@@ -53,14 +64,14 @@ class Actor extends Entity {
 		
 	}
 
-	public function setTarget(x:Float, y:Float, ?cancelExisting:Bool) {
-		targetPos = new Point(x, y);
+	public function setTarget(x:Int, y:Int) {
+		targetPos = new MapPoint(x, y);
 		if (tween == null) {
 			tween = new LinearMotion(null, TweenType.Persist);
 			addTween(tween);
 			HXP.log("created new tweener");
 		}
-		tween.setMotionSpeed(this.x, this.y, x, y, config.get("spd") * PlayScene.TILE_SIZE);
+		tween.setMotionSpeed(this.x, this.y, PlayScene.instance.level.toScreenX(x), PlayScene.instance.level.toScreenY(y), config.get("spd") * PlayScene.TILE_SIZE);
 		tween.start();
 
 	}

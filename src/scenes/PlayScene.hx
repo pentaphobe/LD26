@@ -39,17 +39,21 @@ class PlayScene extends Scene {
 	// how many seconds per AI processing step
 	public static var AI_RATE:Float = 0.5;
 	public static var AGENT_RATE:Float = 0.2;
+	public static var BACKGROUND_AUTO_SCROLL:Bool = false;
+
+	public var cameraSpeed:Float = 4;
 
 	public var levelList:Array<String>;
 	public var startLevelSetName:String;
 	public var currentLevel:Int;
-	var level:Level;
+	public var level:Level;
 
 	public function new() {
 		super();
 		instance = this;
 		menu = new Menu("ingame", menuEvent, uiEvent, cast(HXP.screen.width / 2), cast(HXP.screen.height / 2));
 
+		setupKeyBindings();
 		loadLevelSet();
 		loadActorTemplates();
 
@@ -86,7 +90,7 @@ class PlayScene extends Scene {
 				// HXP.log("Attempting to order " + selectedEntities.length + " entities");
 				for (entity in selectedEntities) {
 					HXP.log("ordered movement of " + entity + " to " + mouseX + ", " + mouseY);
-					cast(entity, Actor).setTarget(mouseX, mouseY);
+					cast(entity, Actor).setTarget( level.toMapX(mouseX), level.toMapY(mouseY));
 				}
 			}
 		});
@@ -143,13 +147,15 @@ class PlayScene extends Scene {
 
 		uiStates.enter();
 		HXP.log("entering game");
-		HXP.log(level);
-		loadLevel();
-
 
 		var bgScroller = new Backdrop("gfx/gridbg.png", true, true);
+		bgScroller.scrollX = 0.2;
+		bgScroller.scrollY = 0.2;
 		background = new Entity(0, 0, bgScroller);
 		add(background);
+
+
+		loadLevel();
 
 
 		testEntity = ActorFactory.create("basic", "computer", HXP.screen.width / 2, HXP.screen.height / 2);
@@ -172,8 +178,8 @@ class PlayScene extends Scene {
 		}
 		// HXP.log("Ai update");
 		if (testEntity.tween != null && !testEntity.tween.active) {
-			var newX:Float = testEntity.x + (Math.random()-0.5)*50;
-			var newY:Float = testEntity.y + (Math.random()-0.5)*50;
+			var newX:Int = level.toMapX(testEntity.x) + cast((Math.random()-0.5) * 2);
+			var newY:Int = level.toMapY(testEntity.y) + cast((Math.random()-0.5) * 2);
 			testEntity.setTarget(newX, newY);
 		}
 	}
@@ -188,7 +194,7 @@ class PlayScene extends Scene {
 
 	public override function update() {
 		super.update();
-		if (!menu.isActive) {
+		if (!menu.isActive && BACKGROUND_AUTO_SCROLL) {
 			background.x += 0.1;
 			background.y += 0.05;
 		}
@@ -201,6 +207,7 @@ class PlayScene extends Scene {
 		uiStates.update();
 		// a little special case code for in-game menu since it acts differently
 		updateMenu();
+		updateCamera();
 	}
 
 	public override function render() {
@@ -228,6 +235,31 @@ class PlayScene extends Scene {
 		level.load(levelList[currentLevel]);
 	}
 
+	public function setupKeyBindings() {
+		Input.define("up", [Key.UP, Key.W]);
+		Input.define("down", [Key.DOWN, Key.S]);		
+		Input.define("left", [Key.LEFT, Key.A]);
+		Input.define("right", [Key.RIGHT, Key.D]);				
+	}
+
+	public function updateCamera() {
+		var moveX:Float = 0;
+		var moveY:Float = 0;
+
+		if (Input.check("up")) {
+			moveY -= 1;
+		} 
+		if (Input.check("down")) {
+			moveY += 1;
+		}
+		if (Input.check("left")) {
+			moveX -= 1;
+		}
+		if (Input.check("right")) {
+			moveX += 1;
+		}
+		camera.offset(moveX * cameraSpeed, moveY * cameraSpeed);
+	}
 	public function updateMenu() {
 		if (Input.pressed(Key.ESCAPE)) {
 			if (menu.isActive) {
