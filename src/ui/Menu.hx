@@ -39,7 +39,7 @@ class MenuState extends State {
 		this.y = y;
 	}
 	public override function enter() {
-		HXP.log("creating menu state " + title);		
+		// HXP.log("creating menu state " + title);		
 		var configItems:Array<Dynamic> = cast config.items;		
 		actions = new Hash<String>();
 		items = new List<Entity>();
@@ -64,7 +64,7 @@ class MenuState extends State {
 			HXP.scene.add(entity);
 			items.add(entity);
 			actions.set(item.label, item.action);
-			HXP.log("added entity at " + entity.x + ", " + entity.y + " to scene " + Type.getClassName(Type.getClass(HXP.scene)) );
+			// HXP.log("added entity at " + entity.x + ", " + entity.y + " to scene " + Type.getClassName(Type.getClass(HXP.scene)) );
 			currentY += 20;
 		}		
 	}
@@ -83,7 +83,7 @@ class MenuState extends State {
 	// }
 
 	public override function exit() {
-		HXP.log("removing items");
+		// HXP.log("removing items");
 		HXP.scene.removeList(items);
 		items.clear();
 	}
@@ -128,23 +128,23 @@ class Menu extends StateMachine<MenuState> {
 	}
 
 	public override function enter() {
-		HXP.log("setting up menu: " + name);
+		// HXP.log("setting up menu: " + name);
 		var sections = config.sections;
 
 		for ( item in Reflect.fields(sections) ) {			
 			var sectionName:String = item;
-			HXP.log("creating menu state " + sectionName);
+			// HXP.log("creating menu state " + sectionName);
 			var menuState:MenuState = new MenuState( sectionName, Reflect.field(sections, sectionName), menuCallback, uiCallback,  x, y );
 			addState(menuState);
 		}	
-		HXP.log("fields:" + states);
+		// HXP.log("fields:" + states);
 		replaceState(config.start);		
 		super.enter();		
 		isActive = true;
 	}
 
 	public override function exit() {
-		HXP.log("exiting hopefully");
+		// HXP.log("exiting hopefully");
 		isActive = false;
 		super.exit();
 	}

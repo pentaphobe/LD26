@@ -42,7 +42,7 @@ class MenuScene extends Scene {
 	}
 
 	public function uiEvent(eventType:String, source:UIEntity) {
-		HXP.log("uiEvent:" + eventType + ", " + source);
+		// HXP.log("uiEvent:" + eventType + ", " + source);
 		if (eventType == "onGotMouse") {
 			Assets.sfxHover.play();
 		} else if (eventType == "onClick") {
@@ -51,7 +51,7 @@ class MenuScene extends Scene {
 	}
 
 	public function menuEvent(action:String) {
-		HXP.log("menuEvent:" + action);
+		// HXP.log("menuEvent:" + action);
 		if (action == "start") {
 			HXP.scene = new PlayScene();
 		}

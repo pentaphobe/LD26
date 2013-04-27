@@ -33,7 +33,6 @@ class PlayScene extends Scene {
 
 	var menu:Menu;
 	var uiStates:StateMachine<UIState>;
-	var level:Level;
 	public static var instance(get_instance, set_instance):PlayScene;
 	public static var TILE_SIZE:Int = 32;
 	public static var HTILE_SIZE:Int = cast (TILE_SIZE/2);
@@ -44,6 +43,7 @@ class PlayScene extends Scene {
 	public var levelSet:Array<String>;
 	public var startLevelSetName:String;
 	public var currentLevel:Int;
+	var level:Level;
 
 	public function new() {
 		super();
@@ -142,7 +142,7 @@ class PlayScene extends Scene {
 
 		uiStates.enter();
 		HXP.log("entering game");
-
+		HXP.log(level);
 		loadLevel();
 
 

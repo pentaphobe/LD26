@@ -14,7 +14,7 @@ class ActorTemplate {
 		this.parent = parent;
 		for ( i in Reflect.fields(jsonData.stats) ) {
 			this.stats.set(i, Reflect.field(jsonData.stats, i));
-			HXP.log(i + ", " + Reflect.field(jsonData.stats, i));
+			// HXP.log(i + ", " + Reflect.field(jsonData.stats, i));
 		}		
 	}
 	public function get(statName:String):Float {
@@ -31,12 +31,12 @@ class ActorTemplate {
 	public function keys():Iterator<String> {
 		var result = new Hash<Float>();
 		if (parent != null) {
-			HXP.log(typeName + " getting keys from parent " + parent.typeName);
+			// HXP.log(typeName + " getting keys from parent " + parent.typeName);
 			for (i in parent.keys()) {
 				result.set(i, parent.get(i));
 			}
 		} else {
-			HXP.log(typeName + " has no parent to inherit from");
+			// HXP.log(typeName + " has no parent to inherit from");
 		}
 		for (i in stats.keys()) {
 			result.set(i, stats.get(i));

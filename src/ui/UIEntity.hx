@@ -54,14 +54,14 @@ class UIEntity extends Entity {
 	}
 	
 	public  function onClick(relX:Float, relY:Float) {
-		HXP.log("clicked " + uiName);	
+		// HXP.log("clicked " + uiName);	
 		if (handler != null) {
 			handler("onClick", this);
 		}
 	}
 
 	public  function onGotMouse(relX:Float, relY:Float) {
-		HXP.log("got mouse " + uiName);	
+		// HXP.log("got mouse " + uiName);	
 
 		if (handler != null) {
 			handler("onGotMouse", this);
@@ -69,7 +69,7 @@ class UIEntity extends Entity {
 	}
 
 	public  function onLostMouse(relX:Float, relY:Float) {
-		HXP.log("lost mouse " + uiName);	
+		// HXP.log("lost mouse " + uiName);	
 		if (handler != null) {
 			handler("onLostMouse", this);
 		}		
