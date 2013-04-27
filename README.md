@@ -39,6 +39,9 @@
 	- tweening is going to need work as the internal tweens in HaxePunk aren't really suited to this (no pausing for example)
 		- likely just going to do easing between current tile and next tile in our path
 
+#### 5:30am
+	- getting tired.  the electronic music I'm listening to just did a vinyl stop and I thought I was stroking out
+	- things are looking pretty good.  there are definitely a few things going a little weird though :)
 
 ### To Do (misc QA as I find it)
 	- "back" option in About menu takes you to the game instead of back to the Main Menu
