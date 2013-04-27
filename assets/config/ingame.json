@@ -8,7 +8,7 @@
 	sections:{
 		main:{
 			title:"In Game Menu",
-			background:"vignette.png"
+			background:"!blurred"
 			items:[
 				{label:"return to game", action:"return"},
 				{label:"options", action:"@options"},

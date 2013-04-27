@@ -40,9 +40,13 @@
 		- likely just going to do easing between current tile and next tile in our path
 
 
+### To Do (misc QA as I find it)
+	- "back" option in About menu takes you to the game instead of back to the Main Menu
+
+
 ### Notes
 
-Theme this time is **Minimalist** which seems mightily redundant.
+Theme this time is **Minimalist** which seems mightily redundant for a 48-hr compo :)
 
 But hey, at least [we have someone to blame!](http://www.ludumdare.com/compo/2013/04/26/you-need-a-scapegoat/) (good on you klianc09 for taking the bullet and also reassuring everyone :)
 

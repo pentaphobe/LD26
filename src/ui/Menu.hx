@@ -5,9 +5,12 @@ import com.haxepunk.HXP;
 import com.haxepunk.utils.Input;
 import com.haxepunk.utils.Key;
 import nme.text.TextFormatAlign;
+import nme.filters.BlurFilter;
+
 import com.haxepunk.utils.Draw;
 import com.haxepunk.Entity;
 import com.haxepunk.graphics.Stamp;
+import com.haxepunk.graphics.Image;
 import scenes.MenuScene;
 
 import states.State;
@@ -42,8 +45,17 @@ class MenuState extends State {
 		items = new List<Entity>();
 		var currentY:Int = y;
 		if ( Reflect.hasField(config, "background") ) {
-			var bg:Stamp = new Stamp("gfx/" + config.background);
-			var ent:Entity = new Entity(0, 0, bg);
+			var bgName:String = config.background;
+			var ent:Entity = new Entity(0, 0);
+			if (bgName == "!blurred") {
+				var bg:Image = HXP.screen.capture();
+				bg.applyFilter(new BlurFilter(9, 9));
+				ent.graphic = bg;
+			} else {
+				var bg:Stamp = new Stamp("gfx/" + config.background);
+				ent.graphic = bg;
+			}
+			
 			HXP.scene.add(ent);
 			items.add(ent);
 		}

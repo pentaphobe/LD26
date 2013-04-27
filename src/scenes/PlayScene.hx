@@ -1,6 +1,7 @@
 
 package scenes;
 import nme.geom.Point;
+import nme.display.BitmapData;
 import com.haxepunk.Scene;
 import com.haxepunk.HXP;
 import com.haxepunk.utils.Input;
@@ -212,6 +213,9 @@ class PlayScene extends Scene {
 			if (menu.isActive) {
 				menu.exit();
 			} else {
+				// HXP.screen.addFilter([new BlurFilter(3, 3)]);
+				// HXP.screen.addFilter([]);
+
 				menu.enter();
 				Assets.sfxSuwip.play();
 				menu.pushState("main");
