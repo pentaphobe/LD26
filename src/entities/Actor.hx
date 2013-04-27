@@ -50,23 +50,38 @@ class Actor extends Entity {
 		graphic.y = -PlayScene.HTILE_SIZE;
 		type = teamName;	
 
-		tween = new LinearMotion(null, TweenType.Persist);
-		addTween(tween);
+		
 	}
 
-	public function setTarget(x:Float, y:Float) {
+	public function setTarget(x:Float, y:Float, ?cancelExisting:Bool) {
 		targetPos = new Point(x, y);
-		tween.setMotion(this.x, this.y, x, y, 0.5);
+		if (tween == null) {
+			tween = new LinearMotion(null, TweenType.Persist);
+			addTween(tween);
+			HXP.log("created new tweener");
+		}
+		tween.setMotionSpeed(this.x, this.y, x, y, config.get("spd") * PlayScene.TILE_SIZE);
 		tween.start();
 
 	}
 
 	public override function update() {
 		super.update();
-		HXP.log(tween.active);
-		if (tween.active) {
-			x = tween.x;
-			y = tween.y;
+		if (tween != null && tween.active) {
+			if (collideTypes(["computer", "human"], tween.x, tween.y) == null) {
+				x = tween.x;
+				y = tween.y;
+			} else {
+				// var dx = tween.x - x;
+				// var dy = tween.y - y;
+				// x += dy * 0.1;
+				// y += dx * 0.1;
+				tween.active = false;
+				HXP.alarm(0.1, function (event:Dynamic) {
+					setTarget(targetPos.x, targetPos.y);
+				}, TweenType.OneShot);
+				// tween.active = false;
+			}
 		}
 	}
 
