@@ -13,6 +13,7 @@ class State {
 
 	public function enter() {
 		HXP.log("entering state: " + name);
+		isDone = false;
 	}
 	public function update() {
 		// HXP.log("updating state: " + name);
@@ -23,7 +24,8 @@ class State {
 	}
 
 	public function exit() {
-		HXP.log("exiting state: " + name);		
+		HXP.log("exiting state: " + name);	
+		isDone = true;	
 	}
 	
 	public function get_isDone():Bool { return isDone; }
