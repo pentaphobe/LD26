@@ -72,10 +72,17 @@ class PlayScene extends Scene {
 
 		testState = new UIState("orderMove");
 		testState.setOverride(CustomUpdate, function (owner:PrototypeState) {
+			HXP.log("updating orderMove");
 			if (Input.mouseReleased) {
-				HXP.log("ordered movement to " + mouseX + ", " + mouseY);
+				
 				owner.isDone = true;
+				HXP.log("Attempting to order " + selectedEntities.length + " entities");
+				for (entity in selectedEntities) {
+					HXP.log("ordered movement of " + entity + " to " + mouseX + ", " + mouseY);
+					cast(entity, Actor).setTarget(mouseX, mouseY);
+				}
 			}
+			HXP.log("ummm..");
 		});
 		uiStates.addState(testState);
 	}	
@@ -120,15 +127,9 @@ class PlayScene extends Scene {
 			return;
 		}
 		HXP.log("Ai update");
-		var newX:Float = testEntity.x + (Math.random()-0.5)*20;
-		var newY:Float = testEntity.y + (Math.random()-0.5)*20;
-		// there's gotta be a better way!
-		// var tween:LinearMotion = new LinearMotion(tweenComplete, TweenType.OneShot);
-		// tween.setMotion(testEntity.x, testEntity.y, newX, newY, AI_RATE, function (v:Float):Float {
-		// 	testEntity.x = 
-		// });
-		// testEntity.addTween(tween, true);
-		testEntity.moveTo(newX, newY);
+		var newX:Float = testEntity.x + (Math.random()-0.5)*50;
+		var newY:Float = testEntity.y + (Math.random()-0.5)*50;
+		testEntity.setTarget(newX, newY);
 	}
 
 	public function tweenComplete(event:Dynamic) {

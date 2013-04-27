@@ -1,5 +1,6 @@
 
 package entities;
+import nme.geom.Point;
 
 import com.haxepunk.Entity;
 import com.haxepunk.Scene;
@@ -8,6 +9,8 @@ import com.haxepunk.graphics.Image;
 import com.haxepunk.Graphic;
 import com.haxepunk.graphics.Text;
 import com.haxepunk.graphics.Graphiclist;
+import com.haxepunk.tweens.motion.LinearMotion;
+import com.haxepunk.Tween;
 import nme.text.TextFormatAlign;
 import utils.ActorTemplate;
 import scenes.PlayScene;
@@ -19,6 +22,8 @@ class Actor extends Entity {
 	public var hitPoints:Float;
 	public var movementPoints:Float;
 	public var actionPoints:Float;
+	public var targetPos:Point;
+	public var tween:LinearMotion;
 	public function new(teamName:String, x:Float, y:Float) {
 		super(x, y);
 		var col:Int;
@@ -43,7 +48,26 @@ class Actor extends Entity {
 		centerOrigin();
 		graphic.x = -PlayScene.HTILE_SIZE;
 		graphic.y = -PlayScene.HTILE_SIZE;
-		type = teamName;		
+		type = teamName;	
+
+		tween = new LinearMotion(null, TweenType.Persist);
+		addTween(tween);
+	}
+
+	public function setTarget(x:Float, y:Float) {
+		targetPos = new Point(x, y);
+		tween.setMotion(this.x, this.y, x, y, 0.5);
+		tween.start();
+
+	}
+
+	public override function update() {
+		super.update();
+		HXP.log(tween.active);
+		if (tween.active) {
+			x = tween.x;
+			y = tween.y;
+		}
 	}
 
 	public function heal(?amount:Float=0, ?allowOverHeal:Bool=false) {
