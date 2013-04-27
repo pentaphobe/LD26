@@ -7,6 +7,7 @@ import com.haxepunk.utils.Input;
 import com.haxepunk.utils.Key;
 import com.haxepunk.Entity;
 import com.haxepunk.graphics.Image;
+import com.haxepunk.graphics.Backdrop;
 import com.haxepunk.tweens.motion.LinearMotion;
 import com.haxepunk.utils.Draw;
 
@@ -25,6 +26,7 @@ class PlayScene extends Scene {
 	var testEntity:Actor;
 	var startDragPoint:Point;
 	var selectedEntities:Array<Entity>;
+	var background:Entity;
 	//***** /TEMPORARY ******
 
 	var menu:Menu;
@@ -34,6 +36,7 @@ class PlayScene extends Scene {
 	public static var HTILE_SIZE:Int = cast (TILE_SIZE/2);
 	// how many seconds per AI processing step
 	public static var AI_RATE:Float = 0.5;
+	public static var AGENT_RATE:Float = 0.2;
 
 	public var levelSet:Array<String>;
 	public var startLevelName:String;
@@ -51,6 +54,7 @@ class PlayScene extends Scene {
 		uiStates = new StateMachine<UIState>("ui");
 		var testState:UIState = new UIState("select");
 		testState.setOverride(CustomUpdate, function (owner:PrototypeState) {
+			HXP.log("updating select");
 			if (Input.mousePressed) {
 				startDragPoint = new Point(mouseX, mouseY);
 				if (!Input.check(Key.SHIFT)) {
@@ -65,32 +69,47 @@ class PlayScene extends Scene {
 			if (startDragPoint != null && Input.mouseDown) {
 				var w:Int = cast(mouseX - startDragPoint.x);
 				var h:Int = cast(mouseY - startDragPoint.y);
-				Draw.rect(cast startDragPoint.x, cast startDragPoint.y, w, h, 0x00ff00, 0.1);
+				Draw.rectPlus(cast startDragPoint.x, cast startDragPoint.y, w, h, 0x00ff00, 0.5, 3);
 			}
 		});
 		uiStates.addStateAndEnter(testState);
 
 		testState = new UIState("orderMove");
 		testState.setOverride(CustomUpdate, function (owner:PrototypeState) {
-			HXP.log("updating orderMove");
 			if (Input.mouseReleased) {
 				
 				owner.isDone = true;
-				HXP.log("Attempting to order " + selectedEntities.length + " entities");
+				// HXP.log("Attempting to order " + selectedEntities.length + " entities");
 				for (entity in selectedEntities) {
 					HXP.log("ordered movement of " + entity + " to " + mouseX + ", " + mouseY);
 					cast(entity, Actor).setTarget(mouseX, mouseY);
 				}
 			}
-			HXP.log("ummm..");
 		});
 		uiStates.addState(testState);
 	}	
 
 	public function selectEntities(x:Float, y:Float, w:Float, h:Float) {
-		
-		collideRectInto("computer", x, y, w, h, selectedEntities);
+		if (w < 0) {
+			x += w;
+			w = -w;
+		}		
+		if (h < 0) {
+			y += h;
+			h = -h;
+		}
+		var MIN_RECT_SIZE:Int = 4;
+		if (w < MIN_RECT_SIZE && h < MIN_RECT_SIZE) {
+			// this rectangle is considered a click, so we'll just choose an entity and bring it to the "back"
+			var ent:Entity = collideRect("computer", x, y, w, h);
+			if (ent == null) return;
 
+			sendToBack(ent);
+			bringForward(ent);
+			selectedEntities.push(ent);
+		} else {
+			collideRectInto("computer", x, y, w, h, selectedEntities);
+		}
 	}
 
 	public function loadLevelSet() {
@@ -106,30 +125,46 @@ class PlayScene extends Scene {
 
 	public override function begin() {
 		super.begin();
+
 		uiStates.enter();
 		HXP.log("entering game");
 
 		setLevel(startLevelName);
 
+
+		var bgScroller = new Backdrop("gfx/gridbg.png", true, true);
+		background = new Entity(0, 0, bgScroller);
+		add(background);
+
+
 		testEntity = ActorFactory.create("basic", "computer", HXP.screen.width / 2, HXP.screen.height / 2);
 		add(testEntity);
 		testEntity = ActorFactory.create("scout", "computer", HXP.screen.width / 3, HXP.screen.height / 2);
+		add(testEntity);
+		testEntity = ActorFactory.create("heavy", "computer", HXP.screen.width * 2 / 3, HXP.screen.height / 2);
 		add(testEntity);
 
 		// createMap();
 
 		// Keep this for last
-		HXP.alarm(AI_RATE, doAiMove, TweenType.Looping, this);		
+		HXP.alarm(AI_RATE, doAiMove, TweenType.Looping, this);	
+		HXP.alarm(AGENT_RATE, doAgentMove, TweenType.Looping, this);	
 	}
 
 	public function doAiMove(event:Dynamic) {
 		if (menu.isActive) {
 			return;
 		}
-		HXP.log("Ai update");
-		var newX:Float = testEntity.x + (Math.random()-0.5)*50;
-		var newY:Float = testEntity.y + (Math.random()-0.5)*50;
-		testEntity.setTarget(newX, newY);
+		// HXP.log("Ai update");
+		if (testEntity.tween != null && !testEntity.tween.active) {
+			var newX:Float = testEntity.x + (Math.random()-0.5)*50;
+			var newY:Float = testEntity.y + (Math.random()-0.5)*50;
+			testEntity.setTarget(newX, newY);
+		}
+	}
+
+	public function doAgentMove(event:Dynamic) {
+
 	}
 
 	public function tweenComplete(event:Dynamic) {
@@ -138,8 +173,15 @@ class PlayScene extends Scene {
 
 	public override function update() {
 		super.update();
+		if (!menu.isActive) {
+			background.x += 0.1;
+			background.y += 0.05;
+		}
 		if (Input.pressed(Key.M)) {
 			uiStates.pushState("orderMove");
+		} 
+		if (uiStates.getCurrent() == null) {
+			uiStates.pushState("select");
 		}
 		uiStates.update();
 		// a little special case code for in-game menu since it acts differently
@@ -151,7 +193,7 @@ class PlayScene extends Scene {
 		uiStates.render();
 		for ( entity in selectedEntities) {
 			// Draw.hitbox(entity, true, 0x00ff00, 0.5);
-			Draw.circlePlus(cast entity.x, cast entity.y, TILE_SIZE+2, 0x00FF00, 0.25, false);
+			Draw.circlePlus(cast entity.x, cast entity.y, TILE_SIZE+2, 0x00FF00, 0.5, false, 2);
 		}
 		menu.render();
 	}
