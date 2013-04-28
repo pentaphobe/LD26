@@ -7,12 +7,16 @@ import com.haxepunk.graphics.Image;
 import com.haxepunk.masks.Grid;
 
 import scenes.PlayScene;
+import server.Agent;
 
 class Level extends EntityGroup {
 	var jsonData:Dynamic;
-	var mapWidth:Int;
-	var mapHeight:Int;
-	var entityMap:Array<Actor>;
+	public var mapWidth(default, default):Int;
+	private function set_mapWidth(w:Int):Int { mapWidth = w; return mapWidth; }
+	public var mapHeight(default, default):Int;
+	private function set_mapHeight(w:Int):Int { mapHeight = w; return mapHeight; }
+
+	var entityMap:Array<Agent>;
 	var map:Tilemap;
 	var grid:Grid;
 	public function new() {
@@ -59,16 +63,16 @@ class Level extends EntityGroup {
 		// HXP.scene.add(e);
 	}
 
-	public function setActor(x:Int, y:Int, actor:Actor) {
-		entityMap[y * mapWidth + x] = actor;
-		if (actor != null) {
+	public function setAgent(x:Int, y:Int, agent:Agent) {
+		entityMap[y * mapWidth + x] = agent;
+		if (agent != null) {
 			map.setTile(x, y, 1);
 		} else {
 			map.setTile(x, y, 0);			
 		}
 	}
 
-	public function getActor(x:Int, y:Int):Actor {
+	public function getAgent(x:Int, y:Int):Agent {
 		return entityMap[y * mapWidth + x];
 	}
 

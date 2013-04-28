@@ -2,14 +2,14 @@
 package utils;
 import com.haxepunk.HXP;
 
-class ActorTemplate {
+class AgentTemplate {
 	public var typeName:String;
-	public var parent:ActorTemplate=null;
+	public var parent:AgentTemplate=null;
 	public var stats:Hash<Float>;
 	public function new() {
 		stats = new Hash<Float>();
 	}
-	public function load(jsonData:Dynamic, ?parent:ActorTemplate=null) {
+	public function load(jsonData:Dynamic, ?parent:AgentTemplate=null) {
 		this.typeName = jsonData.name;
 		this.parent = parent;
 		for ( i in Reflect.fields(jsonData.stats) ) {
@@ -22,7 +22,7 @@ class ActorTemplate {
 			if (parent != null) {
 				return parent.get(statName);
 			}
-			HXP.log("ActorTemplate.get() - no stat named " + statName);
+			HXP.log("AgentTemplate.get() - no stat named " + statName);
 			HXP.log("my parent is " + parent);
 			return 0;
 		}
@@ -44,8 +44,8 @@ class ActorTemplate {
 
 		return result.keys();
 	}
-	public function clone():ActorTemplate {
-		var tpl:ActorTemplate = new ActorTemplate();
+	public function clone():AgentTemplate {
+		var tpl:AgentTemplate = new AgentTemplate();
 		tpl.typeName = typeName + "_";
 		tpl.parent = this;
 		for ( i in stats.keys() ) {

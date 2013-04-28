@@ -12,6 +12,8 @@ import com.haxepunk.graphics.Backdrop;
 import com.haxepunk.graphics.Stamp;
 import com.haxepunk.tweens.motion.LinearMotion;
 import com.haxepunk.utils.Draw;
+import nme.filters.GlowFilter;
+import nme.filters.BlurFilter;
 
 import states.StateMachine;
 import states.PrototypeState;
@@ -19,7 +21,7 @@ import states.UIState;
 import ui.Menu;
 import ui.UIEntity;
 import entities.Actor;
-import utils.ActorFactory;
+import utils.AgentFactory;
 import entities.Level;
 import com.haxepunk.Tween;
 
@@ -44,16 +46,18 @@ class PlayScene extends Scene {
 	// how many seconds per AI processing step
 	public static var AI_RATE:Float = 0.5;
 	public static var AGENT_RATE:Float = 0.2;
+	public static var SERVER_RATE:Float = 0.2;
 	public static var BACKGROUND_AUTO_SCROLL:Bool = false;
 
 	public var cameraSpeed:Float = 4;
 
-	public var server:Server;
+	public static var server:Server;
 
 	// [@note this apparently ain't working - come back to it]
 	// private var lobby(default, never):Lobby;
 	// public function get_lobby():Lobby { return server.lobby; }	
-	public var lobby(default, never):Lobby;
+	// public var lobby(default, never):Lobby;
+	public var lobby:Lobby;
 	public var world:World;
 	public var level:Level;
 
@@ -64,16 +68,15 @@ class PlayScene extends Scene {
 
 		setupKeyBindings();
 		server = new Server();
+		server.createPlayer("computer");
 
-		// HXP.watch(lobby);
-		HXP.watch(world);
-		// HXP.watch(level);
 		// [@note this should be made redundant by property getter, but it or I am being weird]
-		// lobby = server.lobby;
+		lobby = server.lobby;
 		level = server.world.level;
 		world = server.world;
 
-		loadActorTemplates();
+
+		loadAgentTemplates();
 
 		selectedEntities = new Array<Entity>();
 
@@ -99,7 +102,7 @@ class PlayScene extends Scene {
 		// 	bringForward(ent);
 		// 	selectedEntities.push(ent);
 		// } else {
-			collideRectInto("computer", x, y, w, h, selectedEntities);
+			collideRectInto("human", x, y, w, h, selectedEntities);
 		// }
 	}
 
@@ -117,12 +120,23 @@ class PlayScene extends Scene {
 
 		world.loadCurrentLevel();
 
-		testEntity = ActorFactory.create("basic", "computer", HXP.screen.width / 2, HXP.screen.height / 2);
+		testEntity = AgentFactory.create("basic", "human", cast(level.mapWidth / 2), cast(level.mapHeight / 2)) ;
 		add(testEntity);
-		testEntity = ActorFactory.create("scout", "computer", HXP.screen.width / 3, HXP.screen.height / 2);
-		add(testEntity);
-		testEntity = ActorFactory.create("heavy", "computer", HXP.screen.width * 2 / 3, HXP.screen.height / 2);
-		add(testEntity);
+
+		for (i in 0...40) {
+			var select:Int = cast(Math.random()*3);
+			var newX:Int = cast(Math.random()*level.mapWidth);
+			var newY:Int = cast(Math.random()*level.mapHeight);
+			switch (select) {
+				case 0:
+					testEntity = AgentFactory.create("basic", "human", newX, newY) ;			
+				case 1:
+					testEntity = AgentFactory.create("scout", "human", newX, newY);
+				case 2:
+					testEntity = AgentFactory.create("heavy", "human", newX, newY);
+			}
+			add(testEntity);			
+		}
 
 		var uiGfx:Stamp = new Stamp("gfx/ui_mockup.png");
 		uiGfx.scrollX = uiGfx.scrollY = 0;
@@ -134,8 +148,17 @@ class PlayScene extends Scene {
 		// createMap();
 
 		// Keep this for last
-		HXP.alarm(AI_RATE, doAiMove, TweenType.Looping, this);	
-		HXP.alarm(AGENT_RATE, doAgentMove, TweenType.Looping, this);	
+		HXP.alarm(SERVER_RATE, serverTick, TweenType.Looping, this);
+		// HXP.alarm(AI_RATE, doAiMove, TweenType.Looping, this);	
+		// HXP.alarm(AGENT_RATE, doAgentMove, TweenType.Looping, this);	
+	}
+
+	public function serverTick(event:Dynamic) {
+		if (menu.isActive) {
+			return;
+		}
+
+		server.update();
 	}
 
 	public function doAiMove(event:Dynamic) {
@@ -143,11 +166,11 @@ class PlayScene extends Scene {
 			return;
 		}
 		// HXP.log("Ai update");
-		if (testEntity.tween != null && !testEntity.tween.active) {
-			var newX:Int = level.toMapX(testEntity.x) + cast((Math.random()-0.5) * 2);
-			var newY:Int = level.toMapY(testEntity.y) + cast((Math.random()-0.5) * 2);
-			testEntity.setTarget(newX, newY);
-		}
+		// if (testEntity.tween != null && !testEntity.tween.active) {
+		// 	var newX:Int = level.toMapX(testEntity.x) + cast((Math.random()-0.5) * 2);
+		// 	var newY:Int = level.toMapY(testEntity.y) + cast((Math.random()-0.5) * 2);
+		// 	testEntity.setTarget(newX, newY);
+		// }
 	}
 
 	public function doAgentMove(event:Dynamic) {
@@ -192,8 +215,8 @@ class PlayScene extends Scene {
 		menu.render();
 	}
 
-	public function loadActorTemplates() {
-		ActorFactory.load( Utils.loadJson("actors") );
+	public function loadAgentTemplates() {
+		AgentFactory.load( Utils.loadJson("actors") );
 	}
 
 
@@ -299,8 +322,11 @@ class PlayScene extends Scene {
 				owner.isDone = true;
 				// HXP.log("Attempting to order " + selectedEntities.length + " entities");
 				for (entity in selectedEntities) {
-					HXP.log("ordered movement of " + entity + " to " + mouseX + ", " + mouseY);
-					cast(entity, Actor).setTarget( level.toMapX(mouseX), level.toMapY(mouseY));
+					var actor:Actor = cast entity;
+					// HXP.log("ordered movement of " + entity + " to " + mouseX + ", " + mouseY);
+					server.sendLocalOrder("move", actor.toMapX(mouseX), actor.toMapY(mouseY), actor.agent);
+					// cast(entity, Actor).setTarget( level.toMapX(mouseX), level.toMapY(mouseY));
+
 				}
 			}
 		});
@@ -323,4 +349,6 @@ class PlayScene extends Scene {
 		instance = inst;
 		return instance;
 	}
+
+
 }

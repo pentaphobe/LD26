@@ -32,6 +32,7 @@ class MenuState extends State {
 	var x:Int;
 	var y:Int;
 	var itemHeight:Int = 27;
+	
 	public function new(id:String, config:Dynamic, ?menuCallback:MenuCallback=null, ?uiCallback:UICallback=null, ?x:Int = 0, ?y:Int = 0) {
 		super(id);
 		this.config = config;
@@ -41,6 +42,7 @@ class MenuState extends State {
 		this.x = x;
 		this.y = y;
 	}
+
 	public override function enter() {
 		// HXP.log("creating menu state " + title);		
 		var configItems:Array<Dynamic> = cast config.items;		

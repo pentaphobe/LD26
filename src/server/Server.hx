@@ -5,11 +5,11 @@ import server.ServerEventHandler;
 import server.ServerEvent;
 import server.Lobby;
 import server.Player;
+import server.World;
 
 
 class Server extends ServerEventDispatcher, implements Orderable {
 	var players:List<Player>;
-	var agents:List<Agent>;
 	var playerHash:Hash<Player>;
 
 	public var localPlayer:Player;
@@ -43,7 +43,10 @@ class Server extends ServerEventDispatcher, implements Orderable {
 		super.update();
 
 		// get orders
-		// update agents
+		// update players
+		for (player in players) {
+			player.update();
+		}
 		// update world
 	}
 
@@ -103,8 +106,21 @@ class Server extends ServerEventDispatcher, implements Orderable {
 		return p;
 	}
 
+	public function createAgent(playerName:String, ?x:Int=0, ?y:Int=0):Agent {
+		var agent:Agent = new Agent(x, y);
+		agent.player = getPlayer(playerName);
+		world.addAgent(agent);
+		HXP.log("player:" + agent.player);
+		HXP.log(" `- pos:" + agent.pos);
+		agent.player.addAgent(agent);
+		return agent;
+	}
+
 	public function getPlayer(name:String):Player {
-		if (!playerHash.exists(name)) return null;
+		if (!playerHash.exists(name)) {
+			HXP.log("failed to find player named " + name);
+			return null;
+		}
 		return playerHash.get(name);
 	}
 

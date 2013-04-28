@@ -1,16 +1,18 @@
 package server;
 import com.haxepunk.HXP;
 
+import utils.AgentTemplate;
+import utils.AgentFactory;
+import utils.MapPoint;
+
+
 import server.ServerEventHandler;
 import server.ServerEvent;
 import server.Server;
 import server.Lobby;
 
-import entities.Actor;
 
-interface Orderable {
-	public function onOrder(order:PlayerOrder):Bool;
-}
+
 
 /** Placeholder
  */
@@ -43,25 +45,6 @@ class PlayerOrder {
 	}
 }
 
-/** Placeholder
- *
- * Agents will be the low-level aspect of entities in the
- * game logic
- * currently Actors are handling all of it, but that's causing
- * weirdness, so I'm moving over to this split and Actors
- * will just be visual representations of the Agent data
- * (with interpolation etc)
- */ 
- class Agent extends BasicServerEventHandler, implements Orderable {
- 	public var player:Player; 	
- 	public var actor:Actor;
- 	public var pos:MapPoint;
-	public function onOrder(order:PlayerOrder):Bool {
-		HXP.log("agent order mutta flichers! " + order);
-		return true;
-	}
- }
-
 
 class Player extends BasicServerEventHandler, implements Orderable {
 	public var name:String;
@@ -74,12 +57,19 @@ class Player extends BasicServerEventHandler, implements Orderable {
 		agents = new List<Agent>();
 	}
 
+	public function update() {
+		for (agent in agents) {
+			agent.update();
+		}
+	}
+
 	/** Called by the main UI
 	 * User -> Order -> Us!
 	 */
 	public function onOrder(order:PlayerOrder):Bool {
 		// will forward to owned agents
 		HXP.log(name + " got order " + order);
+		HXP.log(" `-- attempting dispatch to " + agents.length + " agents");
 		// potential intervention here
 
 		for ( agent in agents ) {
@@ -91,10 +81,12 @@ class Player extends BasicServerEventHandler, implements Orderable {
 	}
 
 	public function addAgent(agent:Agent):Agent {
+		HXP.log("addAgent:" + agent);
 		if (agent == null) return null;
-		if (server != null) {
-			server.addHandler(agent);
-		}
+		// if (server != null) {
+		// 	server.addHandler(agent);
+		// }
+		HXP.log(" " + name + " taking responsibility");
 		agent.player = this;
 		agents.add(agent);
 		return agent;
