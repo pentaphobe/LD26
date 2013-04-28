@@ -10,7 +10,6 @@ import com.haxepunk.tweens.TweenEvent;
 import server.Server;
 import server.ServerEvent;
 
-
 class ServerTestScene extends Scene {
 	var server:Server;
 	public function new() {

@@ -73,9 +73,9 @@ class Actor extends Entity {
 		label.size = 10;
 		gList.add(label);
 
-		centerOrigin();
-		graphic.x = -PlayScene.HTILE_SIZE+1;
-		graphic.y = -PlayScene.HTILE_SIZE+1;
+		// centerOrigin();
+		// graphic.x = -PlayScene.HTILE_SIZE+1;
+		// graphic.y = -PlayScene.HTILE_SIZE+1;
 		type = teamName;	
 
 		targetPos = new MapPoint();

@@ -76,18 +76,18 @@ class Level extends EntityGroup {
 	}
 
 	public function toScreenX(mapX:Int):Float {
-		return (mapX * PlayScene.TILE_SIZE) + PlayScene.HTILE_SIZE;
+		return (mapX * PlayScene.TILE_SIZE) /* + PlayScene.HTILE_SIZE*/;
 	}
 	public function toScreenY(mapY:Int):Float {
-		return (mapY * PlayScene.TILE_SIZE) + PlayScene.HTILE_SIZE;
+		return (mapY * PlayScene.TILE_SIZE) /* + PlayScene.HTILE_SIZE*/;
 	} 
 
 	public function toMapX(scrX:Float):Int {
-		scrX -= PlayScene.HTILE_SIZE;
+		// scrX -= PlayScene.HTILE_SIZE;
 		return cast(HXP.clamp(scrX / cast(PlayScene.TILE_SIZE,Float), 1, mapWidth-1));
 	}
 	public function toMapY(scrY:Float):Int {
-		scrY -= PlayScene.HTILE_SIZE;
+		// scrY -= PlayScene.HTILE_SIZE;
 		return cast( HXP.clamp(scrY / cast(PlayScene.TILE_SIZE, Float), 1, mapHeight-1));
 	} 
 

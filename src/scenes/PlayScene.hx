@@ -22,6 +22,8 @@ import utils.ActorFactory;
 import entities.Level;
 import com.haxepunk.Tween;
 
+import server.Lobby;
+
 
 class PlayScene extends Scene {
 	//***** TEMPORARY *******
@@ -43,8 +45,7 @@ class PlayScene extends Scene {
 
 	public var cameraSpeed:Float = 4;
 
-	public var levelList:Array<String>;
-	public var startLevelSetName:String;
+	public var lobby:Lobby;
 	public var currentLevel:Int;
 	public var level:Level;
 
@@ -54,6 +55,7 @@ class PlayScene extends Scene {
 		menu = new Menu("ingame", menuEvent, uiEvent, cast(HXP.screen.width / 2), cast(HXP.screen.height / 2));
 
 		setupKeyBindings();
+		lobby = new Lobby();
 		loadLevelSet();
 		loadActorTemplates();
 
@@ -121,24 +123,9 @@ class PlayScene extends Scene {
 	}
 
 	public function loadLevelSet() {
-		var levelsFile:Dynamic = Utils.loadJson("levels");
-		startLevelSetName = levelsFile.start;
-		currentLevel = 0;
-		var levelSet:Dynamic = Reflect.field(levelsFile.levelSets, startLevelSetName);
-		if (levelSet == null) {
-			HXP.log("error loading level set " + startLevelSetName);
-			return;
-		}
-		HXP.log(levelSet);
-		var tmpList:Array<Dynamic> = cast levelSet;
-
-		levelList = new Array<String>();
-		for ( idx in 0...tmpList.length) {
-			levelList[idx] = cast tmpList[idx];			
-		}		
-		HXP.log("First level set: " + startLevelSetName);
-		HXP.log("First level: " + levelList[currentLevel]);
 		level = new Level();
+		currentLevel = 0;	
+		HXP.log("First level: " + lobby.levelList[currentLevel]);
 
 	}
 
@@ -221,7 +208,7 @@ class PlayScene extends Scene {
 		uiStates.render();
 		for ( entity in selectedEntities) {
 			// Draw.hitbox(entity, true, 0x00ff00, 0.5);
-			Draw.circlePlus(cast entity.x, cast entity.y, TILE_SIZE+2, 0x00FF00, 0.5, false, 2);
+			Draw.circlePlus(cast entity.x+HTILE_SIZE, cast entity.y+HTILE_SIZE, TILE_SIZE+2, 0x00FF00, 0.5, false, 2);
 		}
 		menu.render();
 	}
@@ -235,10 +222,10 @@ class PlayScene extends Scene {
 		// HXP.log(levelSet);
 		// HXP.log(levelSet[currentLevel]);
 		HXP.log(level);
-		if (levelList == null) {
+		if (lobby.levelList == null) {
 			HXP.log("Why you no load level set?");
 		}
-		level.load(levelList[currentLevel]);
+		level.load(lobby.levelList[currentLevel]);
 	}
 
 	public function setupKeyBindings() {
@@ -264,7 +251,11 @@ class PlayScene extends Scene {
 		if (Input.check("right")) {
 			moveX += 1;
 		}
-		camera.offset(moveX * cameraSpeed, moveY * cameraSpeed);
+		var speed:Float = cameraSpeed;
+		if (Input.check(Key.SHIFT)) {
+			speed *= 3;
+		}
+		camera.offset(moveX * speed, moveY * speed);
 	}
 	public function updateMenu() {
 		if (Input.pressed(Key.ESCAPE)) {

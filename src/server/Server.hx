@@ -3,6 +3,7 @@ import com.haxepunk.HXP;
 
 import server.ServerEventHandler;
 import server.ServerEvent;
+import server.Lobby;
 
 class Player extends BasicServerEventHandler {
 	public var name:String;
@@ -31,7 +32,7 @@ class Server extends ServerEventDispatcher {
 	var localPlayer:Player;
 
 	// var world:World;
-	// var lobby:Lobby;
+	var lobby:Lobby;
 
 	public function new(?existingLocalPlayer:Player = null) {
 		super();
@@ -49,6 +50,8 @@ class Server extends ServerEventDispatcher {
 		} else {
 			localPlayer = addPlayer(existingLocalPlayer);
 		}
+
+		lobby = new Lobby();
 	}
 
 	public override function update() {

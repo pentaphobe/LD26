@@ -16,6 +16,11 @@ class ServerEventDispatcher {
 		eventList = new List<ServerEvent>();
 		eventsToAdd = new List<ServerEvent>();
 		handlers = new List<ServerEventHandler>();
+
+		/* this is leftover from the first few lines of code
+		 in the server class, but I liked the comment so it's
+		 staying here in memoriam
+		 */
 		// // just in case this isn't our first rodeo
 		// eventList.clear();		
 	}	
@@ -30,8 +35,8 @@ class ServerEventDispatcher {
 		// creation of an empty iterator
 		if (eventList.length == 0) return;
 
-		HXP.log("about to process " + eventList.length + " events");	
-		HXP.log("and there are " + handlers.length + " handlers");
+		// HXP.log("about to process " + eventList.length + " events");	
+		// HXP.log("and there are " + handlers.length + " handlers");
 		for (evt in eventList) {
 			dispatchEvent(evt);
 		}
@@ -76,7 +81,7 @@ class ServerEventDispatcher {
 
 	public function send(type:ServerEventType, ?target:ServerEventHandler=null, ?src:ServerEventHandler=null):ServerEvent {
 		var evt:ServerEvent = new ServerEvent(type, src, target);
-		HXP.log("sending " + evt);
+		// HXP.log("sending " + evt);
 		return add(evt);
 	}
 
