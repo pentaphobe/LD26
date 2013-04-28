@@ -42,10 +42,9 @@ class ServerTestScene extends Scene {
 
 		server.addHandler(new TestHandler());
 
+		// players aren't actors. stop confusing yourself :)
 		server.createPlayer("percival");
 		server.createPlayer("noggin");
-
-		server.sendByName(WasHit, "noggin", "percival");
 
 		// no need to update at full speed, we just want to test
 		// server interaction

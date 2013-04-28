@@ -5,18 +5,11 @@ import server.ServerEventHandler;
 import server.ServerEvent;
 import server.Lobby;
 
-class Player extends BasicServerEventHandler {
-	public var name:String;
-	public function new(name:String) {
-		this.name = name;
-	}
-	public function toString():String {
-		return "[Player " + name + "]";
-	}
-}
+
 
 class Server extends ServerEventDispatcher {
 	var players:List<Player>;
+	var agents:List<Agent>;
 	var playerHash:Hash<Player>;
 
 	public var localPlayer:Player;
@@ -87,13 +80,20 @@ class Server extends ServerEventDispatcher {
 		addPlayer(p);
 		return p;
 	}
+
+	public function getPlayer(name:String):Player {
+		if (!playerHash.exists(name)) return null;
+		return playerHash.get(name);
+	}
+
 	private function addPlayer(p:Player):Player {
 		if (p == null) {
 			return null;
 		}
 		players.add(p);
 		playerHash.set(p.name, p);
-		super.addHandler(p);
+		p.server = this;
+		super.addHandler(p);		
 		return p;
 	}
 }
