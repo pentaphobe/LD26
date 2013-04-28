@@ -68,8 +68,8 @@ class Player extends BasicServerEventHandler, implements Orderable {
 	 */
 	public function onOrder(order:PlayerOrder):Bool {
 		// will forward to owned agents
-		HXP.log(name + " got order " + order);
-		HXP.log(" `-- attempting dispatch to " + agents.length + " agents");
+		// HXP.log(name + " got order " + order);
+		// HXP.log(" `-- attempting dispatch to " + agents.length + " agents");
 		// potential intervention here
 
 		for ( agent in agents ) {
@@ -86,10 +86,18 @@ class Player extends BasicServerEventHandler, implements Orderable {
 		// if (server != null) {
 		// 	server.addHandler(agent);
 		// }
-		HXP.log(" " + name + " taking responsibility");
+		// HXP.log(" " + name + " taking responsibility");
 		agent.player = this;
 		agents.add(agent);
 		return agent;
+	}
+
+	public function removeAgent(agent:Agent) {
+		agents.remove(agent);
+	}
+
+	public override function onEvent(event:ServerEvent):Bool {
+		return event.target.onEvent(event);
 	}
 
 	public function toString():String {

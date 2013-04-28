@@ -5,7 +5,7 @@ import entities.Level;
 class World {
 	public var currentLevel:Int;
 	public var level:Level;
-	var agents:List<Agent>;
+	public var agents:List<Agent>;
 	
 	public var server:Server;
 

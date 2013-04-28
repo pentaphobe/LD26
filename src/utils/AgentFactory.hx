@@ -56,7 +56,7 @@ class AgentFactory {
 		// we duplicate the template since we want to potentially allow individual progression 
 		agent.config = template.clone();
 		actor.agent = agent;
-		actor.label.text = actor.teamName + "\n" + agent.config.parent.typeName;			
+		actor.setLabel(actor.teamName + "\n" + agent.config.parent.typeName);			
 		agent.reset();
 		return actor;
 	}

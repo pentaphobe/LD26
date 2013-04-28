@@ -24,6 +24,7 @@ import server.Agent;
 
 
 class Actor extends Entity {
+	public static var USE_LABEL:Bool = false;
 
 	public var teamName:String;
 	public var label:Text;
@@ -50,9 +51,11 @@ class Actor extends Entity {
 		setHitboxTo(img);		
 		gList.add(img);
 
-		label = new Text(teamName, -(PlayScene.TILE_SIZE/4), -PlayScene.TILE_SIZE, {color:col, align:TextFormatAlign.CENTER});
-		label.size = 10;
-		gList.add(label);
+		if (USE_LABEL) {
+			label = new Text(teamName, -(PlayScene.TILE_SIZE/4), -PlayScene.TILE_SIZE, {color:col, align:TextFormatAlign.CENTER});
+			label.size = 10;
+			gList.add(label);
+		}
 
 		// centerOrigin();
 		// graphic.x = -PlayScene.HTILE_SIZE+1;
@@ -69,6 +72,9 @@ class Actor extends Entity {
 
 	public override function update() {
 		super.update();
+		if (!agent.isAlive) {
+			HXP.scene.remove(this);
+		}
 
 		// [@todo here is where we check with Agent path]		
 		// // no target to move towards (or we've arrived)
@@ -91,7 +97,7 @@ class Actor extends Entity {
 		// 	HXP.log("moving by " + 0 + ", " + dy);
 		// 	moveBy(0, dy);
 		// }
-		label.text = teamName + "\n" + agent.config.parent.typeName + "\n" + agent.state;					
+		setLabel(teamName + "\n" + agent.config.parent.typeName + "\n" + agent.state);					
 	}
 
 	// [@remove debug rendering]
@@ -112,6 +118,12 @@ class Actor extends Entity {
 				
 				pos.set(pos2.x, pos2.y);
 			}
+		}
+	}
+
+	public function setLabel(str:String) {
+		if (USE_LABEL) {
+			label.text = str;
 		}
 	}
 

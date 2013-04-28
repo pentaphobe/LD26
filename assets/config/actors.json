@@ -1,4 +1,10 @@
 {
+	/* STATS
+
+	speed is a max of 10 and indicates how long it takes
+	the entity to move one tile - calculated as delayTime = (10-speed) * scaler
+
+	*/
 	basic:{
 		name:"basic",
 		stats:{

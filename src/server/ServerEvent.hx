@@ -8,6 +8,7 @@ enum ServerEventType {
 	PathCancelled;
 	PathBlocked;
 	WasHit;
+	WasKilled;
 	TargetFound;
 }
 

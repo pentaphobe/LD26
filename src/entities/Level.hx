@@ -78,6 +78,10 @@ class Level extends EntityGroup {
 		return entityMap[y * mapWidth + x];
 	}
 
+	public function getWall(x:Int, y:Int):Bool {
+		return grid.getTile(x, y);
+	}
+
 	public function createActors() {
 		// var e:Entity = new Entity(0, 0, Image.createRect(20, 20)); 
 		// add(e);

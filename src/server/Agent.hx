@@ -6,6 +6,7 @@ import utils.AgentFactory;
 import utils.MapPoint;
 
 import entities.Actor;
+import entities.Level;
 
 import server.ServerEventHandler;
 import server.ServerEvent;
@@ -46,6 +47,7 @@ enum AgentState {
  	public var config:AgentTemplate;
  	public var state(default, default):AgentState;
  	public var stateTicks:Int;
+ 	public var isAlive:Bool = true;
 
  	public function new(?x:Int=0, ?y:Int=0) {
  		pos = new MapPoint(x, y);
@@ -81,21 +83,23 @@ enum AgentState {
 					breed();
 				}
 			default:
+				heal(0.1);
 		}
 	}
 
 	public function breed() {
+		var level:Level = player.server.world.level;
 		for (y in -1...2) {
 			for (x in -1...2) {
 				if (x == 0 && y == 0) continue;
 
 				var tmpX = pos.x + x;
 				var tmpY = pos.y + y;
-				if (player.server.world.level.getAgent(tmpX, tmpY) == null) {
+				if (!level.getWall(tmpX, tmpY) && level.getAgent(tmpX, tmpY) == null) {
 					var ent:Actor = AgentFactory.create(config.parent.typeName, player.name, tmpX, tmpY);
 					HXP.scene.add(ent);	
 					state = AgentIdling;	
-					break;
+					return;
 				}
 			}
 		}
@@ -103,13 +107,16 @@ enum AgentState {
 	}
 
 	public function updateMovement() {
-		if (path == null || path.length == 0) return;
+		if (path == null || path.length == 0) {
+			onArrived();
+			return;
+		}
 
 		var node:MapPoint = path.pop();
 
 		if (node.equals(pos)) {
 			if (!getNextPathNode()) {
-				state = AgentIdling;
+				onArrived();
 				return;
 			}			
 		}
@@ -150,7 +157,7 @@ enum AgentState {
 	public function buildPath() {
 		path.clear();
 		var tmp:MapPoint = new MapPoint(pos.x, pos.y);
-		HXP.log("building path from " + pos + " to " + targetPos);
+		// HXP.log("building path from " + pos + " to " + targetPos);
 
 		var maxIter:Int = 10;
 		do {
@@ -163,10 +170,10 @@ enum AgentState {
 				tmp.y += cast HXP.clamp(dy, -1, 1);
 			}
 			var node:MapPoint = new MapPoint(tmp.x, tmp.y);
-			HXP.log(" -- " + node);
+			// HXP.log(" -- " + node);
 			path.add( node );
 		} while (--maxIter > 0 && !tmp.equals(targetPos));
-		HXP.log("path has " + path.length + " entries");
+		// HXP.log("path has " + path.length + " entries");
 	}	
 
 	public function getNextPathNode():Bool {
@@ -196,6 +203,17 @@ enum AgentState {
 		HXP.log("event PathArrived");
 		state = AgentIdling;
 		return true;
+	}
+
+	public override function onWasHit(evt:ServerEvent):Bool {
+		HXP.log("OUCH!  I got hit by " + evt.source);
+		return true;
+	}
+
+	// [@note that there is no notification here as that comes via the event]
+	// [@... this is just a convenience function for Server]
+	public function hurt(amount:Float=0) {
+		hitPoints -= amount;
 	}
 
 	public function heal(?amount:Float=0, ?allowOverHeal:Bool=false) {

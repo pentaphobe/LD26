@@ -48,6 +48,19 @@ class Server extends ServerEventDispatcher, implements Orderable {
 			player.update();
 		}
 		// update world
+
+		// cull deaths
+		var toRemove:List<Agent> = new List<Agent>();
+		for (agent in world.agents) {
+			if (!agent.isAlive) {
+				toRemove.add(agent);
+			}
+		}
+		for (dead in toRemove) {
+			world.agents.remove(dead);
+			dead.player.removeAgent(dead);
+			world.level.setAgent(dead.pos.x, dead.pos.y, null);
+		}
 	}
 
 	public function sendLocalOrder(type:String, ?x:Int=0, ?y:Int=0, ?agent:Agent) {
@@ -99,6 +112,16 @@ class Server extends ServerEventDispatcher, implements Orderable {
 	// 	}
 	// }
 
+	public function hurtAgent(amount:Float, ?src:Agent, ?target:Agent) {
+		target.hurt(amount);
+		send(WasHit, src, target);
+
+		if (target.hitPoints < 0) {
+			target.isAlive = false;
+			send(WasKilled, src, target);
+		}
+	}
+
 	public function sendByName(type:ServerEventType, ?src:String="", ?target:String=""):ServerEvent {
 		var srcPlayer:Player = playerHash.get(src);
 		var targetPlayer:Player = playerHash.get(target);
@@ -129,7 +152,7 @@ class Server extends ServerEventDispatcher, implements Orderable {
 		return playerHash.get(name);
 	}
 
-	private function addPlayer(p:Player):Player {
+	public function addPlayer(p:Player):Player {
 		if (p == null) {
 			return null;
 		}

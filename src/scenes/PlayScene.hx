@@ -10,6 +10,7 @@ import com.haxepunk.Entity;
 import com.haxepunk.graphics.Image;
 import com.haxepunk.graphics.Backdrop;
 import com.haxepunk.graphics.Stamp;
+import com.haxepunk.graphics.Text;
 import com.haxepunk.tweens.motion.LinearMotion;
 import com.haxepunk.utils.Draw;
 import nme.filters.GlowFilter;
@@ -28,10 +29,13 @@ import com.haxepunk.Tween;
 import server.Lobby;
 import server.Server;
 import server.World;
+import server.Agent;
+import server.ComputerPlayer;
 
 class PlayScene extends Scene {
 	//***** TEMPORARY *******
 	var uiOverlay:Entity;
+	var agentInfoText:Text;
 	var testEntity:Actor;
 	var startDragPoint:Point;
 	var selectedEntities:Array<Entity>;
@@ -46,7 +50,7 @@ class PlayScene extends Scene {
 	// how many seconds per AI processing step
 	public static var AI_RATE:Float = 0.5;
 	public static var AGENT_RATE:Float = 0.2;
-	public static var SERVER_RATE:Float = 0.2;
+	public static var SERVER_RATE:Float = 0.1;
 	public static var BACKGROUND_AUTO_SCROLL:Bool = false;
 
 	public var cameraSpeed:Float = 4;
@@ -68,7 +72,7 @@ class PlayScene extends Scene {
 
 		setupKeyBindings();
 		server = new Server();
-		server.createPlayer("computer");
+		server.addPlayer(new ComputerPlayer());
 
 		// [@note this should be made redundant by property getter, but it or I am being weird]
 		lobby = server.lobby;
@@ -116,12 +120,10 @@ class PlayScene extends Scene {
 		bgScroller.scrollX = 0.2;
 		bgScroller.scrollY = 0.2;
 		background = new Entity(0, 0, bgScroller);
+		background.layer = 1000;
 		add(background);
 
 		world.loadCurrentLevel();
-
-		testEntity = AgentFactory.create("basic", "human", cast(level.mapWidth / 2), cast(level.mapHeight / 2)) ;
-		add(testEntity);
 
 		for (j in 0...2) {
 			var teamName:String = "human";
@@ -147,9 +149,14 @@ class PlayScene extends Scene {
 		var uiGfx:Stamp = new Stamp("gfx/ui_mockup.png");
 		uiGfx.scrollX = uiGfx.scrollY = 0;
 		uiOverlay = new Entity(0, 0, uiGfx);
-		uiOverlay.layer = 1;
-
+		uiOverlay.layer = 2;
 		add(uiOverlay);
+
+		agentInfoText = new Text("AgentType\nstr:24\ndex:24", 0, 0, {color:0x005500});
+		agentInfoText.scrollX = agentInfoText.scrollY = 0;
+		var agentInfoEntity:Entity = new Entity(440, 325, agentInfoText);
+		agentInfoEntity.layer = 1;				
+		add(agentInfoEntity);
 
 		// createMap();
 
@@ -202,8 +209,13 @@ class PlayScene extends Scene {
 		if (Input.pressed(Key.B)) {
 			for ( entity in selectedEntities ) {
 				server.sendLocalOrder("breed", 0, 0, cast(entity, Actor).agent);
-			}
-			
+			}			
+		}
+		if (Input.pressed(Key.H) && selectedEntities.length > 0) {
+			// [@remove hurt selected]
+			var agent:Agent = cast(selectedEntities[0], Actor).agent;
+			// agent.hitPoints -= 1;
+			server.hurtAgent(1, null, agent);
 		}
 		if (uiStates.getCurrent() == null) {
 			uiStates.pushState("select");
@@ -220,6 +232,17 @@ class PlayScene extends Scene {
 	public override function render() {
 		super.render();
 		uiStates.render();
+	
+		if ( selectedEntities.length == 0) {
+			agentInfoText.text = "";
+		} else {
+			var agent:Agent = cast(selectedEntities[0], Actor).agent;
+			agentInfoText.text = agent.config.parent.typeName + "\nstr:" + agent.config.get("str") + "\ndex:" + agent.config.get("dex");
+			var hp:Float = agent.hitPoints / cast(agent.config.get("vit"), Float);
+			Draw.rect(cast(HXP.camera.x + 440), cast(HXP.camera.y+380), 40, 10, 0xff0000, 0.8);
+			Draw.rect(cast(HXP.camera.x + 440), cast(HXP.camera.y+380), cast(40 * hp), 10, 0x00ff00, 0.9);
+		}
+
 		for ( entity in selectedEntities) {
 			// Draw.hitbox(entity, true, 0x00ff00, 0.5);
 			Draw.circlePlus(cast entity.x+HTILE_SIZE, cast entity.y+HTILE_SIZE, TILE_SIZE+2, 0x00FF00, 0.5, false, 2);
