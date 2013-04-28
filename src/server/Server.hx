@@ -13,7 +13,7 @@ class Server extends ServerEventDispatcher, implements Orderable {
 	var playerHash:Hash<Player>;
 
 	public var localPlayer:Player;
-	// var world:World;
+	public var world:World;
 	public var lobby:Lobby;
 
 	public function new(?existingLocalPlayer:Player = null) {
@@ -33,7 +33,9 @@ class Server extends ServerEventDispatcher, implements Orderable {
 			localPlayer = addPlayer(existingLocalPlayer);
 		}
 
-		lobby = new Lobby();
+		lobby = new Lobby(this);
+		lobby.loadLevelSet();
+		world = new World(this);
 	}
 
 	public override function update() {

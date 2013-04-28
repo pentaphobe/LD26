@@ -24,6 +24,7 @@ import com.haxepunk.Tween;
 
 import server.Lobby;
 import server.Server;
+import server.World;
 
 class PlayScene extends Scene {
 	//***** TEMPORARY *******
@@ -45,16 +46,14 @@ class PlayScene extends Scene {
 
 	public var cameraSpeed:Float = 4;
 
-	//-- to go in world
-	public var currentLevel:Int;
-	public var level:Level;
-	//---
 	public var server:Server;
 
 	// [@note this apparently ain't working - come back to it]
 	// private var lobby(default, never):Lobby;
 	// public function get_lobby():Lobby { return server.lobby; }	
-	var lobby:Lobby;
+	public var lobby(default, never):Lobby;
+	public var world:World;
+	public var level:Level;
 
 	public function new() {
 		super();
@@ -64,10 +63,14 @@ class PlayScene extends Scene {
 		setupKeyBindings();
 		server = new Server();
 
+		// HXP.watch(lobby);
+		HXP.watch(world);
+		// HXP.watch(level);
 		// [@note this should be made redundant by property getter, but it or I am being weird]
-		lobby = server.lobby;
+		// lobby = server.lobby;
+		level = server.world.level;
+		world = server.world;
 
-		loadLevelSet();
 		loadActorTemplates();
 
 		selectedEntities = new Array<Entity>();
@@ -98,14 +101,6 @@ class PlayScene extends Scene {
 		// }
 	}
 
-	public function loadLevelSet() {
-		level = new Level();
-		currentLevel = 0;	
-		HXP.log("" + lobby);
-		// HXP.log("First level: " + lobby.levelList[currentLevel]);
-
-	}
-
 	public override function begin() {
 		super.begin();
 
@@ -118,7 +113,7 @@ class PlayScene extends Scene {
 		background = new Entity(0, 0, bgScroller);
 		add(background);
 
-		loadLevel();
+		world.loadCurrentLevel();
 
 		testEntity = ActorFactory.create("basic", "computer", HXP.screen.width / 2, HXP.screen.height / 2);
 		add(testEntity);
@@ -193,15 +188,7 @@ class PlayScene extends Scene {
 	}
 
 
-	public function loadLevel() {
-		// HXP.log(levelSet);
-		// HXP.log(levelSet[currentLevel]);
-		HXP.log(level);
-		if (lobby.levelList == null) {
-			HXP.log("Why you no load level set?");
-		}
-		level.load(lobby.levelList[currentLevel]);
-	}
+
 
 	public function setupKeyBindings() {
 		Input.define("up", [Key.UP, Key.W]);
@@ -271,7 +258,7 @@ class PlayScene extends Scene {
 
 	public function createUIStates() {
 		uiStates = new StateMachine<UIState>("ui");
-		
+
 		var testState:UIState = new UIState("select");
 		testState.setOverride(CustomUpdate, function (owner:PrototypeState) {
 			// HXP.log("updating select");

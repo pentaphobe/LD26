@@ -3,6 +3,8 @@ package utils;
 import entities.Actor;
 import com.haxepunk.HXP;
 import scenes.PlayScene;
+import entities.Level;
+
 class ActorFactory {
 	static var actorTemplates:Hash<ActorTemplate>;
 	public static function load(jsonData:Dynamic) {
@@ -31,8 +33,13 @@ class ActorFactory {
 			HXP.log("couldn't find Actor Template named " + type + ", creating a blank");
 			return new Actor(teamName, x, y);
 		}
-		x = PlayScene.instance.level.toScreenX( PlayScene.instance.level.toMapX( x ) );
-		y = PlayScene.instance.level.toScreenY( PlayScene.instance.level.toMapY( y ) );
+		var level:Level = PlayScene.instance.level;
+		if (level == null) {
+			HXP.log("level is null for some reason");
+			return null;
+		}
+		x = level.toScreenX( level.toMapX( x ) );
+		y = level.toScreenY( level.toMapY( y ) );
 		var template:ActorTemplate = actorTemplates.get(type);
 		var actor:Actor = new Actor(teamName, x, y);
 		// actor.applyTemplate(template);

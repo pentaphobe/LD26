@@ -6,8 +6,10 @@ class Lobby {
 	public var jsonData:Dynamic;
 	public var levelList:Array<String>;
 	public var startLevelSetName:String;
+	public var server:Server;
 	
-	public function new() {
+	public function new(server:Server) {
+		this.server = server;
 		loadLevelSet();
 	}
 
