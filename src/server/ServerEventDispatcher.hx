@@ -61,6 +61,7 @@ class ServerEventDispatcher {
 					handler.onWasHit(evt);
 				case TargetFound:
 					handler.onTargetFound(evt);
+				default:
 			}
 		}
 	}

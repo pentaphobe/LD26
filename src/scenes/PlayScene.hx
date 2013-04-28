@@ -23,7 +23,7 @@ import entities.Level;
 import com.haxepunk.Tween;
 
 import server.Lobby;
-
+import server.Server;
 
 class PlayScene extends Scene {
 	//***** TEMPORARY *******
@@ -45,9 +45,16 @@ class PlayScene extends Scene {
 
 	public var cameraSpeed:Float = 4;
 
-	public var lobby:Lobby;
+	//-- to go in world
 	public var currentLevel:Int;
 	public var level:Level;
+	//---
+	public var server:Server;
+
+	// [@note this apparently ain't working - come back to it]
+	// private var lobby(default, never):Lobby;
+	// public function get_lobby():Lobby { return server.lobby; }	
+	var lobby:Lobby;
 
 	public function new() {
 		super();
@@ -55,7 +62,11 @@ class PlayScene extends Scene {
 		menu = new Menu("ingame", menuEvent, uiEvent, cast(HXP.screen.width / 2), cast(HXP.screen.height / 2));
 
 		setupKeyBindings();
-		lobby = new Lobby();
+		server = new Server();
+
+		// [@note this should be made redundant by property getter, but it or I am being weird]
+		lobby = server.lobby;
+
 		loadLevelSet();
 		loadActorTemplates();
 
@@ -71,6 +82,8 @@ class PlayScene extends Scene {
 					selectedEntities = new Array<Entity>();
 				}
 			} else if (Input.mouseReleased) {
+				if (startDragPoint == null) return;
+
 				selectEntities(startDragPoint.x, startDragPoint.y, mouseX - startDragPoint.x, mouseY - startDragPoint.y);
 				startDragPoint = null;
 			}
@@ -125,7 +138,8 @@ class PlayScene extends Scene {
 	public function loadLevelSet() {
 		level = new Level();
 		currentLevel = 0;	
-		HXP.log("First level: " + lobby.levelList[currentLevel]);
+		HXP.log("" + lobby);
+		// HXP.log("First level: " + lobby.levelList[currentLevel]);
 
 	}
 
@@ -141,9 +155,7 @@ class PlayScene extends Scene {
 		background = new Entity(0, 0, bgScroller);
 		add(background);
 
-
 		loadLevel();
-
 
 		testEntity = ActorFactory.create("basic", "computer", HXP.screen.width / 2, HXP.screen.height / 2);
 		add(testEntity);

@@ -16,6 +16,9 @@ interface ServerEventHandler {
 	// also good for debugging, but has other uses
 	// eg. could be used to modify events en-route
 	public function onEvent(event:ServerEvent):Bool;
+
+	// whether we want all the events
+	public function isPromiscuous():Bool;
 }
 
 class BasicServerEventHandler implements ServerEventHandler {

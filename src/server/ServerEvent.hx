@@ -3,6 +3,7 @@ package server;
 import server.ServerEventDispatcher;
 
 enum ServerEventType {
+	NonEvent;	// for cancellation, etc.
 	PathArrived;
 	PathCancelled;
 	PathBlocked;

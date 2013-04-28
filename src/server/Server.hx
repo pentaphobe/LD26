@@ -10,17 +10,6 @@ class Player extends BasicServerEventHandler {
 	public function new(name:String) {
 		this.name = name;
 	}
-
-	public override function onWasHit(event:ServerEvent):Bool {
-		HXP.log(name + ": 'ouch!'");
-		return true;
-	}
-
-	public override function onEvent(event:ServerEvent):Bool {
-		HXP.log(name + " got event " + event);
-		return true;
-	}
-
 	public function toString():String {
 		return "[Player " + name + "]";
 	}
@@ -29,10 +18,10 @@ class Player extends BasicServerEventHandler {
 class Server extends ServerEventDispatcher {
 	var players:List<Player>;
 	var playerHash:Hash<Player>;
-	var localPlayer:Player;
 
+	public var localPlayer:Player;
 	// var world:World;
-	var lobby:Lobby;
+	public var lobby:Lobby;
 
 	public function new(?existingLocalPlayer:Player = null) {
 		super();
@@ -81,6 +70,7 @@ class Server extends ServerEventDispatcher {
 				handler.onWasHit(evt);
 			case TargetFound:
 				handler.onTargetFound(evt);
+			default:
 		}
 	}
 

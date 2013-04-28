@@ -65,7 +65,9 @@ class Actor extends Entity {
 		var gList:Graphiclist = new Graphiclist();
 		graphic = gList;
 
-		var img:Graphic = Image.createRect(PlayScene.TILE_SIZE - 2, PlayScene.TILE_SIZE - 2, col);
+		var tmpPadding:Int = 2;
+		var tmpPadding2:Int = tmpPadding * 2;
+		var img:Graphic = Image.createRect(PlayScene.TILE_SIZE - tmpPadding2, PlayScene.TILE_SIZE - tmpPadding2, col);
 		setHitboxTo(img);		
 		gList.add(img);
 
@@ -76,6 +78,8 @@ class Actor extends Entity {
 		// centerOrigin();
 		// graphic.x = -PlayScene.HTILE_SIZE+1;
 		// graphic.y = -PlayScene.HTILE_SIZE+1;
+		graphic.x += tmpPadding;
+		graphic.y += tmpPadding;
 		type = teamName;	
 
 		targetPos = new MapPoint();

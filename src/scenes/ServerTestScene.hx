@@ -8,7 +8,20 @@ import com.haxepunk.Tween;
 import com.haxepunk.tweens.TweenEvent;
 
 import server.Server;
+import server.ServerEventHandler;
 import server.ServerEvent;
+
+/** This class just intercepts events and dumps them out
+ */
+class TestHandler extends BasicServerEventHandler {
+	public function new() {
+
+	}
+	public override function onEvent(event:ServerEvent):Bool {
+		HXP.log("test received:" + event);
+		return true;
+	}
+}
 
 class ServerTestScene extends Scene {
 	var server:Server;
@@ -18,6 +31,8 @@ class ServerTestScene extends Scene {
 
 	public override function begin() {
 		server = new Server();
+
+		server.addHandler(new TestHandler());
 
 		server.createPlayer("percival");
 		server.createPlayer("noggin");
