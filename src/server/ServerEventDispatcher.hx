@@ -48,6 +48,13 @@ class ServerEventDispatcher {
 	 */
 	function dispatchEvent(evt:ServerEvent) {
 		for (handler in handlers) {
+
+			// [@note this line breaks with the above comments]
+			// [@... still not sure if this should live this high up]				
+			if (evt.target != handler && !handler.isPromiscuous()) {
+				continue;
+			}
+
 			// [@note currently ignores return value, potentially should skip the switch sometimes]
 			handler.onEvent(evt);
 			switch (evt.type) {
@@ -80,7 +87,7 @@ class ServerEventDispatcher {
 		return event;
 	}
 
-	public function send(type:ServerEventType, ?target:ServerEventHandler=null, ?src:ServerEventHandler=null):ServerEvent {
+	public function send(type:ServerEventType, ?src:ServerEventHandler=null, ?target:ServerEventHandler=null):ServerEvent {
 		var evt:ServerEvent = new ServerEvent(type, src, target);
 		// HXP.log("sending " + evt);
 		return add(evt);

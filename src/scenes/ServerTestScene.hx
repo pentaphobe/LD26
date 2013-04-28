@@ -18,7 +18,15 @@ class TestHandler extends BasicServerEventHandler {
 
 	}
 	public override function onEvent(event:ServerEvent):Bool {
-		HXP.log("test received:" + event);
+		HXP.log("intercepted:" + event);
+
+		// this isn't how you'd do this, just avoiding contamination
+		HXP.log(" -- sending retaliation on their behalf..");
+		event.dispatcher.send(event.type, event.target, event.source);
+
+		return true;
+	}
+	public override function isPromiscuous():Bool {
 		return true;
 	}
 }
@@ -37,7 +45,7 @@ class ServerTestScene extends Scene {
 		server.createPlayer("percival");
 		server.createPlayer("noggin");
 
-		server.sendByName(WasHit, "percival", "noggin");
+		server.sendByName(WasHit, "noggin", "percival");
 
 		// no need to update at full speed, we just want to test
 		// server interaction

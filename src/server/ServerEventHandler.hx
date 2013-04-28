@@ -40,4 +40,9 @@ class BasicServerEventHandler implements ServerEventHandler {
 	public function onEvent(event:ServerEvent):Bool {
 		return true;
 	}	
+
+	public function isPromiscuous():Bool {
+		return false;
+	}
+
 }

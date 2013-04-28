@@ -52,32 +52,34 @@ class Server extends ServerEventDispatcher {
 		// update world
 	}
 
-	/** overrides default behaviour and only sends
-	 * events to their targets
-	 */
-	override function dispatchEvent(evt:ServerEvent) {
-		// [@note currently ignores return value, potentially should skip the switch sometimes]
-		var handler:ServerEventHandler = evt.target;
-		handler.onEvent(evt);
-		switch (evt.type) {
-			case PathArrived:
-				handler.onPathArrived(evt);
-			case PathCancelled:
-				handler.onPathCancelled(evt);
-			case PathBlocked:
-				handler.onPathBlocked(evt);
-			case WasHit:
-				handler.onWasHit(evt);
-			case TargetFound:
-				handler.onTargetFound(evt);
-			default:
-		}
-	}
+	// disabled since this capability has been added to 
+	// Server and ServerEventHandler
+	// /** overrides default behaviour and only sends
+	//  * events to their targets
+	//  */
+	// override function dispatchEvent(evt:ServerEvent) {
+	// 	// [@note currently ignores return value, potentially should skip the switch sometimes]
+	// 	var handler:ServerEventHandler = evt.target;		
+	// 	handler.onEvent(evt);
+	// 	switch (evt.type) {
+	// 		case PathArrived:
+	// 			handler.onPathArrived(evt);
+	// 		case PathCancelled:
+	// 			handler.onPathCancelled(evt);
+	// 		case PathBlocked:
+	// 			handler.onPathBlocked(evt);
+	// 		case WasHit:
+	// 			handler.onWasHit(evt);
+	// 		case TargetFound:
+	// 			handler.onTargetFound(evt);
+	// 		default:
+	// 	}
+	// }
 
-	public function sendByName(type:ServerEventType, ?target:String="", ?src:String=""):ServerEvent {
+	public function sendByName(type:ServerEventType, ?src:String="", ?target:String=""):ServerEvent {
 		var srcPlayer:Player = playerHash.get(src);
 		var targetPlayer:Player = playerHash.get(target);
-		return send(type, targetPlayer, srcPlayer);
+		return send(type, srcPlayer, targetPlayer);
 	}
 
 	public function createPlayer(name:String):Player {
