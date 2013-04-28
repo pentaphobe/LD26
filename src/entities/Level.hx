@@ -34,6 +34,7 @@ class Level extends EntityGroup {
 		mapWidth = jsonData.map.size.x;
 		mapHeight = jsonData.map.size.y;
 		entityMap = new Array();
+		entityMap[mapWidth*mapHeight-1] = null;
 		width = cast toScreenX(mapWidth);
 		height = cast toScreenY(mapHeight);
 
@@ -49,7 +50,8 @@ class Level extends EntityGroup {
 					map.setTile(x, y, 0);
 					grid.setTile(x, y, false);
 				}
-				entityMap.push(null);
+				entityMap[idx] == null;
+				idx++;
 			}
 		}
 		var e:Entity = new Entity(0, 0, map, grid);

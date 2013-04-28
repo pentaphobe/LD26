@@ -9,6 +9,7 @@ import com.haxepunk.utils.Key;
 import com.haxepunk.Entity;
 import com.haxepunk.graphics.Image;
 import com.haxepunk.graphics.Backdrop;
+import com.haxepunk.graphics.Stamp;
 import com.haxepunk.tweens.motion.LinearMotion;
 import com.haxepunk.utils.Draw;
 
@@ -28,6 +29,7 @@ import server.World;
 
 class PlayScene extends Scene {
 	//***** TEMPORARY *******
+	var uiOverlay:Entity;
 	var testEntity:Actor;
 	var startDragPoint:Point;
 	var selectedEntities:Array<Entity>;
@@ -121,6 +123,13 @@ class PlayScene extends Scene {
 		add(testEntity);
 		testEntity = ActorFactory.create("heavy", "computer", HXP.screen.width * 2 / 3, HXP.screen.height / 2);
 		add(testEntity);
+
+		var uiGfx:Stamp = new Stamp("gfx/ui_mockup.png");
+		uiGfx.scrollX = uiGfx.scrollY = 0;
+		uiOverlay = new Entity(0, 0, uiGfx);
+		uiOverlay.layer = 10;
+
+		add(uiOverlay);
 
 		// createMap();
 

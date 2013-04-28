@@ -31,6 +31,7 @@ class MenuState extends State {
 	var actions:Hash<String>;
 	var x:Int;
 	var y:Int;
+	var itemHeight:Int = 27;
 	public function new(id:String, config:Dynamic, ?menuCallback:MenuCallback=null, ?uiCallback:UICallback=null, ?x:Int = 0, ?y:Int = 0) {
 		super(id);
 		this.config = config;
@@ -65,12 +66,13 @@ class MenuState extends State {
 			
 		}
 		for ( item in configItems ) {
-			var entity:UIEntity = new TextButton(item.label, item.label, x, currentY, this.dispatchEvents);
+			var tmp:Bool = config.fullWidth;
+			var entity:UIEntity = new TextButton(item.label, item.label, x, currentY, this.dispatchEvents, true, true, tmp);
 			HXP.scene.add(entity);
 			items.add(entity);
 			actions.set(item.label, item.action);
 			// HXP.log("added entity at " + entity.x + ", " + entity.y + " to scene " + Type.getClassName(Type.getClass(HXP.scene)) );
-			currentY += 20;
+			currentY += itemHeight;
 		}		
 	}
 

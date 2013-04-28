@@ -16,8 +16,8 @@ class TextButton extends UIEntity {
 	var shadowText:Text;
 	public var normalColor:Int = 0xc0c0c0;
 	public var hoverColor:Int = 0xffffff;
-	public var boxPadding:Int = 4;
-	public function new(label:String, uiName:String, x:Float=0, y:Float=0, ?handler:String->UIEntity->Void = null, hasShadow:Bool=true, hasBackground:Bool = true) {
+	public var boxPadding:Int = 2;
+	public function new(label:String, uiName:String, x:Float=0, y:Float=0, ?handler:String->UIEntity->Void = null, ?hasShadow:Bool=true, ?hasBackground:Bool = true, ?fullWidthBackground:Bool = false) {
 		super(uiName, x, y, handler);
 		var background:Graphic = null;
 		if (hasShadow) {
@@ -26,10 +26,17 @@ class TextButton extends UIEntity {
 		}
 		this.text = new Text(label, 0, 0, {color:normalColor,align:TextFormatAlign.LEFT});
 		this.text.scrollX = this.text.scrollY = 0;
+
 		if (hasBackground) {
-			background = Image.createRect(text.width + boxPadding*2, text.height + boxPadding*2, 0x000000);
-			background.x -= boxPadding;
-			background.y -= boxPadding;
+			if (fullWidthBackground) {
+				var fullWidth:Int = HXP.screen.width - boxPadding*2;
+				background = Image.createRect(fullWidth, text.height + boxPadding*2, 0x000000);
+				background.x = -(fullWidth/2);
+			} else {
+				background = Image.createRect(text.width + boxPadding*2, text.height + boxPadding*2, 0x000000);
+				background.x -= boxPadding;
+				background.y -= boxPadding;
+			}
 			// background.scrollX = background.scrollY = 0;
 		}
 
@@ -43,7 +50,7 @@ class TextButton extends UIEntity {
 			gList.add(this.shadowText);		
 		}
 		gList.add(this.text);
-		setHitboxTo(this.text);
+		setHitboxTo(background);
 		// [@note not sure why this is necessary - I'm setting the color above, but somewhere the items are initialising to hover state]
 		onLostMouse(0, 0);
 	}
