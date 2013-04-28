@@ -19,7 +19,7 @@ class MenuScene extends Scene {
 	var menu:Menu;
 	public function new() {
 		super();
-		menu = new Menu("mainmenu", menuEvent, uiEvent, cast(HXP.screen.width / 2), cast(HXP.screen.height / 2 + HXP.screen.height / 6));
+		menu = new Menu("mainmenu", menuEvent, uiEvent, cast(HXP.screen.width / 2 - HXP.screen.width / 6) , cast(HXP.screen.height / 3 + HXP.screen.height / 6));
 	}
 
 	public override function begin() {

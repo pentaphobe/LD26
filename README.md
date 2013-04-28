@@ -43,6 +43,15 @@
 	- getting tired.  the electronic music I'm listening to just did a vinyl stop and I thought I was stroking out
 	- things are looking pretty good.  there are definitely a few things going a little weird though :)
 
+#### 6:53am (the next day)
+	- whoops. journal.  yeah.. that thing.
+	- back on track after a major refactor
+	- gonna eat Pho, have a cuppa, maybe shower and then launch into the final sprint of:
+		- art
+		- particles (and juicy things)
+		- music / sound
+		... not much for 5 hours..  should be fine
+
 ### To Do (misc QA as I find it)
 	- "back" option in About menu takes you to the game instead of back to the Main Menu
 	- entities aren't checking map coords properly, unify that stuff

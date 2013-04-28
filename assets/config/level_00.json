@@ -2,7 +2,7 @@
 	id:'level_00',
 	title:'a quaint beginning',
 	map:{
-		size:{x:15, y:15},
+		size:{x:35, y:35},
 		stamps:[
 			{type:'I', pos:{x:12, y:8}},
 			{type:'P', pos:{x:5, y:8}}

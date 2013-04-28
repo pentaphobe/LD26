@@ -45,12 +45,12 @@ class PlayScene extends Scene {
 	var menu:Menu;
 	var uiStates:StateMachine<UIState>;
 	public static var instance(get_instance, set_instance):PlayScene;
-	public static var TILE_SIZE:Int = 32;
+	public static var TILE_SIZE:Int = 16;
 	public static var HTILE_SIZE:Int = cast (TILE_SIZE/2);
 	// how many seconds per AI processing step
 	public static var AI_RATE:Float = 0.5;
 	public static var AGENT_RATE:Float = 0.2;
-	public static var SERVER_RATE:Float = 0.1;
+	public static var SERVER_RATE:Float = 2.1;
 	public static var BACKGROUND_AUTO_SCROLL:Bool = false;
 
 	public var cameraSpeed:Float = 4;
@@ -125,12 +125,13 @@ class PlayScene extends Scene {
 
 		world.loadCurrentLevel();
 
+		var totalPerSide:Int = cast(Math.sqrt(level.mapWidth * level.mapHeight));
 		for (j in 0...2) {
 			var teamName:String = "human";
 			if (j == 1) {
 				teamName = "computer";
 			}
-			for (i in 0...5) {
+			for (i in 0...totalPerSide) {
 				var select:Int = cast(Math.random()*3);
 				var newX:Int = cast(HXP.clamp(Math.random()*level.mapWidth, 1, level.mapWidth-2));
 				var newY:Int = cast(HXP.clamp(Math.random()*level.mapHeight, 1, level.mapHeight-2));

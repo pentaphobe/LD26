@@ -56,7 +56,7 @@ enum AgentState {
 		state = AgentIdling;	 		
  	}
 	public function onOrder(order:PlayerOrder):Bool {
-		HXP.log("agent order mutta flichers! " + order);
+		// HXP.log("agent order mutta flichers! " + order);
 		if (order.orderType == "move") {
 			setTarget(order.orderTarget.x, order.orderTarget.y);
 		} else if (order.orderType == "breed") {

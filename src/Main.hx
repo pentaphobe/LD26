@@ -8,9 +8,9 @@ class Main extends Engine
 {
 	public static inline var kScreenWidth:Int = 640;
 	public static inline var kScreenHeight:Int = 400;
-	public static inline var kFrameRate:Int = 60;
+	public static inline var kFrameRate:Int = 30;
 	public static inline var kClearColor:Int = 0x222222;
-	public static inline var kUseFixedUpdate:Bool = false;
+	public static inline var kUseFixedUpdate:Bool = true;
 	public override function new() {
 		super(kScreenWidth, kScreenHeight, kFrameRate, kUseFixedUpdate);
 	}
