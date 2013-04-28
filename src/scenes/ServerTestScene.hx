@@ -6,6 +6,7 @@ import com.haxepunk.utils.Input;
 import com.haxepunk.utils.Key;
 import com.haxepunk.Tween;
 import com.haxepunk.tweens.TweenEvent;
+import com.haxepunk.utils.Draw;
 
 import server.Server;
 import server.ServerEventHandler;
@@ -55,6 +56,15 @@ class ServerTestScene extends Scene {
 		if (Input.pressed(Key.ESCAPE)) {
 			HXP.scene = new MenuScene();
 		}
+		if (Input.pressed(Key.SPACE)) {
+			server.sendLocalOrder("hedge-trimmer");
+			server.sendLocalOrder("well-formed", 23, 23);
+		}
+	}
+
+	public override function render() {
+		Draw.text("press space to fire an event", HXP.screen.width/2, HXP.screen.height/2);
+
 	}
 
 	public function serverTick(event:TweenEvent) {

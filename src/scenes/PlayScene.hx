@@ -72,44 +72,7 @@ class PlayScene extends Scene {
 
 		selectedEntities = new Array<Entity>();
 
-		uiStates = new StateMachine<UIState>("ui");
-		var testState:UIState = new UIState("select");
-		testState.setOverride(CustomUpdate, function (owner:PrototypeState) {
-			// HXP.log("updating select");
-			if (Input.mousePressed) {
-				startDragPoint = new Point(mouseX, mouseY);
-				if (!Input.check(Key.SHIFT)) {
-					selectedEntities = new Array<Entity>();
-				}
-			} else if (Input.mouseReleased) {
-				if (startDragPoint == null) return;
-
-				selectEntities(startDragPoint.x, startDragPoint.y, mouseX - startDragPoint.x, mouseY - startDragPoint.y);
-				startDragPoint = null;
-			}
-		});
-		testState.setOverride(CustomRender, function (owner:PrototypeState) {
-			if (startDragPoint != null && Input.mouseDown) {
-				var w:Int = cast(mouseX - startDragPoint.x);
-				var h:Int = cast(mouseY - startDragPoint.y);
-				Draw.rectPlus(cast startDragPoint.x, cast startDragPoint.y, w, h, 0x00ff00, 0.5, 3);
-			}
-		});
-		uiStates.addStateAndEnter(testState);
-
-		testState = new UIState("orderMove");
-		testState.setOverride(CustomUpdate, function (owner:PrototypeState) {
-			if (Input.mouseReleased) {
-				
-				owner.isDone = true;
-				// HXP.log("Attempting to order " + selectedEntities.length + " entities");
-				for (entity in selectedEntities) {
-					HXP.log("ordered movement of " + entity + " to " + mouseX + ", " + mouseY);
-					cast(entity, Actor).setTarget( level.toMapX(mouseX), level.toMapY(mouseY));
-				}
-			}
-		});
-		uiStates.addState(testState);
+		createUIStates();
 	}	
 
 	public function selectEntities(x:Float, y:Float, w:Float, h:Float) {
@@ -304,6 +267,48 @@ class PlayScene extends Scene {
 		} else if (eventType == "onClick") {
 			Assets.sfxClick.play();
 		}
+	}
+
+	public function createUIStates() {
+		uiStates = new StateMachine<UIState>("ui");
+		
+		var testState:UIState = new UIState("select");
+		testState.setOverride(CustomUpdate, function (owner:PrototypeState) {
+			// HXP.log("updating select");
+			if (Input.mousePressed) {
+				startDragPoint = new Point(mouseX, mouseY);
+				if (!Input.check(Key.SHIFT)) {
+					selectedEntities = new Array<Entity>();
+				}
+			} else if (Input.mouseReleased) {
+				if (startDragPoint == null) return;
+
+				selectEntities(startDragPoint.x, startDragPoint.y, mouseX - startDragPoint.x, mouseY - startDragPoint.y);
+				startDragPoint = null;
+			}
+		});
+		testState.setOverride(CustomRender, function (owner:PrototypeState) {
+			if (startDragPoint != null && Input.mouseDown) {
+				var w:Int = cast(mouseX - startDragPoint.x);
+				var h:Int = cast(mouseY - startDragPoint.y);
+				Draw.rectPlus(cast startDragPoint.x, cast startDragPoint.y, w, h, 0x00ff00, 0.5, 3);
+			}
+		});
+		uiStates.addStateAndEnter(testState);
+
+		testState = new UIState("orderMove");
+		testState.setOverride(CustomUpdate, function (owner:PrototypeState) {
+			if (Input.mouseReleased) {
+				
+				owner.isDone = true;
+				// HXP.log("Attempting to order " + selectedEntities.length + " entities");
+				for (entity in selectedEntities) {
+					HXP.log("ordered movement of " + entity + " to " + mouseX + ", " + mouseY);
+					cast(entity, Actor).setTarget( level.toMapX(mouseX), level.toMapY(mouseY));
+				}
+			}
+		});
+		uiStates.addState(testState);		
 	}
 
 	public static function get_instance():PlayScene {

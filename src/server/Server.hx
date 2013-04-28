@@ -4,10 +4,10 @@ import com.haxepunk.HXP;
 import server.ServerEventHandler;
 import server.ServerEvent;
 import server.Lobby;
+import server.Player;
 
 
-
-class Server extends ServerEventDispatcher {
+class Server extends ServerEventDispatcher, implements Orderable {
 	var players:List<Player>;
 	var agents:List<Agent>;
 	var playerHash:Hash<Player>;
@@ -44,6 +44,26 @@ class Server extends ServerEventDispatcher {
 		// update agents
 		// update world
 	}
+
+	public function sendLocalOrder(type:String, ?x:Int=0, ?y:Int=0, ?agent:Agent) {
+		var order:PlayerOrder = new PlayerOrder(type, x, y, agent, localPlayer);
+		onOrder(order);
+	}
+
+	// [@todo orders are instantly sent presently - is this good?]
+	// [@... should they instead just use the same event system?]
+	public function onOrder(order:PlayerOrder):Bool {
+		// validate the orders here
+		// then forward to owned players
+		if (order.player != null) {
+			order.player.onOrder(order);
+			return true;
+		}
+
+		HXP.log("I refuse to send malformed orders, you lazy dog");
+		return false;
+	}
+
 
 	// disabled since this capability has been added to 
 	// Server and ServerEventHandler
