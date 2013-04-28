@@ -67,14 +67,18 @@ class MenuState extends State {
 		} else {
 			
 		}
+		var xStart = 0;
 		for ( item in configItems ) {
 			var tmp:Bool = config.fullWidth;
-			var entity:UIEntity = new TextButton(item.label, item.label, x, currentY, this.dispatchEvents, true, true, tmp);
+			var entity:UIEntity = new TextButton(item.label, item.label, xStart, currentY, this.dispatchEvents, true, true, tmp);
+
 			HXP.scene.add(entity);
+			HXP.tween(entity, {x:x}, 0.4);
 			items.add(entity);
 			actions.set(item.label, item.action);
 			// HXP.log("added entity at " + entity.x + ", " + entity.y + " to scene " + Type.getClassName(Type.getClass(HXP.scene)) );
 			currentY += itemHeight;
+			xStart -= cast Math.min(entity.width, 100);
 		}		
 	}
 

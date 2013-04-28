@@ -45,12 +45,12 @@ class PlayScene extends Scene {
 	var menu:Menu;
 	var uiStates:StateMachine<UIState>;
 	public static var instance(get_instance, set_instance):PlayScene;
-	public static var TILE_SIZE:Int = 16;
+	public static var TILE_SIZE:Int = 32;
 	public static var HTILE_SIZE:Int = cast (TILE_SIZE/2);
 	// how many seconds per AI processing step
 	public static var AI_RATE:Float = 0.5;
 	public static var AGENT_RATE:Float = 0.2;
-	public static var SERVER_RATE:Float = 2.1;
+	public static var SERVER_RATE:Float = 0.1;
 	public static var BACKGROUND_AUTO_SCROLL:Bool = false;
 
 	public var cameraSpeed:Float = 4;
@@ -113,6 +113,8 @@ class PlayScene extends Scene {
 	public override function begin() {
 		super.begin();
 
+		Assets.sfxGameMusic.loop(0.7);
+
 		uiStates.enter();
 		HXP.log("entering game");
 
@@ -149,7 +151,7 @@ class PlayScene extends Scene {
 
 		var uiGfx:Stamp = new Stamp("gfx/ui_mockup.png");
 		uiGfx.scrollX = uiGfx.scrollY = 0;
-		uiOverlay = new Entity(0, 0, uiGfx);
+		uiOverlay = new Entity(0, HXP.screen.height - uiGfx.height, uiGfx);
 		uiOverlay.layer = 2;
 		add(uiOverlay);
 
@@ -165,6 +167,10 @@ class PlayScene extends Scene {
 		HXP.alarm(SERVER_RATE, serverTick, TweenType.Looping, this);
 		// HXP.alarm(AI_RATE, doAiMove, TweenType.Looping, this);	
 		// HXP.alarm(AGENT_RATE, doAgentMove, TweenType.Looping, this);	
+	}
+
+	public override function end() {
+		Assets.sfxGameMusic.stop();
 	}
 
 	public function serverTick(event:Dynamic) {
