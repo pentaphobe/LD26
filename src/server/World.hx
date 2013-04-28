@@ -21,6 +21,7 @@ class World {
 
 	public function addAgent(agent:Agent):Agent {
 		agents.add(agent);
+		level.setAgent(agent.pos.x, agent.pos.y, agent);
 		return agent;
 	}
 

@@ -44,7 +44,7 @@ class Actor extends Entity {
 		var gList:Graphiclist = new Graphiclist();
 		graphic = gList;
 
-		var tmpPadding:Int = 2;
+		var tmpPadding:Int = 4;
 		var tmpPadding2:Int = tmpPadding * 2;
 		var img:Graphic = Image.createRect(PlayScene.TILE_SIZE - tmpPadding2, PlayScene.TILE_SIZE - tmpPadding2, col);
 		setHitboxTo(img);		
@@ -75,8 +75,8 @@ class Actor extends Entity {
 		// if (!getNextPathNode()) {
 		// 	return;
 		// }
-		x = toScreenX(agent.pos.x);
-		y = toScreenY(agent.pos.y);
+		x += (toScreenX(agent.pos.x) - x) * 0.25;
+		y += (toScreenY(agent.pos.y) - y) * 0.25;
 
 		// var dx:Float = toScreenX(targetPos.x) - x;
 		// var dy:Float = toScreenY(targetPos.y) - y;
@@ -91,21 +91,27 @@ class Actor extends Entity {
 		// 	HXP.log("moving by " + 0 + ", " + dy);
 		// 	moveBy(0, dy);
 		// }
+		label.text = teamName + "\n" + agent.config.parent.typeName + "\n" + agent.state;					
 	}
 
 	// [@remove debug rendering]
 	public override function render() {
 		super.render();
-		var pos:MapPoint = null;
-		for ( pos2 in agent.path ) {
-			if (pos == null) {
-				pos = new MapPoint(pos2.x, pos2.y);
-				continue;
-			}
+		if (agent.state == AgentMoving) {
+			var pos:MapPoint = null;
+			for ( pos2 in agent.path ) {
+				if (pos == null) {
+					pos = new MapPoint(pos2.x, pos2.y);
+					continue;
+				}
 
-			Draw.linePlus(pos.x, pos.y, pos2.x, pos2.y, 0xff0000, 0.5, 2);
-			
-			pos.set(pos2.x, pos2.y);
+				Draw.linePlus(cast toScreenX(pos.x) + PlayScene.HTILE_SIZE, 
+								cast toScreenY(pos.y) + PlayScene.HTILE_SIZE, 
+								cast toScreenX(pos2.x) + PlayScene.HTILE_SIZE, 
+								cast toScreenY(pos2.y) + PlayScene.HTILE_SIZE, 0xff0000, 0.5, 2);
+				
+				pos.set(pos2.x, pos2.y);
+			}
 		}
 	}
 

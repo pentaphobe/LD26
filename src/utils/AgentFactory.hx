@@ -49,6 +49,7 @@ class AgentFactory {
 
 		var template:AgentTemplate = AgentTemplates.get(type);
 		var actor:Actor = new Actor(teamName, scrX, scrY);
+		actor.layer = 10;
 		// actor.applyTemplate(template);
 
 		var agent:Agent = PlayScene.server.createAgent(teamName, x, y);

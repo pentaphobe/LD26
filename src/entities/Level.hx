@@ -65,11 +65,13 @@ class Level extends EntityGroup {
 
 	public function setAgent(x:Int, y:Int, agent:Agent) {
 		entityMap[y * mapWidth + x] = agent;
+		map.clearTile(x, y);
 		if (agent != null) {
 			map.setTile(x, y, 1);
 		} else {
 			map.setTile(x, y, 0);			
 		}
+
 	}
 
 	public function getAgent(x:Int, y:Int):Agent {

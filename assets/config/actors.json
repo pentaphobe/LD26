@@ -1,6 +1,6 @@
 {
 	basic:{
-		name:"basic actor",
+		name:"basic",
 		stats:{
 			// vitality designates starting health
 			vit:10,

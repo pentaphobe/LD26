@@ -55,6 +55,11 @@ class Server extends ServerEventDispatcher, implements Orderable {
 		onOrder(order);
 	}
 
+	public function sendOrder(type:String, ?x:Int=0, ?y:Int=0, ?agent:Agent) {
+		var order:PlayerOrder = new PlayerOrder(type, x, y, agent, agent.player);
+		onOrder(order);		
+	}		
+
 	// [@todo orders are instantly sent presently - is this good?]
 	// [@... should they instead just use the same event system?]
 	public function onOrder(order:PlayerOrder):Bool {

@@ -2,14 +2,26 @@
 	id:'level_00',
 	title:'a quaint beginning',
 	map:{
-		size:{x:33, y:33},
+		size:{x:15, y:15},
 		stamps:[
-			{type:'I'},
-			{type:'P'}
+			{type:'I', pos:{x:12, y:8}},
+			{type:'P', pos:{x:5, y:8}}
 		]		
 	},
 	table:{
-		'P':"player",
-		"I":"ice"
+		'P':{type:"player"},
+		'I':{type:"ice"}
+		'c':{
+			type:"compound",
+			map:{
+				size:{x:5, y:5},
+				entries:[
+					".I.I.",
+					"I.I.I",
+					"..I..",
+					"....."
+				]
+			}
+		}
 	}
 }

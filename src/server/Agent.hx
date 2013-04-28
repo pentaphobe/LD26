@@ -5,8 +5,7 @@ import utils.AgentTemplate;
 import utils.AgentFactory;
 import utils.MapPoint;
 
-// naughty naughty.
-// import scenes.PlayScene;
+import entities.Actor;
 
 import server.ServerEventHandler;
 import server.ServerEvent;
@@ -15,7 +14,11 @@ import server.Lobby;
 import server.Orderable;
 import server.Player;
 
-
+enum AgentState {
+	AgentMoving;
+	AgentIdling;
+	AgentBreeding;
+}
 /** 
  *
  * Agents will be the low-level aspect of entities in the
@@ -26,6 +29,8 @@ import server.Player;
  * (with interpolation etc)
  */ 
  class Agent extends BasicServerEventHandler, implements Orderable {
+ 	public static var TICKS_TO_BREED:Int = 12;
+
 	/** TEMPORARY **/
 	public var path:List<MapPoint>;
 	/** /TEMPORARY **/
@@ -39,27 +44,72 @@ import server.Player;
 	public var targetPos:MapPoint;
  	public var pos:MapPoint;
  	public var config:AgentTemplate;
+ 	public var state(default, default):AgentState;
+ 	public var stateTicks:Int;
 
  	public function new(?x:Int=0, ?y:Int=0) {
  		pos = new MapPoint(x, y);
 		targetPos = new MapPoint();
-		path = new List<MapPoint>();		 		
+		path = new List<MapPoint>();	
+		state = AgentIdling;	 		
  	}
 	public function onOrder(order:PlayerOrder):Bool {
 		HXP.log("agent order mutta flichers! " + order);
 		if (order.orderType == "move") {
 			setTarget(order.orderTarget.x, order.orderTarget.y);
+		} else if (order.orderType == "breed") {
+			state = AgentBreeding;
 		}
 		return true;
 	}
 
+	public function set_state(newState:AgentState):AgentState {
+		// [@todo transitions - or just use a state machine]
+		state = newState;
+		stateTicks = 0;
+		return state;
+	}
+
 	public function update() {
+		stateTicks++;
+
+		switch (state) {
+			case AgentMoving:
+				updateMovement();
+			case AgentBreeding:
+				if (stateTicks >= TICKS_TO_BREED) {
+					breed();
+				}
+			default:
+		}
+	}
+
+	public function breed() {
+		for (y in -1...2) {
+			for (x in -1...2) {
+				if (x == 0 && y == 0) continue;
+
+				var tmpX = pos.x + x;
+				var tmpY = pos.y + y;
+				if (player.server.world.level.getAgent(tmpX, tmpY) == null) {
+					var ent:Actor = AgentFactory.create(config.parent.typeName, player.name, tmpX, tmpY);
+					HXP.scene.add(ent);	
+					state = AgentIdling;	
+					break;
+				}
+			}
+		}
+		HXP.log("no empty space in which to breed");
+	}
+
+	public function updateMovement() {
 		if (path == null || path.length == 0) return;
 
 		var node:MapPoint = path.pop();
 
 		if (node.equals(pos)) {
 			if (!getNextPathNode()) {
+				state = AgentIdling;
 				return;
 			}			
 		}
@@ -78,7 +128,7 @@ import server.Player;
 		player.server.world.level.setAgent(node.x, node.y, this);		
 		player.server.world.level.setAgent(pos.x, pos.y, null);		
 
-		pos.set(node.x, node.y);
+		pos.set(node.x, node.y);		
 	}
 
 	public function swapWith(other:Agent) {
@@ -92,14 +142,7 @@ import server.Player;
 
 	public function setTarget(x:Int, y:Int) {
 		targetPos = new MapPoint(x, y);
-		// if (tween == null) {
-		// 	tween = new LinearMotion(null, TweenType.Persist);
-		// 	addTween(tween);
-		// 	HXP.log("created new tweener");
-		// }
-		// tween.setMotionSpeed(this.x, this.y, toScreenX(x), toScreenY(y), config.get("spd") * PlayScene.TILE_SIZE);
-		// tween.start();
-
+		state = AgentMoving;
 		// temporarily force tile-based movement
 		buildPath();		
 	}
@@ -145,7 +188,14 @@ import server.Player;
 	}	
 
 	public function onArrived() {
+		HXP.log("local onArrived");
 		player.server.send(PathArrived, this, this);
+	}
+
+	public override function onPathArrived(evt:ServerEvent):Bool {
+		HXP.log("event PathArrived");
+		state = AgentIdling;
+		return true;
 	}
 
 	public function heal(?amount:Float=0, ?allowOverHeal:Bool=false) {

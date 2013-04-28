@@ -123,25 +123,31 @@ class PlayScene extends Scene {
 		testEntity = AgentFactory.create("basic", "human", cast(level.mapWidth / 2), cast(level.mapHeight / 2)) ;
 		add(testEntity);
 
-		for (i in 0...40) {
-			var select:Int = cast(Math.random()*3);
-			var newX:Int = cast(Math.random()*level.mapWidth);
-			var newY:Int = cast(Math.random()*level.mapHeight);
-			switch (select) {
-				case 0:
-					testEntity = AgentFactory.create("basic", "human", newX, newY) ;			
-				case 1:
-					testEntity = AgentFactory.create("scout", "human", newX, newY);
-				case 2:
-					testEntity = AgentFactory.create("heavy", "human", newX, newY);
+		for (j in 0...2) {
+			var teamName:String = "human";
+			if (j == 1) {
+				teamName = "computer";
 			}
-			add(testEntity);			
+			for (i in 0...5) {
+				var select:Int = cast(Math.random()*3);
+				var newX:Int = cast(HXP.clamp(Math.random()*level.mapWidth, 1, level.mapWidth-2));
+				var newY:Int = cast(HXP.clamp(Math.random()*level.mapHeight, 1, level.mapHeight-2));
+				switch (select) {
+					case 0:
+						testEntity = AgentFactory.create("basic", teamName, newX, newY) ;			
+					case 1:
+						testEntity = AgentFactory.create("scout", teamName, newX, newY);
+					case 2:
+						testEntity = AgentFactory.create("heavy", teamName, newX, newY);
+				}
+				add(testEntity);			
+			}
 		}
 
 		var uiGfx:Stamp = new Stamp("gfx/ui_mockup.png");
 		uiGfx.scrollX = uiGfx.scrollY = 0;
 		uiOverlay = new Entity(0, 0, uiGfx);
-		uiOverlay.layer = 10;
+		uiOverlay.layer = 1;
 
 		add(uiOverlay);
 
@@ -193,6 +199,12 @@ class PlayScene extends Scene {
 		if (Input.pressed(Key.M)) {
 			uiStates.pushState("orderMove");
 		} 
+		if (Input.pressed(Key.B)) {
+			for ( entity in selectedEntities ) {
+				server.sendLocalOrder("breed", 0, 0, cast(entity, Actor).agent);
+			}
+			
+		}
 		if (uiStates.getCurrent() == null) {
 			uiStates.pushState("select");
 		}
