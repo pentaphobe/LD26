@@ -13,6 +13,8 @@ class Level extends EntityGroup {
 	var mapWidth:Int;
 	var mapHeight:Int;
 	var entityMap:Array<Actor>;
+	var map:Tilemap;
+	var grid:Grid;
 	public function new() {
 		super(0, 0);				
 	}
@@ -35,28 +37,33 @@ class Level extends EntityGroup {
 		width = cast toScreenX(mapWidth);
 		height = cast toScreenY(mapHeight);
 
-		var map:Tilemap = new Tilemap(HXP.getBitmap("gfx/tiles.png"), width, height, PlayScene.TILE_SIZE, PlayScene.TILE_SIZE);
-		var mask:Grid = new Grid(width, height, PlayScene.TILE_SIZE, PlayScene.TILE_SIZE);
+		map = new Tilemap(HXP.getBitmap("gfx/tiles.png"), width, height, PlayScene.TILE_SIZE, PlayScene.TILE_SIZE);
+		grid = new Grid(width, height, PlayScene.TILE_SIZE, PlayScene.TILE_SIZE);
 		var idx:Int = 0;
 		for (y in 0...mapHeight) {
 			for (x in 0...mapWidth) {
 				if ( x == 0 || x == mapWidth-1 || y == 0 || y == mapHeight-1 ) {
 					map.setTile(x, y, 1);
-					mask.setTile(x, y, true);
+					grid.setTile(x, y, true);
 				} else {
 					map.setTile(x, y, 0);
-					mask.setTile(x, y, false);
+					grid.setTile(x, y, false);
 				}
 				entityMap.push(null);
 			}
 		}
-		var e:Entity = new Entity(0, 0, map, mask);
+		var e:Entity = new Entity(0, 0, map, grid);
 		add(e);
 		// HXP.scene.add(e);
 	}
 
 	public function setActor(x:Int, y:Int, actor:Actor) {
 		entityMap[y * mapWidth + x] = actor;
+		if (actor != null) {
+			map.setTile(x, y, 1);
+		} else {
+			map.setTile(x, y, 0);			
+		}
 	}
 
 	public function getActor(x:Int, y:Int):Actor {
