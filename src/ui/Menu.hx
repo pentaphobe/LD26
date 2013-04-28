@@ -11,7 +11,9 @@ import com.haxepunk.utils.Draw;
 import com.haxepunk.Entity;
 import com.haxepunk.graphics.Stamp;
 import com.haxepunk.graphics.Image;
+
 import scenes.MenuScene;
+import scenes.ServerTestScene;
 
 import states.State;
 import states.UIState;
@@ -97,16 +99,26 @@ class MenuState extends State {
 		}
 		if (eventType == "onClick" && menuCallback != null) {
 			var action:String = actions.get(source.uiName);
-			var isInternal:Bool = action.charAt(0) == '@';
-			if (!isInternal) {
-				menuCallback( actions.get(source.uiName) );
-			} else {
+			var firstChar:String = action.charAt(0);
+			var isInternal:Bool = firstChar == '@';
+			var isAdvanced:Bool = firstChar == ':';
+			if (isInternal) {
 				action = action.substr(1);
 				if (action == "exit") {
 					this.isDone = true;
 					return;
 				}
-				cast(parent, Menu).pushState(action);
+				cast(parent, Menu).pushState(action);				
+			} else if (isAdvanced) {
+				action = action.substr(1);
+				var args:Array<String> = action.split(" ");
+				if (args[0] == "scene") {
+					HXP.log("attempting to start scene[scenes." + args[1] + "]");
+					HXP.scene = Type.createInstance(Type.resolveClass("scenes."+args[1]), [] );
+					return;
+				}
+			} else {
+				menuCallback( actions.get(source.uiName) );								
 			}
 		}
 	}

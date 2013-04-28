@@ -36,6 +36,8 @@ class ActorFactory {
 		var template:ActorTemplate = actorTemplates.get(type);
 		var actor:Actor = new Actor(teamName, x, y);
 		// actor.applyTemplate(template);
+		
+		// we duplicate the template since we want to potentially allow individual progression 
 		actor.config = template.clone();
 		actor.label.text = actor.teamName + "\n" + actor.config.parent.typeName;			
 		actor.reset();
