@@ -35,7 +35,7 @@ enum AgentState {
  	public static var TICKS_TO_BREED:Int = 20;
  	public static var TICKS_TO_ATTACK:Int = 4;
  	public static var SEEK_TIMEOUT:Int = 100;
- 	public static var SEEK_RANGE:Float = 120;
+ 	public static var SEEK_RANGE:Float = 60;
 
 	/** TEMPORARY **/
 	public var path:List<MapPoint>;
@@ -53,6 +53,9 @@ enum AgentState {
  	public var state(default, default):AgentState;
  	public var stateTicks:Int;
  	public var isAlive:Bool = true;
+
+ 	// resetting states, these monitor what's happened since the last update
+ 	public var wasHit:Bool = false;
 
  	public function new(?x:Int=0, ?y:Int=0) {
  		pos = new MapPoint(x, y);
@@ -107,6 +110,8 @@ enum AgentState {
 			default:
 				heal(0.1);
 		}
+
+		wasHit = false;
 	}
 
 	public function breed() {
@@ -239,6 +244,14 @@ enum AgentState {
 
 	public override function onWasHit(evt:ServerEvent):Bool {
 		HXP.log("OUCH!  I got hit by " + evt.source);
+		wasHit = true;		
+		var aggr = cast config.getData("behaviour.aggressiveness");
+
+		if (aggr == null || cast(aggr, Float) > 0) {
+			var srcAgent:Agent = cast evt.source;
+			setTarget(srcAgent.pos.x, srcAgent.pos.y);
+			state = AgentAttacking;
+		}
 		return true;
 	}
 

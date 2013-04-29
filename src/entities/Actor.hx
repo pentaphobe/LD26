@@ -32,6 +32,7 @@ class Actor extends Entity {
 	public var teamName:String;
 	public var teamColor:Int;
 	public var label:Text;
+	public var image:Image;
 	public var agent:Agent;
 	public var mapPos:MapPoint;
 	public var tween:LinearMotion;
@@ -56,9 +57,9 @@ class Actor extends Entity {
 		var tmpPadding2:Int = tmpPadding * 2;
 		// var img:Graphic = Image.createRect(PlayScene.TILE_SIZE - tmpPadding2, PlayScene.TILE_SIZE - tmpPadding2, teamColor);
 
-		var img:Image = new Image("gfx/tiles.png", new Rectangle(sprIdx, 0, 32, 32));
-		setHitboxTo(img);		
-		gList.add(img);
+		image = new Image("gfx/tiles.png", new Rectangle(sprIdx, 0, 32, 32));
+		setHitbox(cast image.width, cast image.height, cast image.x, cast image.y);		
+		gList.add(image);
 
 		if (USE_LABEL) {
 			label = new Text(teamName, -(PlayScene.TILE_SIZE/4), -PlayScene.TILE_SIZE, {color:teamColor, align:TextFormatAlign.CENTER});
@@ -92,6 +93,16 @@ class Actor extends Entity {
 			}
 			Assets.sfxExplosion.play(0.05);
 			HXP.scene.remove(this);
+		}
+
+		if (agent.wasHit) {
+			var ps:PlayScene = cast HXP.scene;
+			if (teamName == "human") {
+				ps.emitter.greenHurt(x, y);
+			} else {
+				ps.emitter.redHurt(x, y);
+			}
+			Assets.sfxClick.play(0.05);			
 		}
 
 		// [@todo here is where we check with Agent path]		
@@ -148,6 +159,11 @@ class Actor extends Entity {
 								cast toScreenY(agent.pos.y) + PlayScene.HTILE_SIZE, 
 								cast (toScreenX(agent.targetPos.x) + (Math.random()-0.5) * 2) + PlayScene.HTILE_SIZE,
 								cast (toScreenY(agent.targetPos.y) + (Math.random()-0.5) * 2) + PlayScene.HTILE_SIZE, teamColor, 0.5, 1);
+		}
+		if (agent.state == AgentBreeding) {
+			image.angle++;
+		} else {
+			image.angle = 0;
 		}
 	}
 

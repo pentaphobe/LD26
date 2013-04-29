@@ -5,11 +5,13 @@ import com.haxepunk.HXP;
 class AgentTemplate {
 	public var typeName:String;
 	public var parent:AgentTemplate=null;
+	public var data:Dynamic;
 	public var stats:Hash<Float>;
 	public function new() {
 		stats = new Hash<Float>();
 	}
 	public function load(jsonData:Dynamic, ?parent:AgentTemplate=null) {
+		this.data = jsonData;
 		this.typeName = jsonData.name;
 		this.parent = parent;
 		for ( i in Reflect.fields(jsonData.stats) ) {
@@ -27,6 +29,20 @@ class AgentTemplate {
 			return 0;
 		}
 		return stats.get(statName);
+	}
+	/** recursively drills down into the data objet using reflection
+	 * fails gracefully and returns null
+	 */
+	public function getData(dataPath:String):Dynamic {
+		var members:Array<String> = dataPath.split(".");
+		var cursor:Dynamic = data;
+		for ( member in members ) {
+			if (!Reflect.hasField(cursor, member)) {
+				return null;
+			}
+			cursor = Reflect.field(cursor, member);
+		}
+		return cursor;
 	}
 	public function keys():Iterator<String> {
 		var result = new Hash<Float>();

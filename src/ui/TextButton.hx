@@ -47,7 +47,11 @@ class TextButton extends UIEntity {
 			gList.add(this.shadowText);		
 		}
 		gList.add(this.text);
-		setHitboxTo(background);
+		// if (hasBackground) {
+		// 	setHitbox(cast background.width, cast background.heigh, cast background.x, cast background.y);
+		// }
+		setHitbox(text.width, text.height, cast text.originX, cast text.originY);
+
 		// [@note not sure why this is necessary - I'm setting the color above, but somewhere the items are initialising to hover state]
 		onLostMouse(0, 0);
 	}

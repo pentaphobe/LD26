@@ -33,6 +33,7 @@ import server.World;
 import server.Agent;
 import server.ComputerPlayer;
 import entities.ParticleController;
+import utils.MapPoint;
 
 class PlayScene extends Scene {
 	//***** TEMPORARY *******
@@ -57,6 +58,8 @@ class PlayScene extends Scene {
 	public static var BACKGROUND_AUTO_SCROLL:Bool = false;
 
 	public var cameraSpeed:Float = 4;
+	public var cameraTarget:Point;
+	public var cameraAutoTracking:Bool = true;
 
 	public static var server:Server;
 
@@ -71,6 +74,7 @@ class PlayScene extends Scene {
 	public function new() {
 		super();
 		instance = this;
+		cameraTarget = new Point(camera.x, camera.y);
 		menu = new Menu("ingame", menuEvent, uiEvent, cast(HXP.screen.width / 2), cast(HXP.screen.height / 2));
 
 		setupKeyBindings();
@@ -111,6 +115,7 @@ class PlayScene extends Scene {
 		// } else {
 			collideRectInto("human", x, y, w, h, selectedEntities);
 		// }
+		cameraAutoTracking = true;
 	}
 
 	public override function begin() {
@@ -133,27 +138,42 @@ class PlayScene extends Scene {
 
 		world.loadCurrentLevel();
 
-		var totalPerSide:Int = cast(Math.sqrt(level.mapWidth * level.mapHeight) / 2);
-		for (j in 0...2) {
-			var teamName:String = "human";
-			if (j == 1) {
-				teamName = "computer";
-			}
-			for (i in 0...totalPerSide) {
-				var select:Int = cast(Math.random()*3);
-				var newX:Int = cast(HXP.clamp(Math.random()*level.mapWidth, 1, level.mapWidth-2));
-				var newY:Int = cast(HXP.clamp(Math.random()*level.mapHeight, 1, level.mapHeight-2));
-				switch (select) {
-					case 0:
-						testEntity = AgentFactory.create("basic", teamName, newX, newY) ;			
-					case 1:
-						testEntity = AgentFactory.create("scout", teamName, newX, newY);
-					case 2:
-						testEntity = AgentFactory.create("heavy", teamName, newX, newY);
+		for ( team in Reflect.fields(level.jsonData.teams) ) {
+			var data:Dynamic = Reflect.field(level.jsonData.teams, team);
+			var topLeft:MapPoint = new MapPoint(data.start.x, data.start.y);
+			var botRight:MapPoint = new MapPoint(data.start.x2, data.start.y2);
+			for ( agent in cast(data.agents, Array<Dynamic>) ) {
+				for ( i in 0...agent.count ) {
+					var xPos:Int = cast( Math.random() * (botRight.x-topLeft.x) + topLeft.x );
+					var yPos:Int = cast( Math.random() * (botRight.y-topLeft.y) + topLeft.y );
+					var actor:Actor = AgentFactory.create( agent.type, team, xPos, yPos );
+					add(actor);
 				}
-				add(testEntity);			
 			}
 		}
+
+		// generates a random population of opposing entities
+		// var totalPerSide:Int = cast(Math.sqrt(level.mapWidth * level.mapHeight) / 2);
+		// for (j in 0...2) {
+		// 	var teamName:String = "human";
+		// 	if (j == 1) {
+		// 		teamName = "computer";
+		// 	}
+		// 	for (i in 0...totalPerSide) {
+		// 		var select:Int = cast(Math.random()*3);
+		// 		var newX:Int = cast(HXP.clamp(Math.random()*level.mapWidth, 1, level.mapWidth-2));
+		// 		var newY:Int = cast(HXP.clamp(Math.random()*level.mapHeight, 1, level.mapHeight-2));
+		// 		switch (select) {
+		// 			case 0:
+		// 				testEntity = AgentFactory.create("basic", teamName, newX, newY) ;			
+		// 			case 1:
+		// 				testEntity = AgentFactory.create("scout", teamName, newX, newY);
+		// 			case 2:
+		// 				testEntity = AgentFactory.create("heavy", teamName, newX, newY);
+		// 		}
+		// 		add(testEntity);			
+		// 	}
+		// }
 
 		// var uiGfx:Stamp = new Stamp("gfx/ui_mockup.png");
 		// uiGfx.scrollX = uiGfx.scrollY = 0;
@@ -264,9 +284,22 @@ class PlayScene extends Scene {
 			Draw.rect(cast(HXP.camera.x + 440), cast(HXP.camera.y+380), cast(40 * hp), 10, 0x00ff00, 0.9);
 		}
 
+		var centroidX:Float = 0;
+		var centroidY:Float = 0;
 		for ( entity in selectedEntities) {
 			// Draw.hitbox(entity, true, 0x00ff00, 0.5);
 			Draw.circlePlus(cast entity.x+HTILE_SIZE, cast entity.y+HTILE_SIZE, TILE_SIZE+2, 0x00FF00, 0.5, false, 2);
+			centroidX += entity.x;
+			centroidY += entity.y;
+		}
+		if (selectedEntities.length > 0) {
+			centroidX /= selectedEntities.length;
+			centroidY /= selectedEntities.length;
+			Draw.circlePlus(cast centroidX + HTILE_SIZE, cast centroidY + HTILE_SIZE, 4, 0xFF00FF, 0.1, false, 2);
+			centroidX -= HXP.screen.width / 2;
+			centroidY -= HXP.screen.height / 2;
+			cameraTarget.x = centroidX;
+			cameraTarget.y = centroidY;
 		}
 		menu.render();
 	}
@@ -289,21 +322,36 @@ class PlayScene extends Scene {
 
 		if (Input.check("up")) {
 			moveY -= 1;
+			cameraAutoTracking = false;
 		} 
 		if (Input.check("down")) {
 			moveY += 1;
+			cameraAutoTracking = false;			
 		}
 		if (Input.check("left")) {
 			moveX -= 1;
+			cameraAutoTracking = false;			
 		}
 		if (Input.check("right")) {
 			moveX += 1;
+			cameraAutoTracking = false;			
 		}
 		var speed:Float = cameraSpeed;
 		if (Input.check(Key.SHIFT)) {
 			speed *= 3;
 		}
 		camera.offset(moveX * speed, moveY * speed);
+
+		if (cameraAutoTracking) {
+			var dX:Float = HXP.clamp( (cameraTarget.x - camera.x ) * 0.25, -cameraSpeed, cameraSpeed);
+			var dY:Float = HXP.clamp( (cameraTarget.y - camera.y) * 0.25, -cameraSpeed, cameraSpeed);
+			// camera goes the other direction
+			// camera.x = centroidX - HXP.screen.width / 2;
+			// camera.y = centroidY - HXP.screen.height / 2;
+			// camera.x += dX;
+			// camera.y += dY;		
+			camera.offset(dX, dY);
+		}
 	}
 	public function updateMenu() {
 		if (Input.pressed(Key.ESCAPE)) {

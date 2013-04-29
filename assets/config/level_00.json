@@ -2,22 +2,22 @@
 	id:'level_00',
 	title:'a quaint beginning',
 	map:{
-		size:{x:15, y:15},		
+		size:{x:21, y:21},		
 	},
 	teams:{
 		human:{
-			start:{x:2, y:5},
+			start:{x:2, y:9, x2:4, y2:12},
 			agents:[
 				{type:'basic', count:2},
 				{type:'heavy', count:1}
 			]
 		},
-		computer:[
-			start:{x:7, y:5},
+		computer:{
+			start:{x:17, y:9, x2:19, y2:12},
 			agents:[
-				{type:'basic', count:1},
-				{type:'heavy', count:1}
+				{type:'basic', count:4},
+				{type:'heavy', count:4}
 			]
-		]
+		}
 	}
 }
