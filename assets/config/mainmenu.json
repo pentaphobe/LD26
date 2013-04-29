@@ -12,8 +12,8 @@
 			items:[
 				{label:"start", action:"start"},
 				{label:"about", action:"@about"},
-				{label:"how to play", action:"@howToPlay"},
-				{label:"Server test", action:":scene ServerTestScene"}
+				//{label:"how to play", action:"@howToPlay"},
+				//{label:"Server test", action:":scene ServerTestScene"}
 			]
 		},
 		about:{
@@ -23,12 +23,14 @@
 				{label:"back", action:"@exit"}
 			]
 		},
-		howToPlay:{
+/*		howToPlay:{
 			title:"How to play",
-			//background:"@blurred",
+			background:"@blurred",
 			items:[
 				{label:"back", action:"@exit"}
 			]
 		}
+		*/
 	}
+
 }

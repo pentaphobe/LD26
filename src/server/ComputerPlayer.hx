@@ -5,12 +5,21 @@ import server.Player;
 import server.Agent;
 
 class ComputerPlayer extends Player {
+	public var TICKS_PER_THINK:Int = 12;
+	private var tickCounter = 0;
+
 	public function new() {
 		super("computer");
 	}
 
 	public override function update() {
 		super.update();
+		if ( (++tickCounter) % TICKS_PER_THINK == 0) {
+			think();
+		}
+	}
+
+	public function think() {
 		HXP.log("Computer moving " + agents.length + " agents");
 		if (agents.length == 0) return;
 
@@ -31,7 +40,7 @@ class ComputerPlayer extends Player {
 			var newY:Int = cast(HXP.clamp(Math.random()*server.world.level.mapHeight, 1, server.world.level.mapHeight-2));
 	
 			server.sendOrder("move", newX, newY, selected);
-		}
+		}		
 	}
 
 	public override function toString():String {

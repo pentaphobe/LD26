@@ -2,26 +2,22 @@
 	id:'level_00',
 	title:'a quaint beginning',
 	map:{
-		size:{x:35, y:35},
-		stamps:[
-			{type:'I', pos:{x:12, y:8}},
-			{type:'P', pos:{x:5, y:8}}
-		]		
+		size:{x:15, y:15},		
 	},
-	table:{
-		'P':{type:"player"},
-		'I':{type:"ice"}
-		'c':{
-			type:"compound",
-			map:{
-				size:{x:5, y:5},
-				entries:[
-					".I.I.",
-					"I.I.I",
-					"..I..",
-					"....."
-				]
-			}
-		}
+	teams:{
+		human:{
+			start:{x:2, y:5},
+			agents:[
+				{type:'basic', count:2},
+				{type:'heavy', count:1}
+			]
+		},
+		computer:[
+			start:{x:7, y:5},
+			agents:[
+				{type:'basic', count:1},
+				{type:'heavy', count:1}
+			]
+		]
 	}
 }

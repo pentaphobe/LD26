@@ -19,6 +19,8 @@ enum AgentState {
 	AgentMoving;
 	AgentIdling;
 	AgentBreeding;
+	AgentAttacking;
+	AgentSeeking;
 }
 /** 
  *
@@ -30,7 +32,10 @@ enum AgentState {
  * (with interpolation etc)
  */ 
  class Agent extends BasicServerEventHandler, implements Orderable {
- 	public static var TICKS_TO_BREED:Int = 12;
+ 	public static var TICKS_TO_BREED:Int = 20;
+ 	public static var TICKS_TO_ATTACK:Int = 4;
+ 	public static var SEEK_TIMEOUT:Int = 50;
+ 	public static var SEEK_RANGE:Float = 4;
 
 	/** TEMPORARY **/
 	public var path:List<MapPoint>;
@@ -61,6 +66,9 @@ enum AgentState {
 			setTarget(order.orderTarget.x, order.orderTarget.y);
 		} else if (order.orderType == "breed") {
 			state = AgentBreeding;
+		} else if (order.orderType == "attack") {
+			setTarget(order.orderTarget.x, order.orderTarget.y);
+			state = AgentAttacking;
 		}
 		return true;
 	}
@@ -79,8 +87,22 @@ enum AgentState {
 			case AgentMoving:
 				updateMovement();
 			case AgentBreeding:
-				if (stateTicks >= TICKS_TO_BREED) {
+				if ( (stateTicks % TICKS_TO_BREED) == TICKS_TO_BREED-1 ) {
 					breed();
+				}
+			case AgentAttacking:
+				if ( (stateTicks % TICKS_TO_ATTACK) == TICKS_TO_ATTACK-1 ) {				
+					updateAttack();
+				}
+			case AgentSeeking:
+				if (stateTicks >= SEEK_TIMEOUT) {
+					state = AgentIdling;
+				} else {
+					var agent:Agent = player.server.world.findNearestTo(targetPos.x, targetPos.y, SEEK_RANGE);
+					if (agent != null) {
+						state = AgentAttacking;
+						targetPos.set(agent.pos.x, agent.pos.y);
+					}
 				}
 			default:
 				heal(0.1);
@@ -104,6 +126,16 @@ enum AgentState {
 			}
 		}
 		HXP.log("no empty space in which to breed");
+	}
+
+	public function updateAttack() {
+		var agent:Agent = player.server.world.level.getAgent(targetPos.x, targetPos.y);
+		if (agent == null) {
+			state = AgentSeeking;
+			return;
+		}
+		Assets.sfxShoot.play(0.1);
+		player.server.hurtAgent(config.get("str"), this, agent);
 	}
 
 	public function updateMovement() {

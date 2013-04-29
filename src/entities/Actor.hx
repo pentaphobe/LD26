@@ -27,24 +27,24 @@ import server.Agent;
 
 
 class Actor extends Entity {
-	public static var USE_LABEL:Bool = false;
+	public static var USE_LABEL:Bool = true;
 
 	public var teamName:String;
+	public var teamColor:Int;
 	public var label:Text;
 	public var agent:Agent;
 	public var mapPos:MapPoint;
 	public var tween:LinearMotion;
 	public function new(teamName:String, x:Float, y:Float) {
 		super(x, y);
-		var col:Int;
 		mapPos = new MapPoint( toMapX(x), toMapY(y) );
 
 		var sprIdx:Int = 0;
 		if (teamName == "human") {
-			col = 0x00ff00;
+			teamColor = 0x00ff00;
 			sprIdx = 64;
 		} else {
-			col = 0xff0000;
+			teamColor = 0xff0000;
 			sprIdx = 96;
 		}
 		this.teamName = teamName;
@@ -54,14 +54,14 @@ class Actor extends Entity {
 
 		var tmpPadding:Int = 0;
 		var tmpPadding2:Int = tmpPadding * 2;
-		// var img:Graphic = Image.createRect(PlayScene.TILE_SIZE - tmpPadding2, PlayScene.TILE_SIZE - tmpPadding2, col);
+		// var img:Graphic = Image.createRect(PlayScene.TILE_SIZE - tmpPadding2, PlayScene.TILE_SIZE - tmpPadding2, teamColor);
 
 		var img:Image = new Image("gfx/tiles.png", new Rectangle(sprIdx, 0, 32, 32));
 		setHitboxTo(img);		
 		gList.add(img);
 
 		if (USE_LABEL) {
-			label = new Text(teamName, -(PlayScene.TILE_SIZE/4), -PlayScene.TILE_SIZE, {color:col, align:TextFormatAlign.CENTER});
+			label = new Text(teamName, -(PlayScene.TILE_SIZE/4), -PlayScene.TILE_SIZE, {color:teamColor, align:TextFormatAlign.CENTER});
 			label.size = 10;
 			gList.add(label);
 		}
@@ -84,6 +84,13 @@ class Actor extends Entity {
 	public override function update() {
 		super.update();
 		if (!agent.isAlive) {
+			var ps:PlayScene = cast HXP.scene;
+			if (teamName == "human") {
+				ps.emitter.greenExplode(x, y);
+			} else {
+				ps.emitter.redExplode(x, y);
+			}
+			Assets.sfxExplosion.play(0.05);
 			HXP.scene.remove(this);
 		}
 
@@ -131,10 +138,16 @@ class Actor extends Entity {
 				Draw.linePlus(cast toScreenX(pos.x) + PlayScene.HTILE_SIZE, 
 								cast toScreenY(pos.y) + PlayScene.HTILE_SIZE, 
 								cast toScreenX(pos2.x) + PlayScene.HTILE_SIZE, 
-								cast toScreenY(pos2.y) + PlayScene.HTILE_SIZE, 0xff0000, 0.5, 2);
+								cast toScreenY(pos2.y) + PlayScene.HTILE_SIZE, teamColor, 0.5, 2);
 				
 				pos.set(pos2.x, pos2.y);
 			}
+		} 
+		if (agent.state == AgentAttacking) {
+			Draw.linePlus(cast toScreenX(agent.pos.x) + PlayScene.HTILE_SIZE, 
+								cast toScreenY(agent.pos.y) + PlayScene.HTILE_SIZE, 
+								cast (toScreenX(agent.targetPos.x) + (Math.random()-0.5) * 2) + PlayScene.HTILE_SIZE,
+								cast (toScreenY(agent.targetPos.y) + (Math.random()-0.5) * 2) + PlayScene.HTILE_SIZE, teamColor, 0.5, 1);
 		}
 	}
 

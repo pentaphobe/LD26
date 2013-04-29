@@ -8,6 +8,8 @@ class Assets {
 	public static var sfxSuwip:Sfx;
 	public static var sfxMenuMusic:Sfx;
 	public static var sfxGameMusic:Sfx;
+	public static var sfxShoot:Sfx;
+	public static var sfxExplosion:Sfx;
 
 	public static function loadAssets() {
 		loadSounds();
@@ -26,6 +28,9 @@ class Assets {
 		sfxSuwip = new Sfx(nme.Assets.getSound("sfx/ui_suwip." + extension));		
 		sfxMenuMusic = new Sfx(nme.Assets.getSound("sfx/menu_music." + extension));		
 		sfxGameMusic = new Sfx(nme.Assets.getSound("sfx/game_music." + extension));		
+		sfxShoot = new Sfx(nme.Assets.getSound("sfx/shoot." + extension));		
+		sfxExplosion = new Sfx(nme.Assets.getSound("sfx/explosion." + extension));		
+
 	}
 
 	public static function loadGraphics() {

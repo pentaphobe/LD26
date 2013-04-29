@@ -11,6 +11,7 @@ import com.haxepunk.graphics.Image;
 import com.haxepunk.graphics.Backdrop;
 import com.haxepunk.graphics.Stamp;
 import com.haxepunk.graphics.Text;
+import com.haxepunk.graphics.Emitter;
 import com.haxepunk.tweens.motion.LinearMotion;
 import com.haxepunk.utils.Draw;
 import nme.filters.GlowFilter;
@@ -31,6 +32,7 @@ import server.Server;
 import server.World;
 import server.Agent;
 import server.ComputerPlayer;
+import entities.ParticleController;
 
 class PlayScene extends Scene {
 	//***** TEMPORARY *******
@@ -40,6 +42,7 @@ class PlayScene extends Scene {
 	var startDragPoint:Point;
 	var selectedEntities:Array<Entity>;
 	var background:Entity;
+	public var emitter:ParticleController;
 	//***** /TEMPORARY ******
 
 	var menu:Menu;
@@ -115,6 +118,9 @@ class PlayScene extends Scene {
 
 		Assets.sfxGameMusic.loop(0.7);
 
+		emitter = new ParticleController();
+		add(emitter);			
+
 		uiStates.enter();
 		HXP.log("entering game");
 
@@ -127,7 +133,7 @@ class PlayScene extends Scene {
 
 		world.loadCurrentLevel();
 
-		var totalPerSide:Int = cast(Math.sqrt(level.mapWidth * level.mapHeight));
+		var totalPerSide:Int = cast(Math.sqrt(level.mapWidth * level.mapHeight) / 2);
 		for (j in 0...2) {
 			var teamName:String = "human";
 			if (j == 1) {
@@ -149,11 +155,11 @@ class PlayScene extends Scene {
 			}
 		}
 
-		var uiGfx:Stamp = new Stamp("gfx/ui_mockup.png");
-		uiGfx.scrollX = uiGfx.scrollY = 0;
-		uiOverlay = new Entity(0, HXP.screen.height - uiGfx.height, uiGfx);
-		uiOverlay.layer = 2;
-		add(uiOverlay);
+		// var uiGfx:Stamp = new Stamp("gfx/ui_mockup.png");
+		// uiGfx.scrollX = uiGfx.scrollY = 0;
+		// uiOverlay = new Entity(0, HXP.screen.height - uiGfx.height, uiGfx);
+		// uiOverlay.layer = 2;
+		// add(uiOverlay);
 
 		agentInfoText = new Text("AgentType\nstr:24\ndex:24", 0, 0, {color:0x005500});
 		agentInfoText.scrollX = agentInfoText.scrollY = 0;
@@ -218,11 +224,19 @@ class PlayScene extends Scene {
 				server.sendLocalOrder("breed", 0, 0, cast(entity, Actor).agent);
 			}			
 		}
+		if (Input.pressed(Key.A)) {
+			uiStates.pushState("orderAttack");
+		}
 		if (Input.pressed(Key.H) && selectedEntities.length > 0) {
 			// [@remove hurt selected]
-			var agent:Agent = cast(selectedEntities[0], Actor).agent;
+			var actor:Actor = cast(selectedEntities[0], Actor);
+			var agent:Agent = actor.agent;
 			// agent.hitPoints -= 1;
+			emitter.greenHurt(actor.x, actor.y);
 			server.hurtAgent(1, null, agent);
+		}
+		if (Input.pressed(Key.N)) {
+			server.world.nextLevel();
 		}
 		if (uiStates.getCurrent() == null) {
 			uiStates.pushState("select");
@@ -262,13 +276,11 @@ class PlayScene extends Scene {
 	}
 
 
-
-
 	public function setupKeyBindings() {
-		Input.define("up", [Key.UP, Key.W]);
-		Input.define("down", [Key.DOWN, Key.S]);		
-		Input.define("left", [Key.LEFT, Key.A]);
-		Input.define("right", [Key.RIGHT, Key.D]);				
+		Input.define("up", [Key.UP]);
+		Input.define("down", [Key.DOWN]);		
+		Input.define("left", [Key.LEFT]);
+		Input.define("right", [Key.RIGHT]);				
 	}
 
 	public function updateCamera() {
@@ -372,7 +384,25 @@ class PlayScene extends Scene {
 				}
 			}
 		});
-		uiStates.addState(testState);		
+		uiStates.addState(testState);	
+
+
+		testState = new UIState("orderAttack");
+		testState.setOverride(CustomUpdate, function (owner:PrototypeState) {
+			if (Input.mouseReleased) {
+				
+				owner.isDone = true;
+				// HXP.log("Attempting to order " + selectedEntities.length + " entities");
+				for (entity in selectedEntities) {
+					var actor:Actor = cast entity;
+					// HXP.log("ordered movement of " + entity + " to " + mouseX + ", " + mouseY);
+					server.sendLocalOrder("attack", actor.toMapX(mouseX), actor.toMapY(mouseY), actor.agent);
+					// cast(entity, Actor).setTarget( level.toMapX(mouseX), level.toMapY(mouseY));
+
+				}
+			}
+		});
+		uiStates.addState(testState);
 	}
 
 	public static function get_instance():PlayScene {
