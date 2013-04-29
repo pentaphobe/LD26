@@ -138,8 +138,8 @@ class Server extends ServerEventDispatcher, implements Orderable {
 		var agent:Agent = new Agent(x, y);
 		agent.player = getPlayer(playerName);
 		world.addAgent(agent);
-		HXP.log("player:" + agent.player);
-		HXP.log(" `- pos:" + agent.pos);
+		// HXP.log("player:" + agent.player);
+		// HXP.log(" `- pos:" + agent.pos);
 		agent.player.addAgent(agent);
 		return agent;
 	}

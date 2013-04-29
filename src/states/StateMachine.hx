@@ -86,7 +86,7 @@ class StateMachine<T : State> extends State {
 	}
 
 	public function pushState(name:String):T {
-		HXP.log("pushing state [" + name + "] onto stack " + stateStack);
+		// HXP.log("pushing state [" + name + "] onto stack " + stateStack);
 		if (!states.exists(name)) {
 			HXP.log(this.name + ": no state named " + name);
 			return null;
@@ -100,10 +100,10 @@ class StateMachine<T : State> extends State {
 			HXP.log(this.name + " not pushing null state");
 			return null;
 		}
-		HXP.log("adding state " + state.name);
+		// HXP.log("adding state " + state.name);
 		states.set(state.name, state);
 		state.parent = this;
-		HXP.log("  it's now here: " + states.get(state.name));
+		// HXP.log("  it's now here: " + states.get(state.name));
 		return state;
 	}
 
@@ -126,7 +126,7 @@ class StateMachine<T : State> extends State {
 		}
 		exitCurrent();
 		stateStack.pop();
-		HXP.log("popped stack, now it's:" + stateStack);
+		// HXP.log("popped stack, now it's:" + stateStack);
 		if (stateStack.length > 0) {
 			stateStack.first().enter();
 		}

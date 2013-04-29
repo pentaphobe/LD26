@@ -325,7 +325,7 @@ class PlayScene extends Scene {
 	}
 
 	public function menuEvent(action:String) {
-		HXP.log("menuEvent:" + action);
+		// HXP.log("menuEvent:" + action);
 		if (action == "exit") {
 			HXP.scene = new MenuScene();
 		} else if (action == "return") {

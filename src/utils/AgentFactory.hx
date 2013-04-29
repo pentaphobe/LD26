@@ -25,9 +25,9 @@ class AgentFactory {
 			var tpl:AgentTemplate = AgentTemplates.get(i);
 			var par:AgentTemplate = AgentTemplates.get(entry.parent);
 			if (par == null) {
-				HXP.log(entry.name + " - no parent named " + entry.parent);				
+				// HXP.log(entry.name + " - no parent named " + entry.parent);				
 			} else {
-				HXP.log(entry.name + " - parent is " + entry.parent);
+				// HXP.log(entry.name + " - parent is " + entry.parent);
 				tpl.parent = par;								
 			}			
 		}

@@ -34,8 +34,8 @@ enum AgentState {
  class Agent extends BasicServerEventHandler, implements Orderable {
  	public static var TICKS_TO_BREED:Int = 20;
  	public static var TICKS_TO_ATTACK:Int = 4;
- 	public static var SEEK_TIMEOUT:Int = 50;
- 	public static var SEEK_RANGE:Float = 4;
+ 	public static var SEEK_TIMEOUT:Int = 100;
+ 	public static var SEEK_RANGE:Float = 120;
 
 	/** TEMPORARY **/
 	public var path:List<MapPoint>;
@@ -98,7 +98,7 @@ enum AgentState {
 				if (stateTicks >= SEEK_TIMEOUT) {
 					state = AgentIdling;
 				} else {
-					var agent:Agent = player.server.world.findNearestTo(targetPos.x, targetPos.y, SEEK_RANGE);
+					var agent:Agent = player.server.world.findNearestTo(targetPos.x, targetPos.y, "computer", SEEK_RANGE);
 					if (agent != null) {
 						state = AgentAttacking;
 						targetPos.set(agent.pos.x, agent.pos.y);
@@ -227,12 +227,12 @@ enum AgentState {
 	}	
 
 	public function onArrived() {
-		HXP.log("local onArrived");
+		// HXP.log("local onArrived");
 		player.server.send(PathArrived, this, this);
 	}
 
 	public override function onPathArrived(evt:ServerEvent):Bool {
-		HXP.log("event PathArrived");
+		// HXP.log("event PathArrived");
 		state = AgentIdling;
 		return true;
 	}

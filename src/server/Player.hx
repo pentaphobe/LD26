@@ -81,7 +81,7 @@ class Player extends BasicServerEventHandler, implements Orderable {
 	}
 
 	public function addAgent(agent:Agent):Agent {
-		HXP.log("addAgent:" + agent);
+		// HXP.log("addAgent:" + agent);
 		if (agent == null) return null;
 		// if (server != null) {
 		// 	server.addHandler(agent);
