@@ -1,11 +1,14 @@
 
 package entities;
 import nme.geom.Point;
+import nme.geom.Rectangle;
 
 import com.haxepunk.Entity;
 import com.haxepunk.Scene;
 import com.haxepunk.HXP;
 import com.haxepunk.graphics.Image;
+
+
 import com.haxepunk.Graphic;
 import com.haxepunk.graphics.Text;
 import com.haxepunk.graphics.Graphiclist;
@@ -35,19 +38,25 @@ class Actor extends Entity {
 		super(x, y);
 		var col:Int;
 		mapPos = new MapPoint( toMapX(x), toMapY(y) );
+
+		var sprIdx:Int = 0;
 		if (teamName == "human") {
 			col = 0x00ff00;
+			sprIdx = 64;
 		} else {
 			col = 0xff0000;
+			sprIdx = 96;
 		}
 		this.teamName = teamName;
 
 		var gList:Graphiclist = new Graphiclist();
 		graphic = gList;
 
-		var tmpPadding:Int = 4;
+		var tmpPadding:Int = 0;
 		var tmpPadding2:Int = tmpPadding * 2;
-		var img:Graphic = Image.createRect(PlayScene.TILE_SIZE - tmpPadding2, PlayScene.TILE_SIZE - tmpPadding2, col);
+		// var img:Graphic = Image.createRect(PlayScene.TILE_SIZE - tmpPadding2, PlayScene.TILE_SIZE - tmpPadding2, col);
+
+		var img:Image = new Image("gfx/tiles.png", new Rectangle(sprIdx, 0, 32, 32));
 		setHitboxTo(img);		
 		gList.add(img);
 
@@ -60,8 +69,10 @@ class Actor extends Entity {
 		// centerOrigin();
 		// graphic.x = -PlayScene.HTILE_SIZE+1;
 		// graphic.y = -PlayScene.HTILE_SIZE+1;
+
 		graphic.x += tmpPadding;
 		graphic.y += tmpPadding;
+
 		type = teamName;	
 
 	}
@@ -81,8 +92,14 @@ class Actor extends Entity {
 		// if (!getNextPathNode()) {
 		// 	return;
 		// }
-		x += (toScreenX(agent.pos.x) - x) * 0.25;
-		y += (toScreenY(agent.pos.y) - y) * 0.25;
+
+		var dx:Float = (toScreenX(agent.pos.x) - x);
+		var dy:Float = (toScreenY(agent.pos.y) - y);
+		var spd:Float = agent.config.get("spd") * 4;
+		dx = HXP.clamp(dx, -spd, spd);
+		dy = HXP.clamp(dy, -spd, spd);
+		x += dx;
+		y += dy;
 
 		// var dx:Float = toScreenX(targetPos.x) - x;
 		// var dy:Float = toScreenY(targetPos.y) - y;
