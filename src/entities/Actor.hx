@@ -59,6 +59,7 @@ class Actor extends Entity {
 
 		image = new Image("gfx/tiles.png", new Rectangle(sprIdx, 0, 32, 32));
 		setHitbox(cast image.width, cast image.height, cast image.x, cast image.y);		
+		image.centerOO();
 		gList.add(image);
 
 		if (USE_LABEL) {
@@ -68,8 +69,9 @@ class Actor extends Entity {
 		}
 
 		// centerOrigin();
-		// graphic.x = -PlayScene.HTILE_SIZE+1;
-		// graphic.y = -PlayScene.HTILE_SIZE+1;
+		graphic.x += PlayScene.HTILE_SIZE;
+		graphic.y += PlayScene.HTILE_SIZE;
+
 
 		graphic.x += tmpPadding;
 		graphic.y += tmpPadding;
@@ -111,8 +113,8 @@ class Actor extends Entity {
 		// 	return;
 		// }
 
-		var dx:Float = (toScreenX(agent.pos.x) - x);
-		var dy:Float = (toScreenY(agent.pos.y) - y);
+		var dx:Float = (toScreenX(agent.pos.x) - x + PlayScene.HTILE_SIZE);
+		var dy:Float = (toScreenY(agent.pos.y) - y + PlayScene.HTILE_SIZE);
 		var spd:Float = agent.config.get("spd") * 4;
 		dx = HXP.clamp(dx, -spd, spd);
 		dy = HXP.clamp(dy, -spd, spd);
@@ -133,6 +135,14 @@ class Actor extends Entity {
 		// 	moveBy(0, dy);
 		// }
 		setLabel(teamName + "\n" + agent.config.parent.typeName + "\n" + agent.state);					
+
+		if (agent.state == AgentBreeding) {
+			// one full rotation per breeding cycle
+			var angleChange:Float = 360 / (Agent.TICKS_TO_BREED / PlayScene.SERVER_RATE);
+			image.angle+=angleChange;
+		} else {
+			image.angle = 0;
+		}		
 	}
 
 	// [@remove debug rendering]
@@ -160,11 +170,7 @@ class Actor extends Entity {
 								cast (toScreenX(agent.targetPos.x) + (Math.random()-0.5) * 2) + PlayScene.HTILE_SIZE,
 								cast (toScreenY(agent.targetPos.y) + (Math.random()-0.5) * 2) + PlayScene.HTILE_SIZE, teamColor, 0.5, 1);
 		}
-		if (agent.state == AgentBreeding) {
-			image.angle++;
-		} else {
-			image.angle = 0;
-		}
+
 	}
 
 	public function setLabel(str:String) {
