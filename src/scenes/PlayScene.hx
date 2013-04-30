@@ -39,6 +39,7 @@ import server.TutorialController;
 
 class PlayScene extends Scene {
 	public static var renderSelectionInfo:Bool = false;
+	public static var allowEdgeScrolling:Bool = true;
 
 	//***** TEMPORARY *******
 	var uiOverlay:Entity;
@@ -63,7 +64,7 @@ class PlayScene extends Scene {
 	public static var SERVER_RATE:Float = 0.1;
 	public static var BACKGROUND_AUTO_SCROLL:Bool = false;
 
-	public static var SCREEN_SCROLL_EDGE:Float = 40;
+	public static var SCREEN_SCROLL_EDGE:Float = 20;
 
 	public var cameraSpeed:Float = 4;
 	public var cameraTarget:Point;
@@ -109,17 +110,9 @@ class PlayScene extends Scene {
 		}
 		var MIN_RECT_SIZE:Int = 4;
 		var hadSelection:Bool = selectedEntities.length > 0;
-		// if (w < MIN_RECT_SIZE && h < MIN_RECT_SIZE) {
-		// 	// this rectangle is considered a click, so we'll just choose an entity and bring it to the "back"
-		// 	var ent:Entity = collideRect("computer", x, y, w, h);
-		// 	if (ent == null) return;
 
-		// 	sendToBack(ent);
-		// 	bringForward(ent);
-		// 	selectedEntities.push(ent);
-		// } else {
-			collideRectInto("human", x, y, w, h, selectedEntities);
-		// }
+		collideRectInto("human", x, y, w, h, selectedEntities);
+
 		if (selectedEntities.length > 0) {
 			cameraAutoTracking = true;
 			if (!hadSelection) {
@@ -396,8 +389,17 @@ class PlayScene extends Scene {
 		if (selectedEntities.length > 0) {
 			centroidX /= selectedEntities.length;
 			centroidY /= selectedEntities.length;
-			Draw.circlePlus(cast centroidX, cast centroidY, 4, 0xFF00FF, 0.1, false, 2);
-			setCameraTarget(centroidX, centroidY);
+
+			// HXP.log("centroid:" + centroidX + ", " + centroidY);
+			var aX:Float = centroidX - camera.x;			
+			var aY:Float = centroidY - camera.y;
+			// HXP.log("  absolut:" + aX + ", " + aY);
+			if (aX < SCREEN_SCROLL_EDGE || aY < SCREEN_SCROLL_EDGE 
+					|| aX > HXP.screen.width-SCREEN_SCROLL_EDGE
+					|| aY > HXP.screen.height-SCREEN_SCROLL_EDGE) {
+				Draw.circlePlus(cast centroidX, cast centroidY, 4, 0xFF00FF, 0.1, false, 2);
+				setCameraTarget(centroidX, centroidY);
+			}
 		}
 
 		var actors:Array<Actor> = new Array<Actor>();
@@ -505,10 +507,14 @@ class PlayScene extends Scene {
 			moveX += 1;
 			cameraAutoTracking = false;			
 		}
-		if (mouseX-camera.x < SCREEN_SCROLL_EDGE) { moveX -= 1; cameraAutoTracking = false;}
-		if (mouseY-camera.y < SCREEN_SCROLL_EDGE) { moveY -= 1; cameraAutoTracking = false;}
-		if (mouseX-camera.x > HXP.screen.width - SCREEN_SCROLL_EDGE) { moveX += 1; cameraAutoTracking = false;}
-		if (mouseY-camera.y > HXP.screen.height - SCREEN_SCROLL_EDGE) { moveY += 1; cameraAutoTracking = false;}
+
+		// [@todo mouse edges don't work great in flash web]
+		if (allowEdgeScrolling /* && HXP.focused*/) {		
+			if (mouseX-camera.x < SCREEN_SCROLL_EDGE) { moveX -= 1; cameraAutoTracking = false;}
+			if (mouseY-camera.y < SCREEN_SCROLL_EDGE) { moveY -= 1; cameraAutoTracking = false;}
+			if (mouseX-camera.x > HXP.screen.width - SCREEN_SCROLL_EDGE) { moveX += 1; cameraAutoTracking = false;}
+			if (mouseY-camera.y > HXP.screen.height - SCREEN_SCROLL_EDGE) { moveY += 1; cameraAutoTracking = false;}
+		}
 		var speed:Float = cameraSpeed;
 		if (Input.check(Key.SHIFT)) {
 			speed *= 3;
@@ -647,5 +653,13 @@ class PlayScene extends Scene {
 		return instance;
 	}
 
+	// public override function focusLost() {
+	// 	HXP.log("Lost Focus");
+	// 	cameraTarget.setTo( camera.x + HXP.screen.width/2, camera.y + HXP.screen.height/2);
+	// }
+	// public override function focusGained() {
+	// 	HXP.log("Gained Focus");
+	// 	cameraTarget.setTo( camera.x + HXP.screen.width/2, camera.y + HXP.screen.height/2);
+	// }
 
 }
