@@ -49,7 +49,7 @@ class ComputerPlayer extends Player {
 	}
 
 	public function orderAgent(selected:Agent) {
-		if (selected.state != AgentIdling && selected.stateTicks < IMPATIENCE_TICKS) {
+		if (selected.state != Idling && selected.stateTicks < IMPATIENCE_TICKS) {
 			return;
 		}
 

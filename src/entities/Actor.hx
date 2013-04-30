@@ -120,7 +120,7 @@ class Actor extends Entity {
 
 		setLabel(agent.config.parent.typeName + "\n" + agent.state);					
 
-		if (agent.state == AgentBreeding) {
+		if (agent.state == Breeding) {
 			// one full rotation per breeding cycle
 			var angleChange:Float = 360 / (Agent.TICKS_TO_BREED / PlayScene.SERVER_RATE);
 			image.angle+=angleChange;
@@ -132,7 +132,7 @@ class Actor extends Entity {
 	// [@remove debug rendering]
 	public override function render() {
 		super.render();
-		if (agent.state == AgentMoving) {
+		if (agent.state == Moving) {
 			var pos:MapPoint = null;
 			for ( pos2 in agent.path ) {
 				if (pos == null) {
@@ -148,7 +148,7 @@ class Actor extends Entity {
 				pos.set(pos2.x, pos2.y);
 			}
 		} 
-		if (agent.state == AgentAttacking) {
+		if (agent.state == Attacking) {
 			Draw.linePlus(cast toScreenX(agent.pos.x) + PlayScene.HTILE_SIZE, 
 								cast toScreenY(agent.pos.y) + PlayScene.HTILE_SIZE, 
 								cast (toScreenX(agent.targetPos.x) + (Math.random()-0.5) * 2) + PlayScene.HTILE_SIZE,

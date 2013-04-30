@@ -16,11 +16,11 @@ import server.Orderable;
 import server.Player;
 
 enum AgentState {
-	AgentMoving;
-	AgentIdling;
-	AgentBreeding;
-	AgentAttacking;
-	AgentSeeking;
+	Moving;
+	Idling;
+	Breeding;
+	Attacking;
+	Seeking;
 }
 /** 
  *
@@ -63,16 +63,16 @@ enum AgentState {
  		pos = new MapPoint(x, y);
 		targetPos = new MapPoint(x, y);
 		path = new List<MapPoint>();	
-		state = AgentIdling;	 		
+		state = Idling;	 		
  	}
 	public function onOrder(order:PlayerOrder):Bool {
 		// HXP.log("agent order mutta flichers! " + order);
 		if (order.orderType == "move") {
 			setTarget(order.orderTarget.x, order.orderTarget.y);
 		} else if (order.orderType == "breed") {
-			state = AgentBreeding;
+			state = Breeding;
 		} else if (order.orderType == "attack") {
-			setTarget(order.orderTarget.x, order.orderTarget.y, AgentAttacking);
+			setTarget(order.orderTarget.x, order.orderTarget.y, Attacking);
 		}
 		return true;
 	}
@@ -88,23 +88,23 @@ enum AgentState {
 		stateTicks++;
 
 		switch (state) {
-			case AgentMoving:
+			case Moving:
 				updateMovement();
-			case AgentBreeding:
+			case Breeding:
 				if ( (stateTicks % TICKS_TO_BREED) == TICKS_TO_BREED-1 ) {
 					breed();
 				}
-			case AgentAttacking:
+			case Attacking:
 				if ( (stateTicks % TICKS_TO_ATTACK) == TICKS_TO_ATTACK-1 ) {				
 					updateAttack();
 				}
-			case AgentSeeking:
+			case Seeking:
 				if (stateTicks >= SEEK_TIMEOUT) {
-					state = AgentIdling;
+					state = Idling;
 				} else {
 					var agent:Agent = player.server.world.findNearestTo(targetPos.x, targetPos.y, enemyTeam(), SEEK_RANGE);
 					if (agent != null) {
-						state = AgentAttacking;
+						state = Attacking;
 						targetPos.set(agent.pos.x, agent.pos.y);
 					}
 				}
@@ -127,7 +127,7 @@ enum AgentState {
 				if (!level.getWall(tmpX, tmpY) && level.getAgent(tmpX, tmpY) == null) {
 					var ent:Actor = AgentFactory.create(config.parent.typeName, player.name, tmpX, tmpY);
 					HXP.scene.add(ent);	
-					state = AgentIdling;	
+					state = Idling;	
 					return;
 				}
 			}
@@ -141,10 +141,10 @@ enum AgentState {
 			// allow finding an enemy within 1 block		
 			agent = player.server.world.findNearestTo(targetPos.x, targetPos.y, enemyTeam(), 1);
 			if (agent == null) {
-				state = AgentSeeking;
+				state = Seeking;
 				return;
 			}
-			setTarget(agent.pos.x, agent.pos.y, AgentAttacking);
+			setTarget(agent.pos.x, agent.pos.y, Attacking);
 		}
 		Assets.sfxShoot.play(0.1);
 		player.server.hurtAgent(config.get("str"), this, agent);
@@ -198,7 +198,7 @@ enum AgentState {
 	}
 
 	public function setTarget(x:Int, y:Int, ?newState:AgentState = null) {
-		if (newState == null) newState = AgentMoving;
+		if (newState == null) newState = Moving;
 
 		targetPos = new MapPoint(x, y);
 		state = newState;
@@ -253,7 +253,7 @@ enum AgentState {
 
 	public override function onPathArrived(evt:ServerEvent):Bool {
 		// HXP.log("event PathArrived");
-		state = AgentIdling;
+		state = Idling;
 		return true;
 	}
 
@@ -265,7 +265,7 @@ enum AgentState {
 		if (aggr == null || cast(aggr, Float) > 0) {
 			var srcAgent:Agent = cast evt.source;
 			setTarget(srcAgent.pos.x, srcAgent.pos.y);
-			state = AgentAttacking;
+			state = Attacking;
 		}
 		return true;
 	}
