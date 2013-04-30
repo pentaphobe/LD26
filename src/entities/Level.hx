@@ -59,6 +59,7 @@ class Level extends EntityGroup {
 			}
 		}
 		var e:Entity = new Entity(0, 0, map, grid);
+		e.type = "gameMap";
 		add(e);
 		// HXP.scene.add(e);
 	}
