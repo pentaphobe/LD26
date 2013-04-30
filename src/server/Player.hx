@@ -100,30 +100,67 @@ class Player implements Orderable, implements ServerEventHandler {
 	 * [@note this could be a lot cleaner if we derived from the dispatcher, and made dispatcher derive from handler]
 	 */
 	public function onEvent(event:ServerEvent):Bool {
-		return event.target.onEvent(event);
+		if (event.target != this) {
+			return event.target.onEvent(event);
+		}
+		return true;
 	}
 
+	/* These are event-forwarders, but can also be used to track actions on the player
+	 * eg.
+	 *	when all of a player's actors are killed, we get an onWasKilled directed to the Player (rather than actor)
+	 *	
+	 */
+
 	public function onPathArrived(event:ServerEvent):Bool {
-		return event.target.onPathArrived(event);
+		if (event.target != this) {					
+			return event.target.onPathArrived(event);
+		}
+		// Player-based handling
+		return true;
 	}
 	public function onPathCancelled(event:ServerEvent):Bool {
-		return event.target.onPathCancelled(event);
+		if (event.target != this) {		
+			return event.target.onPathCancelled(event);
+		}
+		// Player-based handling
+		return true;
 	}
 	public function onPathBlocked(event:ServerEvent):Bool {
-		return event.target.onPathBlocked(event);
+		if (event.target != this) {		
+			return event.target.onPathBlocked(event);
+		}
+		// Player-based handling
+		return true;
 	}
 	public function onWasHit(event:ServerEvent):Bool {
-		return event.target.onWasHit(event);
+		if (event.target != this) {	
+			return event.target.onWasHit(event);
+		}
+		// Player-based handling
+		return true;		
 	}
 	public function onWasKilled(event:ServerEvent):Bool {
-		return event.target.onWasKilled(event);
+		if (event.target != this) {		
+			return event.target.onWasKilled(event);
+		}
+		// Player-based handling
+		return true;		
 	}
 	public function onSuccessfulKill(event:ServerEvent):Bool {
-		return event.target.onSuccessfulKill(event);
+		if (event.target != this) {		
+			return event.target.onSuccessfulKill(event);
+		}
+		// Player-based handling
+		return true;		
 	}
 
 	public function onTargetFound(event:ServerEvent):Bool {
-		return event.target.onTargetFound(event);
+		if (event.target != this) {		
+			return event.target.onTargetFound(event);
+		}
+		// Player-based handling
+		return true;		
 	}	
 
 	public function isPromiscuous():Bool {

@@ -7,12 +7,17 @@ import server.Agent;
 class ComputerPlayer extends Player {
 	public var TICKS_PER_THINK:Int = 12;
  	// below this threshold we try to breed
- 	public static var LOW_POPULATION_THRESH:Int = 3;
- 	// if population is enemy.population * HIGH_POP_LEAD_THRESH then we don't bother breeding;
- 	public static var HIGH_POPULATION_LEAD:Float = 2.5;
+ 	public static var LOW_POPULATION_THRESH:Int = 6;
+ 	// if population is population < enemy.population * DESIRED_POPULATION_LEAD then it's like low population
+ 	public static var DESIRED_POPULATION_LEAD:Float = 1.5;
  	public static var IMPATIENCE_TICKS:Int = 30;
 
 	private var tickCounter = 0;
+
+	// this is set to our current population each think() before updating agents
+	// this way, breed orders will be considered in our population estimate
+	private var expectedPopulation = 0;
+	private var desiredPopulation = 0;
 
 	public function new() {
 		super("computer");
@@ -29,20 +34,9 @@ class ComputerPlayer extends Player {
 		// HXP.log("Computer moving " + agents.length + " agents");
 		if (agents.length == 0) return;	
 
-		// var idx:Int = cast(HXP.random * agents.length);
-		// var cnt:Int = 0;
-		// var selected:Agent = null;
-		// for (agent in agents) {
-		// 	if (cnt == idx) {
-		// 		selected = agent;
-		// 	}
-		// 	cnt++;
-		// }
-
-		// if (selected == null) {
-		// 	// should never happen unless we're all dead which will get caught by the server
-		// 	return;
-		// }
+		expectedPopulation = agents.length;
+		var enemyPopulation = server.getPlayer("human").agents.length;
+		desiredPopulation = cast(enemyPopulation * DESIRED_POPULATION_LEAD);
 		for ( selected in agents ) {
 			orderAgent(selected);	
 		}
@@ -53,7 +47,8 @@ class ComputerPlayer extends Player {
 			return;
 		}
 
-		if (agents.length < LOW_POPULATION_THRESH) {
+		if (expectedPopulation < LOW_POPULATION_THRESH || expectedPopulation < desiredPopulation) {
+			++expectedPopulation;
 			server.sendOrder("breed", 0, 0, selected);
 			return;
 		}

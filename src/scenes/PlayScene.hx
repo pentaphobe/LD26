@@ -40,6 +40,7 @@ class PlayScene extends Scene {
 	//***** TEMPORARY *******
 	var uiOverlay:Entity;
 	var agentInfoText:Text;
+	// var pauseMessage:BigTextEntity;
 	var testEntity:Actor;
 	var startDragPoint:Point;
 	var selectedEntities:Array<Entity>;

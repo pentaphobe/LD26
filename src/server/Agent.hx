@@ -199,9 +199,11 @@ enum AgentState {
 		// HXP.log("walking!");
 		var occupant:Agent = player.server.world.level.getAgent(node.x, node.y);
 		if (occupant != null) {
-			HXP.log("square was occupied by " + occupant);
+			// HXP.log("square was occupied by " + occupant);
 			if (occupant.player != player) {
 				HXP.log("Here is where we fight");
+				// setTarget(occupant.pos.x occupant.pos.y);
+				setTarget(node.x, node.y, Attacking);
 				return;			
 			}
 			swapWith(occupant);
@@ -222,7 +224,7 @@ enum AgentState {
 
 	}
 
-	public function setTarget(x:Int, y:Int, ?newState:AgentState = null) {
+	public function setTarget(x:Int, y:Int, ?newState:AgentState=null) {
 		if (newState == null) newState = Moving;
 
 		targetPos = new MapPoint(x, y);
@@ -291,8 +293,7 @@ enum AgentState {
 			if (state != Idling) return false;
 
 			var srcAgent:Agent = cast evt.source;
-			setTarget(srcAgent.pos.x, srcAgent.pos.y);
-			state = Attacking;
+			setTarget(srcAgent.pos.x, srcAgent.pos.y, Attacking);
 		}
 		return true;
 	}
