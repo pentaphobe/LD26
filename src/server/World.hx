@@ -18,6 +18,7 @@ class World {
 
 	public function loadCurrentLevel() {
 		agents.clear();		
+		HXP.log("about to load id:" + currentLevel + ", " + server.lobby.levelList[currentLevel]);
 		level.load(server.lobby.levelList[currentLevel]);
 	}
 

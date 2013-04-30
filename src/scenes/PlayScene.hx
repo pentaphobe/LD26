@@ -312,10 +312,10 @@ class PlayScene extends Scene {
 			background.x += 0.1;
 			background.y += 0.05;
 		}
-		if (Input.pressed(Key.M)) {
+		if (Input.pressed("move")) {
 			uiStates.pushState("orderMove");
 		} 
-		if (Input.pressed(Key.B)) {
+		if (Input.pressed("breed")) {
 			for ( entity in selectedEntities ) {
 				server.sendLocalOrder("breed", 0, 0, cast(entity, Actor).agent);
 			}			
@@ -324,7 +324,7 @@ class PlayScene extends Scene {
 			}
 
 		}
-		if (Input.pressed(Key.A)) {
+		if (Input.pressed("attack")) {
 			uiStates.pushState("orderAttack");
 		}
 		if (Input.pressed(Key.H) && selectedEntities.length > 0) {
@@ -335,21 +335,21 @@ class PlayScene extends Scene {
 			emitter.greenHurt(actor.x, actor.y);
 			server.hurtAgent(1, null, agent);
 		}
-		if (Input.pressed(Key.RIGHT_SQUARE_BRACKET)) {
+		if (Input.pressed("next_level")) {
 			setupLevel(1);
-		} else if (Input.pressed(Key.LEFT_SQUARE_BRACKET)) {
+		} else if (Input.pressed("prev_level")) {
 			setupLevel(-1);
 		}
-		if (Input.pressed(Key.C)) {
+		if (Input.pressed("center_on_player")) {
 			centerOnPlayer("human");
 			cameraAutoTracking = true;
 		}
-		if (Input.pressed(Key.E)) {
+		if (Input.pressed("center_on_enemy")) {
 			centerOnPlayer("computer");
 			// [@todo if we've opted to center on the computer, then continue to follow the computer]
 			cameraAutoTracking = false;
 		}
-		if (Input.pressed(Key.SPACE)) {
+		if (Input.pressed("pause")) {
 			gameIsPaused = !gameIsPaused;
 			if (!menu.isActive) {
 				tutorialController.sendEvent("hitSpacebar");
@@ -462,7 +462,16 @@ class PlayScene extends Scene {
 		Input.define("up", [Key.UP]);
 		Input.define("down", [Key.DOWN]);		
 		Input.define("left", [Key.LEFT]);
-		Input.define("right", [Key.RIGHT]);				
+		Input.define("right", [Key.RIGHT]);
+		Input.define("menu_toggle", [Key.ESCAPE, Key.TAB]);
+		Input.define("breed", [Key.B]);
+		Input.define("attack", [Key.A]);
+		Input.define("move", [Key.M]);
+		Input.define("center_on_player", [Key.C]);
+		Input.define("center_on_enemy", [Key.E]);
+		Input.define("next_level", [Key.RIGHT_SQUARE_BRACKET]);				
+		Input.define("prev_level", [Key.LEFT_SQUARE_BRACKET]);
+		Input.define("pause", [Key.SPACE]);
 	}
 
 	// set camera position instantly (in screen coords)
@@ -518,7 +527,7 @@ class PlayScene extends Scene {
 		}
 	}
 	public function updateMenu() {
-		if (Input.pressed(Key.ESCAPE)) {
+		if (Input.pressed("menu_toggle")) {
 			if (menu.isActive) {
 				menu.exit();
 			} else {
@@ -528,6 +537,7 @@ class PlayScene extends Scene {
 				menu.enter();
 				Assets.sfxSuwip.play();
 				menu.pushState("main");
+				// menu.addAction("push", "main");
 				// menu.enter();
 			}			
 		}				

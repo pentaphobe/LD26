@@ -11,10 +11,10 @@ class UIState extends PrototypeState {
 		super(name);
 	}
 	public override function update() {
-		if (Input.released(Key.ESCAPE)) {
-			isDone = true;
-			return;
-		}
+		// if (Input.released(Key.ESCAPE)) {
+			// isDone = true;
+			// return;
+		// }
 		super.update();
 	}
 }

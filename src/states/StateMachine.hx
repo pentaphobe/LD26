@@ -2,6 +2,17 @@
 package states;
 import com.haxepunk.HXP;
 
+class StateAction {
+	public var action:String;
+	public var arg:String;
+	public function new(action:String, ?arg:String=null) {
+		this.action = action;
+		this.arg = arg;
+	}
+	public function toString():String {
+		return "[action:" + action + ":" + arg + "]";
+	}
+}
 /** StateMachine is itself a State allowing nested states
  * might seem like design overkill, but should save a lot of work 
  * plus it fits the "minimalism" theme :)
@@ -9,11 +20,12 @@ import com.haxepunk.HXP;
 class StateMachine<T : State> extends State {	
 	var stateStack:List<T>;
 	var states:Hash<T>;
-
+	var actionList:List<StateAction>;
 	public function new(name:String) {
 		super(name);
 		stateStack = new List<T>();
 		states = new Hash<T>();
+		actionList = new List<StateAction>();
 	}
 
 	public override function enter() {
@@ -28,6 +40,18 @@ class StateMachine<T : State> extends State {
 	}
 
 	public override function update() {
+		for ( action in actionList ) {
+			HXP.log("running action " + action );
+			if (action.action == "push") {
+				pushState(action.arg);
+			} else if (action.action == "pop") {
+				popState();
+			} else if (action.action == "replace") {
+				replaceState(action.arg);
+			}
+		}
+		actionList.clear();
+
 		var currentState:T = stateStack.first();
 		if (currentState == null) {
 			set_isDone(true);
@@ -54,6 +78,10 @@ class StateMachine<T : State> extends State {
 
 		currentState.render();
 
+	}
+
+	public function addAction(action:String, ?arg:String=null) {
+		actionList.add( new StateAction(action, arg) );
 	}
 
 	public function clear() {
@@ -124,11 +152,16 @@ class StateMachine<T : State> extends State {
 			HXP.log(this.name + " can't pop an empty stack");
 			return;
 		}
+		HXP.log("exit current");
 		exitCurrent();
+		HXP.log("popping actual state stack");
 		stateStack.pop();
 		// HXP.log("popped stack, now it's:" + stateStack);
 		if (stateStack.length > 0) {
+			HXP.log("got back to the previous state");
 			stateStack.first().enter();
+		} else {
+			HXP.log("empty stack");
 		}
 	}
 }

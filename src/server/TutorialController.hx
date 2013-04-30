@@ -77,6 +77,7 @@ class TutorialController {
 	}	
 	private function checkSectionCompletion() {
 		var current = getCurrent();
+		if (current == null) return;
 		for ( event in current.events ) {
 			if (!receivedEvents.exists(event)) {
 				return;

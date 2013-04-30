@@ -110,8 +110,12 @@ class MenuState extends State {
 			var firstChar:String = action.charAt(0);
 			var isInternal:Bool = firstChar == '@';
 			if (action == "<") {
+				HXP.log("GOT BACK ACTION, sending callback");
 				menuCallback( actions.get("<") );
+				HXP.log("Popping menu state");
+				// cast(parent, Menu).addAction("pop");
 				cast(parent, Menu).popState();
+				return;
 			}
 			var isAdvanced:Bool = firstChar == ':';
 			if (isInternal) {
@@ -120,7 +124,8 @@ class MenuState extends State {
 					this.isDone = true;
 					return;
 				}
-				cast(parent, Menu).pushState(action);				
+				// cast(parent, Menu).addAction("push", action);
+				cast(parent, Menu).pushState(action);
 			} else if (isAdvanced) {
 				action = action.substr(1);
 				var args:Array<String> = action.split(" ");
@@ -167,7 +172,8 @@ class Menu extends StateMachine<MenuState> {
 			addState(menuState);
 		}	
 		// HXP.log("fields:" + states);
-		replaceState(config.start);		
+		// addAction(config.start);		
+		replaceState(config.start);
 		super.enter();		
 		isActive = true;
 	}

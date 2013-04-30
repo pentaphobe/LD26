@@ -53,7 +53,11 @@ class Level extends EntityGroup {
 
 	public function createMap() {
 		// HXP.log(jsonData);
-		HXP.log("Creating Map:" + jsonData.id + "[" + jsonData.title + "] size:" + jsonData.map.size.x + ", " + jsonData.map.size.y);
+		// HXP.log("Creating Map:" + jsonData.id + "[" + jsonData.title + "] size:" + jsonData.map.size.x + ", " + jsonData.map.size.y);
+		if (jsonData == null) {
+			HXP.log("YOU SUUUUUCK");
+			return;
+		}
 		mapWidth = jsonData.map.size.x;
 		mapHeight = jsonData.map.size.y;
 		entityMap = new Array();
