@@ -81,14 +81,14 @@ class PlayScene extends Scene {
 	public var level(get_level, never):Level;
 	public function get_level():Level { return server.world.level; }
 
-	public function new() {
+	public function new(?levelSetName:String=null) {
 		super();
 		instance = this;
 		cameraTarget = new Point(camera.x, camera.y);
 		menu = new Menu("ingame", menuEvent, uiEvent, cast(HXP.screen.width / 2), cast(HXP.screen.height / 2));
 
 		setupKeyBindings();
-		server = new Server();
+		server = new Server(levelSetName);
 		tutorialController = new TutorialController();
 
 		loadAgentTemplates();
@@ -319,6 +319,10 @@ class PlayScene extends Scene {
 			for ( entity in selectedEntities ) {
 				server.sendLocalOrder("breed", 0, 0, cast(entity, Actor).agent);
 			}			
+			if (!menu.isActive) {
+				tutorialController.sendEvent("orderBreed");
+			}
+
 		}
 		if (Input.pressed(Key.A)) {
 			uiStates.pushState("orderAttack");

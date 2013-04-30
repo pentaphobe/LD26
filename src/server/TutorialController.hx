@@ -33,7 +33,7 @@ class TutorialController {
 		reset();
 	}
 	public function reset() {
-		receivedEvents = new Hash<Bool>();
+		clearEvents();
 		sections = new Array<TutorialStep>();
 		currentIndex = 0;
 		isDone = false;
@@ -68,6 +68,9 @@ class TutorialController {
 		checkSectionCompletion();
 	}
 
+	private function clearEvents() {
+		receivedEvents = new Hash<Bool>();		
+	}
 	private function getCurrent():TutorialStep {
 		if (isDone || sections.length == 0) return null;
 		return sections[currentIndex];
@@ -86,6 +89,7 @@ class TutorialController {
 	}
 	private function nextSection() {
 		didChangeSections = true;
+		clearEvents();
 		if (++currentIndex >= sections.length) {
 			isDone = true;
 		}		

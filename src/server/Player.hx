@@ -117,60 +117,36 @@ class Player implements Orderable, implements ServerEventHandler {
 
 	public function onPathArrived(event:ServerEvent):Bool {
 		// Player-based handling
-		if (event.target != this) {					
-			return event.target.onPathArrived(event);
-		}
 		return true;
 	}
 	public function onPathCancelled(event:ServerEvent):Bool {
 		// Player-based handling
-		if (event.target != this) {		
-			return event.target.onPathCancelled(event);
-		}
 		return true;
 	}
 	public function onPathBlocked(event:ServerEvent):Bool {
 		// Player-based handling
-		if (event.target != this) {		
-			return event.target.onPathBlocked(event);
-		}
 		return true;
 	}
 	public function onWasHit(event:ServerEvent):Bool {
 		// Player-based handling
-		if (event.target != this) {	
-			return event.target.onWasHit(event);
-		}
 		return true;		
 	}
 	public function onWasKilled(event:ServerEvent):Bool {
 		// Player-based handling
-		if (event.target != this) {		
-			return event.target.onWasKilled(event);
-		}
 		return true;		
 	}
 	public function onSuccessfulHit(event:ServerEvent):Bool {
 		// Player-based handling
-		if (event.target != this) {		
-			return event.target.onSuccessfulKill(event);
-		}
 		return true;		
 	}
 
 	public function onSuccessfulKill(event:ServerEvent):Bool {
 		// Player-based handling
-		if (event.target != this) {		
-			return event.target.onSuccessfulKill(event);
-		}
 		return true;		
 	}
 
 	public function onTargetFound(event:ServerEvent):Bool {
 		// Player-based handling
-		if (event.target != this) {		
-			return event.target.onTargetFound(event);
-		}
 		return true;		
 	}	
 

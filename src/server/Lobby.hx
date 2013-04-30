@@ -8,14 +8,18 @@ class Lobby {
 	public var startLevelSetName:String;
 	public var server:Server;
 	
-	public function new(server:Server) {
+	public function new(server:Server, ?startLevelSet:String = null) {
 		this.server = server;
-		loadLevelSet();
+		loadLevelSet(startLevelSet);
 	}
 
-	public function loadLevelSet() {
+	public function loadLevelSet(?startLevelSet:String = null) {
 		jsonData = Utils.loadJson("levels");
-		startLevelSetName = jsonData.start;
+		if (startLevelSet != null) {
+			startLevelSetName = startLevelSet;
+		} else {
+			startLevelSetName = jsonData.start;
+		}
 		var levelSet:Dynamic = Reflect.field(jsonData.levelSets, startLevelSetName);
 		if (levelSet == null) {
 			HXP.log("error loading level set " + startLevelSetName);

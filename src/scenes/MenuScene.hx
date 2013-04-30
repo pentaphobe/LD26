@@ -72,6 +72,8 @@ class MenuScene extends Scene {
 		// HXP.log("menuEvent:" + action);
 		if (action == "start") {
 			HXP.scene = new PlayScene();
+		} else if (action == "tutorial") {
+			HXP.scene = new PlayScene("tutorial");
 		}
 	}
 }

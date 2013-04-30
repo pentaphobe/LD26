@@ -16,7 +16,7 @@ class Server extends ServerEventDispatcher, implements Orderable {
 	public var world:World;
 	public var lobby:Lobby;
 
-	public function new(?existingLocalPlayer:Player = null) {
+	public function new(?startLevelSetName:String=null, ?existingLocalPlayer:Player = null) {
 		super();
 
 		// [@note some of this should probably be moved to a "begin"]
@@ -25,7 +25,7 @@ class Server extends ServerEventDispatcher, implements Orderable {
 		// lobby = new Lobby();
 		// world = new World();
 		lobby = new Lobby(this);
-		lobby.loadLevelSet();
+		lobby.loadLevelSet(startLevelSetName);
 		world = new World(this);
 
 		reset(existingLocalPlayer);
@@ -136,7 +136,7 @@ class Server extends ServerEventDispatcher, implements Orderable {
 	public function hurtAgent(amount:Float, ?src:Agent, ?target:Agent) {
 		target.hurt(amount);
 		send(WasHit, src, target);
-
+		send(SuccessfulHit, target, src);
 		if (target.hitPoints < 0) {
 			target.isAlive = false;
 			send(WasKilled, src, target);
@@ -156,7 +156,7 @@ class Server extends ServerEventDispatcher, implements Orderable {
 			HXP.log("Sending player event " + type);
 			super.send(type, src, agent.player);
 		}
-		// return super.send(type, src, target);
+		return super.send(type, src, target);
 	}
 
 	public function createHumanPlayer():Player {
