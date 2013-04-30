@@ -50,7 +50,7 @@ class Player extends BasicServerEventHandler, implements Orderable {
 	public var name:String;
 	public var server:Server;
 
-	var agents:List<Agent>;
+	public var agents:List<Agent>;
 
 	public function new(name:String) {
 		this.name = name;
