@@ -17,6 +17,7 @@ class World {
 	}	
 
 	public function loadCurrentLevel() {
+		agents.clear();		
 		level.load(server.lobby.levelList[currentLevel]);
 	}
 
@@ -40,7 +41,7 @@ class World {
 		var best:Agent = null;
 		var bestDist:Float = 100000;
 		if (maxRange != -1) {
-			maxRange *= maxRange;
+			maxRange = (maxRange*maxRange) + (maxRange*maxRange);
 		}
 		for (agent in agents) {
 			var dx:Float = agent.pos.x - x;
@@ -49,7 +50,7 @@ class World {
 			if (dst < bestDist && (maxRange == -1 || dst < maxRange)) {
 				HXP.log("got one in range");
 				if (team != null && agent.player.name != team) {
-					HXP.log("  but wrong team");
+					// HXP.log("  but wrong team");
 					continue;
 				}
 				best = agent;
