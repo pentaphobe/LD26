@@ -386,15 +386,23 @@ class PlayScene extends Scene {
 			actor.renderOverlay();
 		}
 
-		if (gameIsPaused) {
-			var sX:Int = cast camera.x;
-			var sY:Int = cast camera.y;
-			var txt:String = "-- PAUSED --";
 
+		var sX:Int = cast camera.x;
+		var sY:Int = cast camera.y;
+		var txt:String = (world.currentLevel + 1) + " - " + level.title;
+		var txtHeight:Int = 12;
+		var txtWidth:Int = txt.length * 6;
+		var boxHeight:Int = cast(HXP.screen.height/12);
+		Draw.rectPlus(sX, sY, HXP.screen.width, boxHeight, 0x111111, 0.8, true);
+		Draw.text(txt, sX + HXP.screen.width/2 - (txtWidth/2), sY+ txtHeight, {color:0x888888});			
+		if (gameIsPaused) {
+			var txt:String = "-- PAUSED --";
 			var txtWidth:Int = txt.length * 6;
-			var boxHeight:Int = cast(HXP.screen.height/6);
-			Draw.rectPlus(sX, sY, HXP.screen.width, boxHeight, 0x111111, 0.8, true);
-			Draw.text(txt, sX + HXP.screen.width/2 - (txtWidth/2), sY + boxHeight / 2, {color:0xffffff});
+			var boxHeight:Int = cast(HXP.screen.height/6);			
+			var sX:Int = cast camera.x;
+			var sY:Int = cast (camera.y + HXP.screen.height);
+			Draw.rectPlus(sX, sY - cast(boxHeight), HXP.screen.width, boxHeight, 0x111111, 0.8, true);
+			Draw.text(txt, sX + HXP.screen.width/2 - (txtWidth/2), sY - boxHeight/2 - txtHeight, {color:0xffffff});			
 		}
 
 		menu.render();

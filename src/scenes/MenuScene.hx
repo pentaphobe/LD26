@@ -4,6 +4,7 @@ import com.haxepunk.Scene;
 import com.haxepunk.HXP;
 import com.haxepunk.utils.Input;
 import com.haxepunk.utils.Key;
+import com.haxepunk.graphics.Text;
 import nme.text.TextFormatAlign;
 import com.haxepunk.utils.Draw;
 import com.haxepunk.tweens.sound.SfxFader;
@@ -32,6 +33,8 @@ class MenuScene extends Scene {
 		fader.fadeTo(0.7, 4);
 		addTween(fader);
 
+		var text:Text = new Text(Main.VERSION, HXP.screen.width / 2, HXP.screen.height - 20, {color:0x777777});
+		addGraphic(text);
 	}
 
 	public override function render() {

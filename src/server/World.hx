@@ -22,7 +22,7 @@ class World {
 	}
 
 	public function nextLevel():Bool {
-		if (currentLevel >= server.lobby.levelList.length) {
+		if (currentLevel >= server.lobby.levelList.length-1) {
 			return false;
 		}
 		currentLevel++;

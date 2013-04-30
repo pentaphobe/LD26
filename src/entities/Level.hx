@@ -19,6 +19,7 @@ class Level extends EntityGroup {
 	var entityMap:Array<Agent>;
 	var map:Tilemap;
 	var grid:Grid;
+	public var title:String;
 	public function new() {
 		super(0, 0);				
 	}
@@ -41,7 +42,7 @@ class Level extends EntityGroup {
 		entityMap[mapWidth*mapHeight-1] = null;
 		width = cast toScreenX(mapWidth);
 		height = cast toScreenY(mapHeight);
-
+		title = jsonData.title;
 		map = new Tilemap(HXP.getBitmap("gfx/tiles.png"), width, height, PlayScene.TILE_SIZE, PlayScene.TILE_SIZE);
 		grid = new Grid(width, height, PlayScene.TILE_SIZE, PlayScene.TILE_SIZE);
 		var idx:Int = 0;
