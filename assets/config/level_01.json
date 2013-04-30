@@ -2,7 +2,19 @@
 	id:'level_01',
 	title:'a little harder',
 	map:{
-		size:{x:41, y:10},		
+		size:{x:31, y:10},		
+	},
+	ai:{
+		// higher numbers cause the AI to think more slowly
+		think_delay:10,
+		// if population is below this, breed
+		low_population_thresh:6,
+		// if population is less than 
+		// human_population * desired, breed
+		desired_population_lead:1.5;
+		// how long it takes us to get bored of an agent 
+		// doing the same thing		
+		impatience_delay:30;
 	},
 	teams:{
 		human:{
@@ -15,8 +27,8 @@
 		computer:{
 			start:{x:-2, y:2, x2:-4, y2:-2},
 			agents:[
-				{type:'basic', count:4},
-				{type:'heavy', count:4}
+				{type:'basic', count:2},
+				{type:'heavy', count:2}
 			]
 		}
 	}

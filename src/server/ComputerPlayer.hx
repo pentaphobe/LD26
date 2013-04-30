@@ -5,7 +5,7 @@ import server.Player;
 import server.Agent;
 
 class ComputerPlayer extends Player {
-	public var TICKS_PER_THINK:Int = 12;
+	public static var TICKS_PER_THINK:Int = 12;
  	// below this threshold we try to breed
  	public static var LOW_POPULATION_THRESH:Int = 6;
  	// if population is population < enemy.population * DESIRED_POPULATION_LEAD then it's like low population

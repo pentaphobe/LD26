@@ -1,7 +1,7 @@
 {
 	start:'tutorial',
 	levelSets:{
-		tutorial:['level_00', 'level_01'],
+		tutorial:['level_00', 'level_01', 'level_02', 'level_06'],
 		main:['level_01']
 	}
 }

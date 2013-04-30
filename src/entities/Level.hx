@@ -7,6 +7,7 @@ import com.haxepunk.graphics.Image;
 import com.haxepunk.masks.Grid;
 
 import scenes.PlayScene;
+import server.ComputerPlayer;
 import server.Agent;
 
 class Level extends EntityGroup {
@@ -31,6 +32,23 @@ class Level extends EntityGroup {
 
 		createMap();
 		createActors();		
+		updateDifficultySettings();
+	}
+
+	public function updateDifficultySettings() {
+		if (!Reflect.hasField(jsonData, "ai")) return;
+		var getDefault:String->Float->Float;
+		getDefault = function (name:String, defaultValue:Float):Float {
+			if ( Reflect.hasField(jsonData.ai, name) ) {
+				return cast Reflect.field(jsonData.ai, name);
+			}
+			return defaultValue;
+		};
+
+		ComputerPlayer.TICKS_PER_THINK = cast getDefault("think_delay", 12);
+		ComputerPlayer.LOW_POPULATION_THRESH = cast getDefault("low_population_thresh", 6);
+		ComputerPlayer.DESIRED_POPULATION_LEAD = cast getDefault("desired_population_lead", 1.5);
+		ComputerPlayer.IMPATIENCE_TICKS = cast getDefault("impatience_delay", 1.5);
 	}
 
 	public function createMap() {
