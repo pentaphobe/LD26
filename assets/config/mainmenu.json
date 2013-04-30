@@ -21,7 +21,7 @@
 			title:"About IceBreaker",
 			background:"anotherbackground.jpg",
 			items:[
-				{label:"back", action:"@exit"}
+				{label:"back", action:"<"}
 			]
 		},
 /*		howToPlay:{

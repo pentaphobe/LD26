@@ -109,6 +109,10 @@ class MenuState extends State {
 			var action:String = actions.get(source.uiName);
 			var firstChar:String = action.charAt(0);
 			var isInternal:Bool = firstChar == '@';
+			if (action == "<") {
+				menuCallback( actions.get("<") );
+				cast(parent, Menu).popState();
+			}
 			var isAdvanced:Bool = firstChar == ':';
 			if (isInternal) {
 				action = action.substr(1);
