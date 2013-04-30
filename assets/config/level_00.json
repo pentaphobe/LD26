@@ -6,12 +6,12 @@
 	},
 	ai:{
 		// higher numbers cause the AI to think more slowly
-		think_delay:10,
+		think_delay:1400,
 		// if population is below this, breed
-		low_population_thresh:2,
+		low_population_thresh:0,
 		// if population is less than 
 		// human_population * desired, breed
-		desired_population_lead:1.5;
+		desired_population_lead:0.001;
 		// how long it takes us to get bored of an agent 
 		// doing the same thing		
 		impatience_delay:30;
@@ -20,8 +20,7 @@
 		human:{
 			start:{x:2, y:2, x2:4, y2:-1},
 			agents:[
-				{type:'basic', count:2},
-				{type:'heavy', count:1}
+				{type:'basic', count:1},
 			]
 		},
 		computer:{
@@ -30,5 +29,52 @@
 				{type:'basic', count:1},
 			]
 		}
-	}
+	},
+	// a sequence of textual hints and which events cancel them
+	tutorial:[
+		{
+			text:"Themed welcome text"
+			pause:true,
+		},
+		{
+			text:"You can move the camera with the arrow keys,
+or simply move your mouse cursor to 
+the edge of the screen"
+			pause:true,
+		},
+		{
+			text:"Pressing 'C' or 'E' will center the camera on
+your team, or the enemies respectively",
+			pause:true,
+		},
+		{
+			text:"You can select your units by clicking or
+dragging.
+try it, I'll wait...",
+			events:["unitSelected"]
+		},
+		{
+			text:"Good! Now you can move those units.
+hit 'M' and then click somewhere on the map",
+			events:["orderMove"]
+		},
+		{			
+			text:"Excellent!
+Nothing has happened though because the
+game is paused, you can pause and resume
+at any time with <SPACE>",			
+		},
+		{
+			activationEvent:"unitArrived",
+			text:"You can also tell selected
+units to attack by pressing 'A' and then 
+clicking on the unit you wish to attack, try
+now and un-pause to watch the result",	
+			events:["hitSpacebar", "orderAttack"]		
+		},
+		{
+			activationEvent:"unitSuccessfulHit",
+			text:"Almost there! "
+		}
+	]	
 }

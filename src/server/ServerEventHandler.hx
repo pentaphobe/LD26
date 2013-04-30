@@ -11,6 +11,7 @@ interface ServerEventHandler {
 	public function onWasHit(event:ServerEvent):Bool;	
 	public function onWasKilled(event:ServerEvent):Bool;
 	public function onSuccessfulKill(event:ServerEvent):Bool;
+	public function onSuccessfulHit(event:ServerEvent):Bool;	
 	public function onTargetFound(event:ServerEvent):Bool;
 
 	// a catch-all, this is called before the others	
@@ -37,6 +38,9 @@ class BasicServerEventHandler implements ServerEventHandler {
 		return true;
 	}
 	public function onWasKilled(event:ServerEvent):Bool {
+		return true;
+	}
+	public function onSuccessfulHit(event:ServerEvent):Bool {
 		return true;
 	}
 	public function onSuccessfulKill(event:ServerEvent):Bool {

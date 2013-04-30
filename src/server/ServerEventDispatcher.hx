@@ -70,8 +70,11 @@ class ServerEventDispatcher extends BasicServerEventHandler {
 					handler.onTargetFound(evt);
 				case WasKilled:
 					handler.onWasKilled(evt);
+				case SuccessfulHit:
+					handler.onSuccessfulHit(evt);
 				case SuccessfulKill:
 					handler.onSuccessfulKill(evt);
+
 				case NonEvent:
 
 			}

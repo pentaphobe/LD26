@@ -35,6 +35,7 @@ import server.Player;
 import server.ComputerPlayer;
 import entities.ParticleController;
 import utils.MapPoint;
+import server.TutorialController;
 
 class PlayScene extends Scene {
 	public static var renderSelectionInfo:Bool = false;
@@ -48,6 +49,7 @@ class PlayScene extends Scene {
 	var selectedEntities:Array<Entity>;
 	var background:Entity;
 	public var emitter:ParticleController;
+	public static var tutorialController:TutorialController;
 	//***** /TEMPORARY ******
 
 	public var menu:Menu;
@@ -87,6 +89,7 @@ class PlayScene extends Scene {
 
 		setupKeyBindings();
 		server = new Server();
+		tutorialController = new TutorialController();
 
 		loadAgentTemplates();
 
@@ -105,6 +108,7 @@ class PlayScene extends Scene {
 			h = -h;
 		}
 		var MIN_RECT_SIZE:Int = 4;
+		var hadSelection:Bool = selectedEntities.length > 0;
 		// if (w < MIN_RECT_SIZE && h < MIN_RECT_SIZE) {
 		// 	// this rectangle is considered a click, so we'll just choose an entity and bring it to the "back"
 		// 	var ent:Entity = collideRect("computer", x, y, w, h);
@@ -118,6 +122,11 @@ class PlayScene extends Scene {
 		// }
 		if (selectedEntities.length > 0) {
 			cameraAutoTracking = true;
+			if (!hadSelection) {
+				tutorialController.sendEvent("unitSelected");
+			}
+		} else if (hadSelection) {
+			tutorialController.sendEvent("unitDeselected");
 		}
 	}
 
@@ -220,6 +229,11 @@ class PlayScene extends Scene {
 				}
 				if (failed) break;
 			}
+		}
+
+		tutorialController.reset();
+		if ( Reflect.hasField(level.jsonData, "tutorial") ) {
+			tutorialController.loadSections(level.jsonData.tutorial);
 		}
 
 		centerOnPlayer("human");
@@ -333,6 +347,9 @@ class PlayScene extends Scene {
 		}
 		if (Input.pressed(Key.SPACE)) {
 			gameIsPaused = !gameIsPaused;
+			if (!menu.isActive) {
+				tutorialController.sendEvent("hitSpacebar");
+			}
 		}
 		if (uiStates.getCurrent() == null) {
 			uiStates.pushState("select");
@@ -405,7 +422,31 @@ class PlayScene extends Scene {
 			Draw.text(txt, sX + HXP.screen.width/2 - (txtWidth/2), sY - boxHeight/2 - txtHeight, {color:0xffffff});			
 		}
 
+		var tutorialText:String = tutorialController.getCurrentText();
+		if (!menu.isActive && tutorialText != "") {
+			// HXP.log(tutorialController.receivedEvents);
+			if (!gameIsPaused) {
+				gameIsPaused = true;
+			}
+			var w:Int = cast(HXP.screen.width * 2 / 3);
+			var h:Int = cast(HXP.screen.height/3);
+			var x:Int = cast(HXP.screen.width - w);
+			if (mouseX-camera.x >= x) { x = 0; }
+			var y:Int = cast(HXP.screen.height - h - 60);
+			if (mouseY-camera.y >= y) { y = 60; }
+			drawTextRect(tutorialText, x, y , w, h, 0xdddddd, 0x331111);			
+		}
+
 		menu.render();
+	}
+
+	public static function drawTextRect(txt:String, x:Int, y:Int, w:Int, h:Int, textColor:Int=0x888888, boxColor:Int=0x111111) {
+		// var txtWidth:Int = txt.length * 6;
+		var txtHeight:Int = 12;
+		var sX:Int = cast (HXP.camera.x + x);
+		var sY:Int = cast (HXP.camera.y + y);
+		Draw.rectPlus(sX, sY, w, h, boxColor, 0.8, true);
+		Draw.text(txt, sX + 10, sY+ txtHeight + 20, {color:textColor});					
 	}
 
 	public function loadAgentTemplates() {
@@ -550,7 +591,7 @@ class PlayScene extends Scene {
 					// HXP.log("ordered movement of " + entity + " to " + mouseX + ", " + mouseY);
 					server.sendLocalOrder("move", actor.toMapX(mouseX), actor.toMapY(mouseY), actor.agent);
 					// cast(entity, Actor).setTarget( level.toMapX(mouseX), level.toMapY(mouseY));
-
+					tutorialController.sendEvent("orderMove");
 				}
 			}
 		});
@@ -568,7 +609,7 @@ class PlayScene extends Scene {
 					// HXP.log("ordered movement of " + entity + " to " + mouseX + ", " + mouseY);
 					server.sendLocalOrder("attack", actor.toMapX(mouseX), actor.toMapY(mouseY), actor.agent);
 					// cast(entity, Actor).setTarget( level.toMapX(mouseX), level.toMapY(mouseY));
-
+					tutorialController.sendEvent("orderAttack");
 				}
 			}
 		});

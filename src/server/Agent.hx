@@ -274,11 +274,12 @@ enum AgentState {
 	}	
 
 	public function onArrived() {
-		// HXP.log("local onArrived");
+		HXP.log("local onArrived");
 		player.server.send(PathArrived, this, this);
 	}
 
 	public override function onPathArrived(evt:ServerEvent):Bool {
+		HXP.log("event arrived");
 		state = Idling;
 		return true;
 	}

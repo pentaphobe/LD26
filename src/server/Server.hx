@@ -71,7 +71,7 @@ class Server extends ServerEventDispatcher, implements Orderable {
 
 		// this is a bit specific - should be called from higher up the chain (like in PlayScene)
 		if (existingLocalPlayer == null) {
-			localPlayer = createPlayer("human");
+			localPlayer = createHumanPlayer();
 		} else {
 			localPlayer = addPlayer(existingLocalPlayer);
 		}		
@@ -150,6 +150,20 @@ class Server extends ServerEventDispatcher, implements Orderable {
 		return send(type, srcPlayer, targetPlayer);
 	}
 
+	public override function send(type:ServerEventType, ?src:ServerEventHandler=null, ?target:ServerEventHandler=null):ServerEvent {
+		if (Std.is(target, Agent)) {
+			var agent:Agent = cast target;
+			HXP.log("Sending player event " + type);
+			super.send(type, src, agent.player);
+		}
+		// return super.send(type, src, target);
+	}
+
+	public function createHumanPlayer():Player {
+		var p:Player = new HumanPlayer("human");
+		addPlayer(p);
+		return p;
+	}
 	public function createPlayer(name:String):Player {
 		var p:Player = new Player(name);
 		addPlayer(p);

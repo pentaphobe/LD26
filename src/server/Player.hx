@@ -5,7 +5,7 @@ import utils.AgentTemplate;
 import utils.AgentFactory;
 import utils.MapPoint;
 
-
+import scenes.PlayScene;
 import server.ServerEventHandler;
 import server.ServerEvent;
 import server.Server;
@@ -28,7 +28,8 @@ class PlayerOrder {
 	// or location of a place to fire towards (RANGED indirect)
 	// the distinction being that only some attacks will care about who's there
 	public var orderTarget:MapPoint;
-	public function new(type:String, ?x:Int=-1, ?y:Int=-1, agent:Agent=null, player:Player=null) {
+
+	public function new(type:String, ?x:Int=-1, ?y:Int=-1, ?agent:Agent=null, ?player:Player=null) {
 		this.orderType = type;
 		this.orderTarget = new MapPoint(x, y);
 
@@ -100,9 +101,11 @@ class Player implements Orderable, implements ServerEventHandler {
 	 * [@note this could be a lot cleaner if we derived from the dispatcher, and made dispatcher derive from handler]
 	 */
 	public function onEvent(event:ServerEvent):Bool {
+		// interception here
 		if (event.target != this) {
 			return event.target.onEvent(event);
 		}
+		// personal handling here
 		return true;
 	}
 
@@ -113,53 +116,61 @@ class Player implements Orderable, implements ServerEventHandler {
 	 */
 
 	public function onPathArrived(event:ServerEvent):Bool {
+		// Player-based handling
 		if (event.target != this) {					
 			return event.target.onPathArrived(event);
 		}
-		// Player-based handling
 		return true;
 	}
 	public function onPathCancelled(event:ServerEvent):Bool {
+		// Player-based handling
 		if (event.target != this) {		
 			return event.target.onPathCancelled(event);
 		}
-		// Player-based handling
 		return true;
 	}
 	public function onPathBlocked(event:ServerEvent):Bool {
+		// Player-based handling
 		if (event.target != this) {		
 			return event.target.onPathBlocked(event);
 		}
-		// Player-based handling
 		return true;
 	}
 	public function onWasHit(event:ServerEvent):Bool {
+		// Player-based handling
 		if (event.target != this) {	
 			return event.target.onWasHit(event);
 		}
-		// Player-based handling
 		return true;		
 	}
 	public function onWasKilled(event:ServerEvent):Bool {
+		// Player-based handling
 		if (event.target != this) {		
 			return event.target.onWasKilled(event);
 		}
-		// Player-based handling
 		return true;		
 	}
-	public function onSuccessfulKill(event:ServerEvent):Bool {
+	public function onSuccessfulHit(event:ServerEvent):Bool {
+		// Player-based handling
 		if (event.target != this) {		
 			return event.target.onSuccessfulKill(event);
 		}
+		return true;		
+	}
+
+	public function onSuccessfulKill(event:ServerEvent):Bool {
 		// Player-based handling
+		if (event.target != this) {		
+			return event.target.onSuccessfulKill(event);
+		}
 		return true;		
 	}
 
 	public function onTargetFound(event:ServerEvent):Bool {
+		// Player-based handling
 		if (event.target != this) {		
 			return event.target.onTargetFound(event);
 		}
-		// Player-based handling
 		return true;		
 	}	
 
