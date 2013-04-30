@@ -36,6 +36,8 @@ enum AgentState {
  	public static var TICKS_TO_ATTACK:Int = 4;
  	public static var SEEK_TIMEOUT:Int = 100;
  	public static var SEEK_RANGE:Float = 60;
+ 	public static var FIRE_RANGE:Float = 6;
+
 
 	/** TEMPORARY **/
 	public var path:List<MapPoint>;
@@ -50,7 +52,7 @@ enum AgentState {
 	public var targetPos:MapPoint;
  	public var pos:MapPoint;
  	public var config:AgentTemplate;
- 	public var state(default, default):AgentState;
+ 	public var state(default, set_state):AgentState;
  	public var stateTicks:Int;
  	public var isAlive:Bool = true;
 
@@ -59,7 +61,7 @@ enum AgentState {
 
  	public function new(?x:Int=0, ?y:Int=0) {
  		pos = new MapPoint(x, y);
-		targetPos = new MapPoint();
+		targetPos = new MapPoint(x, y);
 		path = new List<MapPoint>();	
 		state = AgentIdling;	 		
  	}
@@ -78,6 +80,7 @@ enum AgentState {
 
 	public function set_state(newState:AgentState):AgentState {
 		// [@todo transitions - or just use a state machine]
+		HXP.log("DOn't worry, the ticks reset");
 		state = newState;
 		stateTicks = 0;
 		return state;
@@ -136,8 +139,13 @@ enum AgentState {
 	public function updateAttack() {
 		var agent:Agent = player.server.world.level.getAgent(targetPos.x, targetPos.y);
 		if (agent == null) {
-			state = AgentSeeking;
-			return;
+			// allow finding an enemy within 1 block
+			var enemyTeam:String = player.name == "human" ? "computer" : "player";
+			agent = player.server.world.findNearestTo(targetPos.x, targetPos.y, enemyTeam, 1);
+			if (agent == null) {
+				state = AgentSeeking;
+				return;
+			}
 		}
 		Assets.sfxShoot.play(0.1);
 		player.server.hurtAgent(config.get("str"), this, agent);
