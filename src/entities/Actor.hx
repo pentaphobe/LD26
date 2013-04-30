@@ -58,7 +58,7 @@ class Actor extends Entity {
 		// var img:Graphic = Image.createRect(PlayScene.TILE_SIZE - tmpPadding2, PlayScene.TILE_SIZE - tmpPadding2, teamColor);
 
 		image = new Image("gfx/tiles.png", new Rectangle(sprIdx, 0, 32, 32));
-		setHitbox(cast image.width, cast image.height, cast image.x, cast image.y);		
+		setHitbox(cast image.width, cast image.height, cast (image.width/2), cast (image.height/2));		
 		image.centerOO();
 		gList.add(image);
 
@@ -79,10 +79,6 @@ class Actor extends Entity {
 		type = teamName;	
 
 	}
-
-
-
-
 
 	public override function update() {
 		super.update();
@@ -121,20 +117,8 @@ class Actor extends Entity {
 		x += dx;
 		y += dy;
 
-		// var dx:Float = toScreenX(targetPos.x) - x;
-		// var dy:Float = toScreenY(targetPos.y) - y;
-		// var tileSpeed = config.get("spd");
-		// HXP.log("move speed:" + tileSpeed);
-		// dx = HXP.clamp(dx, -tileSpeed, tileSpeed);
-		// dy = HXP.clamp(dy, -tileSpeed, tileSpeed);
-		// if ( Math.abs(dx) > Math.abs(dy) ) {
-		// 	HXP.log("moving by " + dx + ", " + 0);
-		// 	moveBy(dx, 0);
-		// } else {
-		// 	HXP.log("moving by " + 0 + ", " + dy);
-		// 	moveBy(0, dy);
-		// }
-		setLabel(teamName + "\n" + agent.config.parent.typeName + "\n" + agent.state);					
+
+		setLabel(agent.config.parent.typeName + "\n" + agent.state);					
 
 		if (agent.state == AgentBreeding) {
 			// one full rotation per breeding cycle

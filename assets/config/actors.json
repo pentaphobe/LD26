@@ -9,7 +9,7 @@
 		name:"basic",
 		stats:{
 			// vitality designates starting health
-			vit:10,
+			vit:30,
 			// strength is a multiplier for attacks
 			str:2,
 			// dexterity determines how many ActionPoints you get
@@ -22,7 +22,7 @@
 		parent:'basic',
 		name:"scout",
 		stats:{
-			vit:6,
+			vit:15,
 			dex:3,
 			spd:10
 		}
@@ -31,7 +31,7 @@
 		parent:'basic',
 		name:"heavy",
 		stats:{
-			vit:15,
+			vit:40,
 			str:4,
 			dex:3,
 			spd:2

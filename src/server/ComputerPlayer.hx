@@ -10,7 +10,7 @@ class ComputerPlayer extends Player {
  	public static var LOW_POPULATION_THRESH:Int = 3;
  	// if population is enemy.population * HIGH_POP_LEAD_THRESH then we don't bother breeding;
  	public static var HIGH_POPULATION_LEAD:Float = 2.5;
- 	public static var IMPATIENCE_TICKS:Int = 40;
+ 	public static var IMPATIENCE_TICKS:Int = 30;
 
 	private var tickCounter = 0;
 

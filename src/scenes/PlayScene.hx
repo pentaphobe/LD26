@@ -295,9 +295,12 @@ class PlayScene extends Scene {
 		}
 		if (Input.pressed(Key.C)) {
 			centerOnPlayer("human");
+			cameraAutoTracking = true;
 		}
 		if (Input.pressed(Key.E)) {
 			centerOnPlayer("computer");
+			// [@todo if we've opted to center on the computer, then continue to follow the computer]
+			cameraAutoTracking = false;
 		}
 		if (uiStates.getCurrent() == null) {
 			uiStates.pushState("select");

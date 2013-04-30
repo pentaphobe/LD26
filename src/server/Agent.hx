@@ -33,7 +33,7 @@ enum AgentState {
  */ 
  class Agent extends BasicServerEventHandler, implements Orderable {
  	public static var TICKS_TO_BREED:Int = 20;
- 	public static var TICKS_TO_ATTACK:Int = 4;
+ 	public static var TICKS_TO_ATTACK:Int = 6;
  	public static var SEEK_TIMEOUT:Int = 100;
  	public static var SEEK_RANGE:Float = 60;
  	public static var FIRE_RANGE:Float = 6;
@@ -72,15 +72,13 @@ enum AgentState {
 		} else if (order.orderType == "breed") {
 			state = AgentBreeding;
 		} else if (order.orderType == "attack") {
-			setTarget(order.orderTarget.x, order.orderTarget.y);
-			state = AgentAttacking;
+			setTarget(order.orderTarget.x, order.orderTarget.y, AgentAttacking);
 		}
 		return true;
 	}
 
 	public function set_state(newState:AgentState):AgentState {
 		// [@todo transitions - or just use a state machine]
-		HXP.log("DOn't worry, the ticks reset");
 		state = newState;
 		stateTicks = 0;
 		return state;
@@ -104,7 +102,7 @@ enum AgentState {
 				if (stateTicks >= SEEK_TIMEOUT) {
 					state = AgentIdling;
 				} else {
-					var agent:Agent = player.server.world.findNearestTo(targetPos.x, targetPos.y, "computer", SEEK_RANGE);
+					var agent:Agent = player.server.world.findNearestTo(targetPos.x, targetPos.y, enemyTeam(), SEEK_RANGE);
 					if (agent != null) {
 						state = AgentAttacking;
 						targetPos.set(agent.pos.x, agent.pos.y);
@@ -112,6 +110,7 @@ enum AgentState {
 				}
 			default:
 				heal(0.1);
+
 		}
 
 		wasHit = false;
@@ -139,16 +138,22 @@ enum AgentState {
 	public function updateAttack() {
 		var agent:Agent = player.server.world.level.getAgent(targetPos.x, targetPos.y);
 		if (agent == null) {
-			// allow finding an enemy within 1 block
-			var enemyTeam:String = player.name == "human" ? "computer" : "player";
-			agent = player.server.world.findNearestTo(targetPos.x, targetPos.y, enemyTeam, 1);
+			// allow finding an enemy within 1 block		
+			agent = player.server.world.findNearestTo(targetPos.x, targetPos.y, enemyTeam(), 1);
 			if (agent == null) {
 				state = AgentSeeking;
 				return;
 			}
+			setTarget(agent.pos.x, agent.pos.y, AgentAttacking);
 		}
 		Assets.sfxShoot.play(0.1);
 		player.server.hurtAgent(config.get("str"), this, agent);
+	}
+
+	// temporary, currently there is only a human and computer, but this will not work for
+	// greater amounts of players and should be moved up to Server or World
+	public function enemyTeam():String {
+		return player.name == "human" ? "computer" : "player";
 	}
 
 	public function updateMovement() {
@@ -192,9 +197,11 @@ enum AgentState {
 
 	}
 
-	public function setTarget(x:Int, y:Int) {
+	public function setTarget(x:Int, y:Int, ?newState:AgentState = null) {
+		if (newState == null) newState = AgentMoving;
+
 		targetPos = new MapPoint(x, y);
-		state = AgentMoving;
+		state = newState;
 		// temporarily force tile-based movement
 		buildPath();		
 	}
