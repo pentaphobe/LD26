@@ -9,6 +9,7 @@ enum ServerEventType {
 	PathBlocked;
 	WasHit;
 	WasKilled;
+	SuccessfulKill;
 	TargetFound;
 }
 

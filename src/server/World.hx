@@ -30,6 +30,15 @@ class World {
 		return true;
 	}
 
+	public function prevLevel():Bool {
+		if (currentLevel == 0) {
+			return false;
+		}
+		currentLevel--;
+		loadCurrentLevel();
+		return true;
+	}
+
 	public function addAgent(agent:Agent):Agent {
 		agents.add(agent);
 		level.setAgent(agent.pos.x, agent.pos.y, agent);
@@ -37,7 +46,7 @@ class World {
 	}
 
 	public function findNearestTo(x:Int, y:Int, ?team:String=null, ?maxRange:Float=-1):Agent {
-		HXP.log("seeking near " + x + ", " + y + " for team " + team + " in range " + maxRange);
+		// HXP.log("seeking near " + x + ", " + y + " for team " + team + " in range " + maxRange);
 		var best:Agent = null;
 		var bestDist:Float = 100000;
 		if (maxRange != -1) {
@@ -48,7 +57,7 @@ class World {
 			var dy:Float = agent.pos.y - y;
 			var dst:Float = (dx*dx + dy*dy);
 			if (dst < bestDist && (maxRange == -1 || dst < maxRange)) {
-				HXP.log("got one in range");
+				// HXP.log("got one in range");
 				if (team != null && agent.player.name != team) {
 					// HXP.log("  but wrong team");
 					continue;

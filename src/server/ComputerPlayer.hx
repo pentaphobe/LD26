@@ -29,7 +29,7 @@ class ComputerPlayer extends Player {
 		// HXP.log("Computer moving " + agents.length + " agents");
 		if (agents.length == 0) return;	
 
-		// var idx:Int = cast(Math.random() * agents.length);
+		// var idx:Int = cast(HXP.random * agents.length);
 		// var cnt:Int = 0;
 		// var selected:Agent = null;
 		// for (agent in agents) {
@@ -70,8 +70,8 @@ class ComputerPlayer extends Player {
 			return;
 		}
 
-		var newX:Int = cast(HXP.clamp(Math.random()*server.world.level.mapWidth, 1, server.world.level.mapWidth-2));
-		var newY:Int = cast(HXP.clamp(Math.random()*server.world.level.mapHeight, 1, server.world.level.mapHeight-2));
+		var newX:Int = cast(HXP.clamp(HXP.random*server.world.level.mapWidth, 1, server.world.level.mapWidth-2));
+		var newY:Int = cast(HXP.clamp(HXP.random*server.world.level.mapHeight, 1, server.world.level.mapHeight-2));
 		
 		server.sendOrder("move", newX, newY, selected);	
 	}

@@ -46,7 +46,7 @@ class PlayerOrder {
 }
 
 
-class Player extends BasicServerEventHandler, implements Orderable {
+class Player implements Orderable, implements ServerEventHandler {
 	public var name:String;
 	public var server:Server;
 
@@ -96,8 +96,38 @@ class Player extends BasicServerEventHandler, implements Orderable {
 		agents.remove(agent);
 	}
 
-	public override function onEvent(event:ServerEvent):Bool {
+	/**** ServerEventHandler stuff 
+	 * [@note this could be a lot cleaner if we derived from the dispatcher, and made dispatcher derive from handler]
+	 */
+	public function onEvent(event:ServerEvent):Bool {
 		return event.target.onEvent(event);
+	}
+
+	public function onPathArrived(event:ServerEvent):Bool {
+		return event.target.onPathArrived(event);
+	}
+	public function onPathCancelled(event:ServerEvent):Bool {
+		return event.target.onPathCancelled(event);
+	}
+	public function onPathBlocked(event:ServerEvent):Bool {
+		return event.target.onPathBlocked(event);
+	}
+	public function onWasHit(event:ServerEvent):Bool {
+		return event.target.onWasHit(event);
+	}
+	public function onWasKilled(event:ServerEvent):Bool {
+		return event.target.onWasKilled(event);
+	}
+	public function onSuccessfulKill(event:ServerEvent):Bool {
+		return event.target.onSuccessfulKill(event);
+	}
+
+	public function onTargetFound(event:ServerEvent):Bool {
+		return event.target.onTargetFound(event);
+	}	
+
+	public function isPromiscuous():Bool {
+		return true;
 	}
 
 	public function toString():String {

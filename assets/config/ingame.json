@@ -12,6 +12,7 @@
 			fullWidth:true,
 			items:[
 				{label:"return to game", action:"return"},
+				{label:"restart level", action:"restart"},
 				{label:"options", action:"@options"},
 				{label:"exit game", action:"exit"}
 			]

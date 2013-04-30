@@ -4,7 +4,7 @@ import com.haxepunk.HXP;
 import server.ServerEvent;
 import server.ServerEventHandler;
 
-class ServerEventDispatcher {
+class ServerEventDispatcher extends BasicServerEventHandler {
 	var eventList:List<ServerEvent>;
 	var eventsToAdd:List<ServerEvent>;
 
@@ -68,7 +68,12 @@ class ServerEventDispatcher {
 					handler.onWasHit(evt);
 				case TargetFound:
 					handler.onTargetFound(evt);
-				default:
+				case WasKilled:
+					handler.onWasKilled(evt);
+				case SuccessfulKill:
+					handler.onSuccessfulKill(evt);
+				case NonEvent:
+
 			}
 		}
 	}

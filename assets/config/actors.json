@@ -15,8 +15,9 @@
 			// dexterity determines how many ActionPoints you get
 			dex:5,
 			// speed determines how many MovementPoints you get
-			spd:3
-		}
+			spd:3,
+			aggression:1
+		},
 	},
 	scout:{
 		parent:'basic',

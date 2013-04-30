@@ -30,7 +30,7 @@ class Server extends ServerEventDispatcher, implements Orderable {
 
 		reset(existingLocalPlayer);
 
-		
+
 	}
 
 	public override function update() {
@@ -58,7 +58,7 @@ class Server extends ServerEventDispatcher, implements Orderable {
 		}
 	}
 
-	public function reset(?existingLocalPlayer:Player = null) {
+	public function reset(?existingLocalPlayer:Player = null, ?levelChangeDirection:Int=0) {
 		if (players == null) {
 			players = new List<Player>();
 			playerHash = new Hash<Player>();
@@ -76,6 +76,11 @@ class Server extends ServerEventDispatcher, implements Orderable {
 			localPlayer = addPlayer(existingLocalPlayer);
 		}		
 
+		if (levelChangeDirection < 0) {
+			world.prevLevel();
+		} else if (levelChangeDirection > 0) {
+			world.nextLevel();
+		}
 		world.loadCurrentLevel();
 	}
 
@@ -135,6 +140,7 @@ class Server extends ServerEventDispatcher, implements Orderable {
 		if (target.hitPoints < 0) {
 			target.isAlive = false;
 			send(WasKilled, src, target);
+			send(SuccessfulKill, target, src);
 		}
 	}
 

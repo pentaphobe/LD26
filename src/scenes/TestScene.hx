@@ -53,9 +53,9 @@ class TestScene extends Scene {
 
 	public override function render() {
 		super.render();
-		Draw.linePlus(cast(Math.random() * HXP.width), cast(Math.random() * HXP.height), 
-						cast(Math.random() * HXP.width), cast(Math.random() * HXP.height), 0xff0000);
-		Draw.text("This is the game rendering", cast(Math.random() * HXP.width), cast(Math.random() * HXP.height));
+		Draw.linePlus(cast(HXP.random * HXP.width), cast(HXP.random * HXP.height), 
+						cast(HXP.random * HXP.width), cast(HXP.random * HXP.height), 0xff0000);
+		Draw.text("This is the game rendering", cast(HXP.random * HXP.width), cast(HXP.random * HXP.height));
 		uiState.render();
 	}
 

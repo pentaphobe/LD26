@@ -58,6 +58,8 @@ class PlayScene extends Scene {
 	public static var SERVER_RATE:Float = 0.1;
 	public static var BACKGROUND_AUTO_SCROLL:Bool = false;
 
+	public static var SCREEN_SCROLL_EDGE:Float = 40;
+
 	public var cameraSpeed:Float = 4;
 	public var cameraTarget:Point;
 	public var cameraAutoTracking:Bool = true;
@@ -151,14 +153,16 @@ class PlayScene extends Scene {
 		Assets.sfxGameMusic.stop();
 	}
 
-	public function setupLevel() {
+	public function setupLevel(?levelChangeDirection:Int=0) {
 		/* clear the previous level */
+		HXP.randomSeed = 31337;
+
 		var oldArray:Array<Entity> = new Array<Entity>();
 		getType("human", oldArray);
 		getType("computer", oldArray);
 		getType("gameMap",oldArray);		
 		removeList(oldArray);		
-		server.reset();
+		server.reset(levelChangeDirection);
 		server.addPlayer(new ComputerPlayer());
 
 
@@ -190,14 +194,26 @@ class PlayScene extends Scene {
 			}
 
 
+			var failed:Bool = false;
 			for ( agent in cast(data.agents, Array<Dynamic>) ) {
 				for ( i in 0...agent.count ) {
-					var xPos:Int = cast( Math.random() * (botRight.x-topLeft.x) + topLeft.x );
-					var yPos:Int = cast( Math.random() * (botRight.y-topLeft.y) + topLeft.y );
+					var xPos:Int=0;
+					var yPos:Int=0;
+					var maxIter = 20;
+					do {
+						xPos = cast( HXP.random * (botRight.x-topLeft.x) + topLeft.x );
+						yPos = cast( HXP.random * (botRight.y-topLeft.y) + topLeft.y );
+						if (--maxIter < 0) {
+							failed = true;
+							break;
+						}
+					} while (level.getAgent(xPos, yPos) != null);
+					if (failed) break;
 
 					var actor:Actor = AgentFactory.create( agent.type, team, xPos, yPos );
 					add(actor);
 				}
+				if (failed) break;
 			}
 		}
 
@@ -247,8 +263,8 @@ class PlayScene extends Scene {
 	// 	}
 	// 	// HXP.log("Ai update");
 	// 	// if (testEntity.tween != null && !testEntity.tween.active) {
-	// 	// 	var newX:Int = level.toMapX(testEntity.x) + cast((Math.random()-0.5) * 2);
-	// 	// 	var newY:Int = level.toMapY(testEntity.y) + cast((Math.random()-0.5) * 2);
+	// 	// 	var newX:Int = level.toMapX(testEntity.x) + cast((HXP.random-0.5) * 2);
+	// 	// 	var newY:Int = level.toMapY(testEntity.y) + cast((HXP.random-0.5) * 2);
 	// 	// 	testEntity.setTarget(newX, newY);
 	// 	// }
 	// }
@@ -264,9 +280,16 @@ class PlayScene extends Scene {
 	public override function update() {
 		// mouse scrolling scale breaks too much
 		// HXP.screen.scale = HXP.clamp(HXP.screen.scale + Input.mouseWheelDelta * 0.02, 0.5, 2);
-			
+
 		super.update();
-		if (!menu.isActive && BACKGROUND_AUTO_SCROLL) {
+
+		// a little special case code for in-game menu since it acts differently
+		updateMenu();
+
+		if (menu.isActive) return;
+				
+
+		if (BACKGROUND_AUTO_SCROLL) {
 			background.x += 0.1;
 			background.y += 0.05;
 		}
@@ -289,9 +312,10 @@ class PlayScene extends Scene {
 			emitter.greenHurt(actor.x, actor.y);
 			server.hurtAgent(1, null, agent);
 		}
-		if (Input.pressed(Key.N)) {
-			// server.world.nextLevel();
-			setupLevel();
+		if (Input.pressed(Key.RIGHT_SQUARE_BRACKET)) {
+			setupLevel(1);
+		} else if (Input.pressed(Key.LEFT_SQUARE_BRACKET)) {
+			setupLevel(-1);
 		}
 		if (Input.pressed(Key.C)) {
 			centerOnPlayer("human");
@@ -305,13 +329,10 @@ class PlayScene extends Scene {
 		if (uiStates.getCurrent() == null) {
 			uiStates.pushState("select");
 		}
-		uiStates.update();
-		// a little special case code for in-game menu since it acts differently
-		updateMenu();
 
-		if (!menu.isActive) {
-			updateCamera();
-		}
+		uiStates.update();
+
+		updateCamera();
 	}
 
 	public override function render() {
@@ -347,6 +368,14 @@ class PlayScene extends Scene {
 			Draw.circlePlus(cast centroidX, cast centroidY, 4, 0xFF00FF, 0.1, false, 2);
 			setCameraTarget(centroidX, centroidY);
 		}
+
+		var actors:Array<Actor> = new Array<Actor>();
+		getClass(Actor, actors);
+		// HXP.log("rendering overlays for " + actors.length + " actors");
+		for (actor in actors) {
+			actor.renderOverlay();
+		}
+
 		menu.render();
 	}
 
@@ -393,6 +422,10 @@ class PlayScene extends Scene {
 			moveX += 1;
 			cameraAutoTracking = false;			
 		}
+		if (mouseX-camera.x < SCREEN_SCROLL_EDGE) { moveX -= 1; cameraAutoTracking = false;}
+		if (mouseY-camera.y < SCREEN_SCROLL_EDGE) { moveY -= 1; cameraAutoTracking = false;}
+		if (mouseX-camera.x > HXP.screen.width - SCREEN_SCROLL_EDGE) { moveX += 1; cameraAutoTracking = false;}
+		if (mouseY-camera.y > HXP.screen.height - SCREEN_SCROLL_EDGE) { moveY += 1; cameraAutoTracking = false;}
 		var speed:Float = cameraSpeed;
 		if (Input.check(Key.SHIFT)) {
 			speed *= 3;
@@ -433,6 +466,9 @@ class PlayScene extends Scene {
 		// HXP.log("menuEvent:" + action);
 		if (action == "exit") {
 			HXP.scene = new MenuScene();
+		} else if (action == "restart") {
+			setupLevel();
+			menu.exit();
 		} else if (action == "return") {
 			HXP.log("trying to exit menu");
 			menu.exit();

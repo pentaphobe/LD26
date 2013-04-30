@@ -77,7 +77,27 @@ enum AgentState {
 		return true;
 	}
 
+	public override function onEvent(evt:ServerEvent):Bool {
+		// super.onEvent(evt);
+		switch (evt.type) {
+			case SuccessfulKill:
+				state = Idling;
+				return true;
+			default:
+				return false;
+		}
+	}
+
 	public function set_state(newState:AgentState):AgentState {
+		// if (state == Attacking && newState != Attacking && player.name == "computer") {
+		// 	HXP.log("cancelled attack state after " + stateTicks + " ticks, changing to " + newState);
+		// }
+		if (newState == state) {
+			return state;
+		}
+		if (newState == Idling) {
+			targetPos.set(pos.x, pos.y);
+		}
 		// [@todo transitions - or just use a state machine]
 		state = newState;
 		stateTicks = 0;
@@ -99,6 +119,8 @@ enum AgentState {
 					updateAttack();
 				}
 			case Seeking:
+				// we're still while seeking, so heal
+				heal(0.1);
 				if (stateTicks >= SEEK_TIMEOUT) {
 					state = Idling;
 				} else {
@@ -106,14 +128,13 @@ enum AgentState {
 					if (agent != null) {
 						state = Attacking;
 						targetPos.set(agent.pos.x, agent.pos.y);
-					}
+					} 
 				}
 			default:
 				heal(0.1);
 
 		}
 
-		wasHit = false;
 	}
 
 	public function breed() {
@@ -124,6 +145,9 @@ enum AgentState {
 
 				var tmpX = pos.x + x;
 				var tmpY = pos.y + y;
+				if (tmpX <= 0 || tmpX >= level.mapWidth-1 || tmpY <= 0 || tmpY >= level.mapHeight-1) {
+					continue;
+				}
 				if (!level.getWall(tmpX, tmpY) && level.getAgent(tmpX, tmpY) == null) {
 					var ent:Actor = AgentFactory.create(config.parent.typeName, player.name, tmpX, tmpY);
 					HXP.scene.add(ent);	
@@ -137,11 +161,12 @@ enum AgentState {
 
 	public function updateAttack() {
 		var agent:Agent = player.server.world.level.getAgent(targetPos.x, targetPos.y);
-		if (agent == null) {
+		if (agent == null || agent.player.name == player.name) {
 			// allow finding an enemy within 1 block		
 			agent = player.server.world.findNearestTo(targetPos.x, targetPos.y, enemyTeam(), 1);
 			if (agent == null) {
-				state = Seeking;
+				// find targets near ourselves
+				setTarget(pos.x, pos.y, Seeking);
 				return;
 			}
 			setTarget(agent.pos.x, agent.pos.y, Attacking);
@@ -252,7 +277,6 @@ enum AgentState {
 	}
 
 	public override function onPathArrived(evt:ServerEvent):Bool {
-		// HXP.log("event PathArrived");
 		state = Idling;
 		return true;
 	}
@@ -260,9 +284,9 @@ enum AgentState {
 	public override function onWasHit(evt:ServerEvent):Bool {
 		HXP.log("OUCH!  I got hit by " + evt.source);
 		wasHit = true;		
-		var aggr = cast config.getData("behaviour.aggressiveness");
+		var aggr:Float = config.get("aggression");
 
-		if (aggr == null || cast(aggr, Float) > 0) {
+		if (aggr > 0) {
 			var srcAgent:Agent = cast evt.source;
 			setTarget(srcAgent.pos.x, srcAgent.pos.y);
 			state = Attacking;

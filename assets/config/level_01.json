@@ -1,8 +1,8 @@
 {
-	id:'level_00',
-	title:'a quaint beginning',
+	id:'level_01',
+	title:'a little harder',
 	map:{
-		size:{x:21, y:9},		
+		size:{x:41, y:10},		
 	},
 	teams:{
 		human:{
@@ -15,8 +15,8 @@
 		computer:{
 			start:{x:-2, y:2, x2:-4, y2:-2},
 			agents:[
-				{type:'basic', count:1},
-				{type:'heavy', count:1}
+				{type:'basic', count:4},
+				{type:'heavy', count:4}
 			]
 		}
 	}

@@ -28,6 +28,7 @@ import server.Agent;
 
 class Actor extends Entity {
 	public static var USE_LABEL:Bool = true;
+	public static var HEALTHBAR_HEIGHT:Int = 5;
 
 	public var teamName:String;
 	public var teamColor:Int;
@@ -63,9 +64,11 @@ class Actor extends Entity {
 		gList.add(image);
 
 		if (USE_LABEL) {
-			label = new Text(teamName, -(PlayScene.TILE_SIZE/4), -PlayScene.TILE_SIZE, {color:teamColor, align:TextFormatAlign.CENTER});
-			label.size = 10;
+			label = new Text(teamName, PlayScene.HTILE_SIZE + 8, -(PlayScene.TILE_SIZE), {color:teamColor});
+			label.centerOO();			
+			label.size = 8;
 			gList.add(label);
+
 		}
 
 		// centerOrigin();
@@ -100,7 +103,8 @@ class Actor extends Entity {
 			} else {
 				ps.emitter.redHurt(x, y);
 			}
-			Assets.sfxClick.play(0.05);			
+			Assets.sfxClick.play(0.05);		
+			agent.wasHit = false;	
 		}
 
 		// [@todo here is where we check with Agent path]		
@@ -132,6 +136,9 @@ class Actor extends Entity {
 	// [@remove debug rendering]
 	public override function render() {
 		super.render();
+	}
+
+	public function renderOverlay() {
 		if (agent.state == Moving) {
 			var pos:MapPoint = null;
 			for ( pos2 in agent.path ) {
@@ -151,10 +158,16 @@ class Actor extends Entity {
 		if (agent.state == Attacking) {
 			Draw.linePlus(cast toScreenX(agent.pos.x) + PlayScene.HTILE_SIZE, 
 								cast toScreenY(agent.pos.y) + PlayScene.HTILE_SIZE, 
-								cast (toScreenX(agent.targetPos.x) + (Math.random()-0.5) * 2) + PlayScene.HTILE_SIZE,
-								cast (toScreenY(agent.targetPos.y) + (Math.random()-0.5) * 2) + PlayScene.HTILE_SIZE, teamColor, 0.5, 1);
+								cast (toScreenX(agent.targetPos.x) + (HXP.random-0.5) * 8) + PlayScene.HTILE_SIZE,
+								cast (toScreenY(agent.targetPos.y) + (HXP.random-0.5) * 8) + PlayScene.HTILE_SIZE, teamColor, 0.5, 2);
 		}
 
+		// health bar
+		var hp:Float = agent.hitPoints / cast(agent.config.get("vit"), Float);
+		if (hp < 1) {
+			Draw.rect(cast(x - PlayScene.HTILE_SIZE), cast(y - PlayScene.HTILE_SIZE), PlayScene.TILE_SIZE, HEALTHBAR_HEIGHT, 0xff0000, 0.5);
+			Draw.rect(cast(x - PlayScene.HTILE_SIZE), cast(y - PlayScene.HTILE_SIZE), cast(PlayScene.TILE_SIZE * hp), HEALTHBAR_HEIGHT, 0x00ff00, 0.9);
+		}		
 	}
 
 	public function setLabel(str:String) {

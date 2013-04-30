@@ -29,7 +29,7 @@ class Level extends EntityGroup {
 		jsonData = Utils.loadJson(levelName);
 
 		createMap();
-		createActors();
+		createActors();		
 	}
 
 	public function createMap() {
@@ -47,15 +47,25 @@ class Level extends EntityGroup {
 		var idx:Int = 0;
 		for (y in 0...mapHeight) {
 			for (x in 0...mapWidth) {
+				entityMap[idx] == null;
+				idx++;
+
 				if ( x == 0 || x == mapWidth-1 || y == 0 || y == mapHeight-1 ) {
-					map.setTile(x, y, 1);
+					var tileIndex:Int = 1;
+					if (x == 0) tileIndex = 9;
+					if (x == mapWidth-1) tileIndex = 11;
+					if (y == 0) tileIndex = 10;
+					if (y == mapHeight-1) tileIndex = 8;
+					if ( (x == 0 || x == mapWidth-1) && (y == 0 || y == mapHeight-1) ) {
+						continue;
+					}
+
+					map.setTile(x, y, tileIndex);
 					grid.setTile(x, y, true);
 				} else {
 					map.setTile(x, y, 0);
 					grid.setTile(x, y, false);
 				}
-				entityMap[idx] == null;
-				idx++;
 			}
 		}
 		var e:Entity = new Entity(0, 0, map, grid);
@@ -64,15 +74,26 @@ class Level extends EntityGroup {
 		// HXP.scene.add(e);
 	}
 
-	public function setAgent(x:Int, y:Int, agent:Agent) {
-		entityMap[y * mapWidth + x] = agent;
+	public function setAgent(x:Int, y:Int, agent:Agent):Bool {
+		var offs:Int = y * mapWidth + x;
+
+		// if (entityMap[offs] != null) {
+		// 	// dangerously iterate through neighboring areas
+		// 	if (setAgent(x - 1, y, agent)) return true;
+		// 	if (setAgent(x + 1, y, agent)) return true;
+		// 	if (setAgent(x, y- 1, agent)) return true;
+		// 	if (setAgent(x, y+1, agent)) return true;
+		// 	return false;
+		// }
+
+		entityMap[offs] = agent;
 		map.clearTile(x, y);
 		if (agent != null) {
 			map.setTile(x, y, 1);
 		} else {
 			map.setTile(x, y, 0);			
 		}
-
+		return true;
 	}
 
 	public function getAgent(x:Int, y:Int):Agent {

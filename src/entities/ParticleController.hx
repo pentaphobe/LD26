@@ -4,6 +4,8 @@ import com.haxepunk.graphics.Emitter;
 import com.haxepunk.utils.Ease;
 import com.haxepunk.HXP;
 
+import scenes.PlayScene;
+
 class ParticleController extends Entity {
 	public var emitter:Emitter;
 	public function new() {
@@ -34,6 +36,9 @@ class ParticleController extends Entity {
 		emitter.newType("red_hurt", [11,12,13]);		
 		emitter.setMotion("red_hurt", 0, 25, 0.5, 360, -40, 1, Ease.quadOut);
 		emitter.setAlpha("red_hurt", 1, 0.1);
+
+		x = -PlayScene.HTILE_SIZE;
+		y = -PlayScene.HTILE_SIZE;
 
 		graphic = emitter;
 		layer = 4;
