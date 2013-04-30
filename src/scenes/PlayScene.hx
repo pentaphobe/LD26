@@ -31,6 +31,7 @@ import server.Lobby;
 import server.Server;
 import server.World;
 import server.Agent;
+import server.Player;
 import server.ComputerPlayer;
 import entities.ParticleController;
 import utils.MapPoint;
@@ -61,15 +62,17 @@ class PlayScene extends Scene {
 	public var cameraTarget:Point;
 	public var cameraAutoTracking:Bool = true;
 
+	public var gameIsPaused:Bool = false;
+
 	public static var server:Server;
 
 	// [@note this apparently ain't working - come back to it]
-	// private var lobby(default, never):Lobby;
-	// public function get_lobby():Lobby { return server.lobby; }	
-	// public var lobby(default, never):Lobby;
-	public var lobby:Lobby;
-	public var world:World;
-	public var level:Level;
+	public var lobby(get_lobby, never):Lobby;
+	public function get_lobby():Lobby { return server.lobby; }	
+	public var world(get_world, never):World;
+	public function get_world():World { return server.world; }
+	public var level(get_level, never):Level;
+	public function get_level():Level { return server.world.level; }
 
 	public function new() {
 		super();
@@ -79,13 +82,6 @@ class PlayScene extends Scene {
 
 		setupKeyBindings();
 		server = new Server();
-		server.addPlayer(new ComputerPlayer());
-
-		// [@note this should be made redundant by property getter, but it or I am being weird]
-		lobby = server.lobby;
-		level = server.world.level;
-		world = server.world;
-
 
 		loadAgentTemplates();
 
@@ -115,7 +111,9 @@ class PlayScene extends Scene {
 		// } else {
 			collideRectInto("human", x, y, w, h, selectedEntities);
 		// }
-		cameraAutoTracking = true;
+		if (selectedEntities.length > 0) {
+			cameraAutoTracking = true;
+		}
 	}
 
 	public override function begin() {
@@ -126,9 +124,6 @@ class PlayScene extends Scene {
 		emitter = new ParticleController();
 		add(emitter);			
 
-		uiStates.enter();
-		HXP.log("entering game");
-
 		var bgScroller = new Backdrop("gfx/gridbg.png", true, true);
 		bgScroller.scrollX = 0.2;
 		bgScroller.scrollY = 0.2;
@@ -136,58 +131,15 @@ class PlayScene extends Scene {
 		background.layer = 1000;
 		add(background);
 
-		world.loadCurrentLevel();
+		HXP.log("entering game");
 
-		for ( team in Reflect.fields(level.jsonData.teams) ) {
-			var data:Dynamic = Reflect.field(level.jsonData.teams, team);
-			var topLeft:MapPoint = new MapPoint(data.start.x, data.start.y);
-			var botRight:MapPoint = new MapPoint(data.start.x2, data.start.y2);
-			for ( agent in cast(data.agents, Array<Dynamic>) ) {
-				for ( i in 0...agent.count ) {
-					var xPos:Int = cast( Math.random() * (botRight.x-topLeft.x) + topLeft.x );
-					var yPos:Int = cast( Math.random() * (botRight.y-topLeft.y) + topLeft.y );
-					var actor:Actor = AgentFactory.create( agent.type, team, xPos, yPos );
-					add(actor);
-				}
-			}
-		}
-
-		// generates a random population of opposing entities
-		// var totalPerSide:Int = cast(Math.sqrt(level.mapWidth * level.mapHeight) / 2);
-		// for (j in 0...2) {
-		// 	var teamName:String = "human";
-		// 	if (j == 1) {
-		// 		teamName = "computer";
-		// 	}
-		// 	for (i in 0...totalPerSide) {
-		// 		var select:Int = cast(Math.random()*3);
-		// 		var newX:Int = cast(HXP.clamp(Math.random()*level.mapWidth, 1, level.mapWidth-2));
-		// 		var newY:Int = cast(HXP.clamp(Math.random()*level.mapHeight, 1, level.mapHeight-2));
-		// 		switch (select) {
-		// 			case 0:
-		// 				testEntity = AgentFactory.create("basic", teamName, newX, newY) ;			
-		// 			case 1:
-		// 				testEntity = AgentFactory.create("scout", teamName, newX, newY);
-		// 			case 2:
-		// 				testEntity = AgentFactory.create("heavy", teamName, newX, newY);
-		// 		}
-		// 		add(testEntity);			
-		// 	}
-		// }
-
-		// var uiGfx:Stamp = new Stamp("gfx/ui_mockup.png");
-		// uiGfx.scrollX = uiGfx.scrollY = 0;
-		// uiOverlay = new Entity(0, HXP.screen.height - uiGfx.height, uiGfx);
-		// uiOverlay.layer = 2;
-		// add(uiOverlay);
+		setupLevel();
 
 		agentInfoText = new Text("AgentType\nstr:24\ndex:24", 0, 0, {color:0x005500});
 		agentInfoText.scrollX = agentInfoText.scrollY = 0;
 		var agentInfoEntity:Entity = new Entity(440, 325, agentInfoText);
 		agentInfoEntity.layer = 1;				
 		add(agentInfoEntity);
-
-		// createMap();
 
 		// Keep this for last
 		HXP.alarm(SERVER_RATE, serverTick, TweenType.Looping, this);
@@ -199,6 +151,88 @@ class PlayScene extends Scene {
 		Assets.sfxGameMusic.stop();
 	}
 
+	public function setupLevel() {
+		/* clear the previous level */
+		var oldArray:Array<Entity> = new Array<Entity>();
+		getType("human", oldArray);
+		getType("computer", oldArray);
+		getType("gameMap",oldArray);		
+		removeList(oldArray);		
+		server.reset();
+		server.addPlayer(new ComputerPlayer());
+
+
+		uiStates.enter();
+		selectedEntities = new Array<Entity>();
+
+
+		for ( team in Reflect.fields(level.jsonData.teams) ) {
+			var data:Dynamic = Reflect.field(level.jsonData.teams, team);
+			var topLeft:MapPoint = new MapPoint(data.start.x, data.start.y);
+			var botRight:MapPoint = new MapPoint(data.start.x2, data.start.y2);
+
+			var fixNegatives:MapPoint->Void = function (mp:MapPoint) {
+				if (mp.x < 0) mp.x += level.mapWidth;
+				if (mp.y < 0) mp.y += level.mapHeight;
+			};
+			fixNegatives(topLeft);
+			fixNegatives(botRight);
+
+			if (topLeft.x > botRight.x) {
+				var tmp:Int = topLeft.x;
+				topLeft.x = botRight.x;
+				botRight.x = tmp;
+			}
+			if (topLeft.y > botRight.y) {
+				var tmp:Int = topLeft.y;
+				topLeft.y = botRight.y;
+				botRight.y = tmp;
+			}
+
+
+			for ( agent in cast(data.agents, Array<Dynamic>) ) {
+				for ( i in 0...agent.count ) {
+					var xPos:Int = cast( Math.random() * (botRight.x-topLeft.x) + topLeft.x );
+					var yPos:Int = cast( Math.random() * (botRight.y-topLeft.y) + topLeft.y );
+
+					var actor:Actor = AgentFactory.create( agent.type, team, xPos, yPos );
+					add(actor);
+				}
+			}
+		}
+
+		centerOnPlayer("human");
+	}
+
+	public function centerOnPlayer(teamName:String) {
+		var player:Player = server.getPlayer(teamName);
+		if (player.agents.length == 0) return;
+
+		var centroidX:Float = 0;
+		var centroidY:Float = 0;
+
+		for ( agent in player.agents) {
+			centroidX += level.toScreenX(agent.pos.x);
+			centroidY += level.toScreenY(agent.pos.y);
+		}
+
+		centroidX /= player.agents.length;
+		centroidY /= player.agents.length;
+
+		var mapCenterX:Float = level.toScreenX( cast(level.mapWidth / 2) );
+		var mapCenterY:Float = level.toScreenY( cast(level.mapHeight / 2) );
+		// if the centroid of the human agents is close to the center of the map
+		// then center on the map instead
+		var distFromCenterX:Float = mapCenterX - centroidX;
+		var distFromCenterY:Float = mapCenterY - centroidY;
+		if ( Math.abs(distFromCenterX) < HXP.screen.width / 2 && Math.abs(distFromCenterY) < HXP.screen.height / 2) {
+			setCamera(mapCenterX, mapCenterY);
+		} else {
+			setCamera(centroidX, centroidY);
+		}
+				
+	}
+
 	public function serverTick(event:Dynamic) {
 		if (menu.isActive) {
 			return;
@@ -207,21 +241,21 @@ class PlayScene extends Scene {
 		server.update();
 	}
 
-	public function doAiMove(event:Dynamic) {
-		if (menu.isActive) {
-			return;
-		}
-		// HXP.log("Ai update");
-		// if (testEntity.tween != null && !testEntity.tween.active) {
-		// 	var newX:Int = level.toMapX(testEntity.x) + cast((Math.random()-0.5) * 2);
-		// 	var newY:Int = level.toMapY(testEntity.y) + cast((Math.random()-0.5) * 2);
-		// 	testEntity.setTarget(newX, newY);
-		// }
-	}
+	// public function doAiMove(event:Dynamic) {
+	// 	if (menu.isActive) {
+	// 		return;
+	// 	}
+	// 	// HXP.log("Ai update");
+	// 	// if (testEntity.tween != null && !testEntity.tween.active) {
+	// 	// 	var newX:Int = level.toMapX(testEntity.x) + cast((Math.random()-0.5) * 2);
+	// 	// 	var newY:Int = level.toMapY(testEntity.y) + cast((Math.random()-0.5) * 2);
+	// 	// 	testEntity.setTarget(newX, newY);
+	// 	// }
+	// }
 
-	public function doAgentMove(event:Dynamic) {
+	// public function doAgentMove(event:Dynamic) {
 
-	}
+	// }
 
 	public function tweenComplete(event:Dynamic) {
 		HXP.log("Tween complete");
@@ -256,7 +290,14 @@ class PlayScene extends Scene {
 			server.hurtAgent(1, null, agent);
 		}
 		if (Input.pressed(Key.N)) {
-			server.world.nextLevel();
+			// server.world.nextLevel();
+			setupLevel();
+		}
+		if (Input.pressed(Key.C)) {
+			centerOnPlayer("human");
+		}
+		if (Input.pressed(Key.E)) {
+			centerOnPlayer("computer");
 		}
 		if (uiStates.getCurrent() == null) {
 			uiStates.pushState("select");
@@ -287,19 +328,21 @@ class PlayScene extends Scene {
 		var centroidX:Float = 0;
 		var centroidY:Float = 0;
 		for ( entity in selectedEntities) {
+			// selectedEntities is an array returned by HaxePunk, rather than rebuild the array every time a selected
+			// entity dies, we're just skipping it here
+			if (!cast(entity, Actor).agent.isAlive) {
+				continue;
+			}
 			// Draw.hitbox(entity, true, 0x00ff00, 0.5);
-			Draw.circlePlus(cast entity.x+HTILE_SIZE, cast entity.y+HTILE_SIZE, TILE_SIZE+2, 0x00FF00, 0.5, false, 2);
+			Draw.circlePlus(cast entity.x, cast entity.y, TILE_SIZE+2, 0x00FF00, 0.5, false, 2);
 			centroidX += entity.x;
 			centroidY += entity.y;
 		}
 		if (selectedEntities.length > 0) {
 			centroidX /= selectedEntities.length;
 			centroidY /= selectedEntities.length;
-			Draw.circlePlus(cast centroidX + HTILE_SIZE, cast centroidY + HTILE_SIZE, 4, 0xFF00FF, 0.1, false, 2);
-			centroidX -= HXP.screen.width / 2;
-			centroidY -= HXP.screen.height / 2;
-			cameraTarget.x = centroidX;
-			cameraTarget.y = centroidY;
+			Draw.circlePlus(cast centroidX, cast centroidY, 4, 0xFF00FF, 0.1, false, 2);
+			setCameraTarget(centroidX, centroidY);
 		}
 		menu.render();
 	}
@@ -314,6 +357,17 @@ class PlayScene extends Scene {
 		Input.define("down", [Key.DOWN]);		
 		Input.define("left", [Key.LEFT]);
 		Input.define("right", [Key.RIGHT]);				
+	}
+
+	// set camera position instantly (in screen coords)
+	public function setCamera(x:Float, y:Float) {
+		camera.setTo(x - (HXP.screen.width/2), y - (HXP.screen.height/2) );
+		setCameraTarget(x, y);
+	}
+
+	// set the camera target
+	public function setCameraTarget(x:Float, y:Float) {
+		cameraTarget.setTo(x, y);
 	}
 
 	public function updateCamera() {
@@ -343,8 +397,8 @@ class PlayScene extends Scene {
 		camera.offset(moveX * speed, moveY * speed);
 
 		if (cameraAutoTracking) {
-			var dX:Float = HXP.clamp( (cameraTarget.x - camera.x ) * 0.25, -cameraSpeed, cameraSpeed);
-			var dY:Float = HXP.clamp( (cameraTarget.y - camera.y) * 0.25, -cameraSpeed, cameraSpeed);
+			var dX:Float = HXP.clamp( ((cameraTarget.x-HXP.screen.width/2) - camera.x ) * 0.25, -cameraSpeed, cameraSpeed);
+			var dY:Float = HXP.clamp( ((cameraTarget.y-HXP.screen.height/2) - camera.y) * 0.25, -cameraSpeed, cameraSpeed);
 			// camera goes the other direction
 			// camera.x = centroidX - HXP.screen.width / 2;
 			// camera.y = centroidY - HXP.screen.height / 2;
