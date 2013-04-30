@@ -24,18 +24,13 @@ class Server extends ServerEventDispatcher, implements Orderable {
 
 		// lobby = new Lobby();
 		// world = new World();
-		players = new List<Player>();
-		playerHash = new Hash<Player>();
-
-		if (existingLocalPlayer == null) {
-			localPlayer = createPlayer("human");
-		} else {
-			localPlayer = addPlayer(existingLocalPlayer);
-		}
-
 		lobby = new Lobby(this);
 		lobby.loadLevelSet();
 		world = new World(this);
+
+		reset(existingLocalPlayer);
+
+		
 	}
 
 	public override function update() {
@@ -61,6 +56,27 @@ class Server extends ServerEventDispatcher, implements Orderable {
 			dead.player.removeAgent(dead);
 			world.level.setAgent(dead.pos.x, dead.pos.y, null);
 		}
+	}
+
+	public function reset(?existingLocalPlayer:Player = null) {
+		if (players == null) {
+			players = new List<Player>();
+			playerHash = new Hash<Player>();
+
+		} else {			
+			for (player in players) {
+				removePlayer(player);
+			}
+		}
+
+		// this is a bit specific - should be called from higher up the chain (like in PlayScene)
+		if (existingLocalPlayer == null) {
+			localPlayer = createPlayer("human");
+		} else {
+			localPlayer = addPlayer(existingLocalPlayer);
+		}		
+
+		world.loadCurrentLevel();
 	}
 
 	public function sendLocalOrder(type:String, ?x:Int=0, ?y:Int=0, ?agent:Agent) {
@@ -142,6 +158,13 @@ class Server extends ServerEventDispatcher, implements Orderable {
 		// HXP.log(" `- pos:" + agent.pos);
 		agent.player.addAgent(agent);
 		return agent;
+	}
+
+	public function removePlayer(player:Player) {
+		if (playerHash.exists(player.name)) {
+			playerHash.remove(player.name);
+		}
+		players.remove(player);
 	}
 
 	public function getPlayer(name:String):Player {
