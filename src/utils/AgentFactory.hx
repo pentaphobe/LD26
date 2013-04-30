@@ -35,7 +35,7 @@ class AgentFactory {
 	public static function create(type:String, teamName:String, ?x:Int=0, ?y:Int=0):Actor {
 		if (!AgentTemplates.exists(type)) {
 			HXP.log("couldn't find Actor Template named " + type + ", creating a blank");
-			return new Actor(teamName, x, y);
+			return new Actor(teamName, "basic", x, y);
 		}
 		var level:Level = PlayScene.instance.level;
 		if (level == null) {
@@ -48,7 +48,7 @@ class AgentFactory {
 		var scrY:Float  = level.toScreenY( y );
 
 		var template:AgentTemplate = AgentTemplates.get(type);
-		var actor:Actor = new Actor(teamName, scrX, scrY);
+		var actor:Actor = new Actor(teamName, template.typeName, scrX, scrY);
 		actor.layer = 10;
 		// actor.applyTemplate(template);
 

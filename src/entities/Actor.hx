@@ -37,7 +37,7 @@ class Actor extends Entity {
 	public var agent:Agent;
 	public var mapPos:MapPoint;
 	public var tween:LinearMotion;
-	public function new(teamName:String, x:Float, y:Float) {
+	public function new(teamName:String, typeName:String, x:Float, y:Float) {
 		super(x, y);
 		mapPos = new MapPoint( toMapX(x), toMapY(y) );
 
@@ -48,6 +48,12 @@ class Actor extends Entity {
 		} else {
 			teamColor = 0xff0000;
 			sprIdx = 96;
+		}
+		if (typeName == "basic") {
+			sprIdx += 32 * 2;
+		}
+		if (typeName == "scout") {
+			sprIdx += 32 * 4;
 		}
 		this.teamName = teamName;
 
