@@ -84,6 +84,9 @@ class Actor extends Entity {
 	}
 
 	public override function update() {
+		if (PlayScene.instance.gameIsPaused || PlayScene.instance.menu.isActive) {
+			return;
+		}
 		super.update();
 		if (!agent.isAlive) {
 			var ps:PlayScene = cast HXP.scene;

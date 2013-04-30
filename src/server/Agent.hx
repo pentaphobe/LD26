@@ -282,11 +282,14 @@ enum AgentState {
 	}
 
 	public override function onWasHit(evt:ServerEvent):Bool {
-		HXP.log("OUCH!  I got hit by " + evt.source);
+		// HXP.log("OUCH!  I got hit by " + evt.source);
 		wasHit = true;		
 		var aggr:Float = config.get("aggression");
 
 		if (aggr > 0) {
+			// don't override player orders
+			if (state != Idling) return false;
+
 			var srcAgent:Agent = cast evt.source;
 			setTarget(srcAgent.pos.x, srcAgent.pos.y);
 			state = Attacking;

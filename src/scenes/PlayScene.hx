@@ -47,7 +47,7 @@ class PlayScene extends Scene {
 	public var emitter:ParticleController;
 	//***** /TEMPORARY ******
 
-	var menu:Menu;
+	public var menu:Menu;
 	var uiStates:StateMachine<UIState>;
 	public static var instance(get_instance, set_instance):PlayScene;
 	public static var TILE_SIZE:Int = 32;
@@ -250,7 +250,7 @@ class PlayScene extends Scene {
 	}
 
 	public function serverTick(event:Dynamic) {
-		if (menu.isActive) {
+		if (menu.isActive || gameIsPaused) {
 			return;
 		}
 
@@ -325,6 +325,9 @@ class PlayScene extends Scene {
 			centerOnPlayer("computer");
 			// [@todo if we've opted to center on the computer, then continue to follow the computer]
 			cameraAutoTracking = false;
+		}
+		if (Input.pressed(Key.SPACE)) {
+			gameIsPaused = !gameIsPaused;
 		}
 		if (uiStates.getCurrent() == null) {
 			uiStates.pushState("select");
