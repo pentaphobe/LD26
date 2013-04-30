@@ -8,7 +8,7 @@
 	sections:{
 		main:{
 			title:"Main Menu",
-			background:"main_menu_bg.png",
+			background:"main_menu_bg.jpg",
 			items:[
 				{label:"start", action:"start"},
 				{label:"about", action:"@about"},
@@ -18,7 +18,7 @@
 		},
 		about:{
 			title:"About IceBreaker",
-			background:"anotherbackground.png",
+			background:"anotherbackground.jpg",
 			items:[
 				{label:"back", action:"@exit"}
 			]

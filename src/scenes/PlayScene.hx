@@ -37,6 +37,8 @@ import entities.ParticleController;
 import utils.MapPoint;
 
 class PlayScene extends Scene {
+	public static var renderSelectionInfo:Bool = false;
+
 	//***** TEMPORARY *******
 	var uiOverlay:Entity;
 	var agentInfoText:Text;
@@ -138,11 +140,13 @@ class PlayScene extends Scene {
 
 		setupLevel();
 
-		agentInfoText = new Text("AgentType\nstr:24\ndex:24", 0, 0, {color:0x005500});
-		agentInfoText.scrollX = agentInfoText.scrollY = 0;
-		var agentInfoEntity:Entity = new Entity(440, 325, agentInfoText);
-		agentInfoEntity.layer = 1;				
-		add(agentInfoEntity);
+		if (renderSelectionInfo) {
+			agentInfoText = new Text("AgentType\nstr:24\ndex:24", 0, 0, {color:0x005500});
+			agentInfoText.scrollX = agentInfoText.scrollY = 0;
+			var agentInfoEntity:Entity = new Entity(440, 325, agentInfoText);
+			agentInfoEntity.layer = 1;				
+			add(agentInfoEntity);
+		}
 
 		// Keep this for last
 		HXP.alarm(SERVER_RATE, serverTick, TweenType.Looping, this);
@@ -343,14 +347,16 @@ class PlayScene extends Scene {
 		super.render();
 		uiStates.render();
 	
-		if ( selectedEntities.length == 0) {
-			agentInfoText.text = "";
-		} else {
-			var agent:Agent = cast(selectedEntities[0], Actor).agent;
-			agentInfoText.text = agent.config.parent.typeName + "\nstr:" + agent.config.get("str") + "\ndex:" + agent.config.get("dex");
-			var hp:Float = agent.hitPoints / cast(agent.config.get("vit"), Float);
-			Draw.rect(cast(HXP.camera.x + 440), cast(HXP.camera.y+380), 40, 10, 0xff0000, 0.8);
-			Draw.rect(cast(HXP.camera.x + 440), cast(HXP.camera.y+380), cast(40 * hp), 10, 0x00ff00, 0.9);
+		if ( renderSelectionInfo ) {
+			if ( selectedEntities.length == 0) {
+				agentInfoText.text = "";
+			} else {
+				var agent:Agent = cast(selectedEntities[0], Actor).agent;
+				agentInfoText.text = agent.config.parent.typeName + "\nstr:" + agent.config.get("str") + "\ndex:" + agent.config.get("dex");
+				var hp:Float = agent.hitPoints / cast(agent.config.get("vit"), Float);
+				Draw.rect(cast(HXP.camera.x + 440), cast(HXP.camera.y+380), 40, 10, 0xff0000, 0.8);
+				Draw.rect(cast(HXP.camera.x + 440), cast(HXP.camera.y+380), cast(40 * hp), 10, 0x00ff00, 0.9);
+			}
 		}
 
 		var centroidX:Float = 0;
@@ -362,7 +368,7 @@ class PlayScene extends Scene {
 				continue;
 			}
 			// Draw.hitbox(entity, true, 0x00ff00, 0.5);
-			Draw.circlePlus(cast entity.x, cast entity.y, TILE_SIZE+2, 0x00FF00, 0.5, false, 2);
+			Draw.circlePlus(cast entity.x, cast entity.y, TILE_SIZE+2, 0x00FF00, 0.2, false, 2);
 			centroidX += entity.x;
 			centroidY += entity.y;
 		}
@@ -378,6 +384,17 @@ class PlayScene extends Scene {
 		// HXP.log("rendering overlays for " + actors.length + " actors");
 		for (actor in actors) {
 			actor.renderOverlay();
+		}
+
+		if (gameIsPaused) {
+			var sX:Int = cast camera.x;
+			var sY:Int = cast camera.y;
+			var txt:String = "-- PAUSED --";
+
+			var txtWidth:Int = txt.length * 6;
+			var boxHeight:Int = cast(HXP.screen.height/6);
+			Draw.rectPlus(sX, sY, HXP.screen.width, boxHeight, 0x111111, 0.8, true);
+			Draw.text(txt, sX + HXP.screen.width/2 - (txtWidth/2), sY + boxHeight / 2, {color:0xffffff});
 		}
 
 		menu.render();
