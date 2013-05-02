@@ -15,6 +15,8 @@ class Server extends ServerEventDispatcher, implements Orderable {
 	public var localPlayer:Player;
 	public var world:World;
 	public var lobby:Lobby;
+	public var levelComplete:Bool;
+	public var winner:Player;
 
 	public function new(?startLevelSetName:String=null, ?existingLocalPlayer:Player = null) {
 		super();
@@ -51,14 +53,40 @@ class Server extends ServerEventDispatcher, implements Orderable {
 				toRemove.add(agent);
 			}
 		}
+
 		for (dead in toRemove) {
 			world.agents.remove(dead);
 			dead.player.removeAgent(dead);
 			world.level.setAgent(dead.pos.x, dead.pos.y, null);
 		}
+
+		checkForWinner();
+	}
+
+	public function checkForWinner() {
+		var candidateWinner:Player=null;
+		for (player in players) {
+			// if this player is still kicking they're a candidate
+			if (player.agents.length > 0) {
+				// but if someone else is already a candidate then no one wins
+				// THERE CAN BE ONLY ONE!
+				if (candidateWinner != null) {
+					candidateWinner = null;
+					break;
+				}
+				// fingers crossed, mister player!
+				candidateWinner = player;
+			}
+		}
+		if (candidateWinner != null) {
+			win(candidateWinner);
+		}
 	}
 
 	public function reset(?existingLocalPlayer:Player = null, ?levelChangeDirection:Int=0) {
+		winner = null;
+		levelComplete = false;
+
 		if (players == null) {
 			players = new List<Player>();
 			playerHash = new Hash<Player>();
@@ -142,6 +170,11 @@ class Server extends ServerEventDispatcher, implements Orderable {
 			send(WasKilled, src, target);
 			send(SuccessfulKill, target, src);
 		}
+	}
+
+	public function win(player:Player) {
+		levelComplete = true;
+		winner = player;
 	}
 
 	public function sendByName(type:ServerEventType, ?src:String="", ?target:String=""):ServerEvent {
