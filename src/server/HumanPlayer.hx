@@ -8,17 +8,17 @@ class HumanPlayer extends Player {
 		super(name);		
 	}
 
-	/**** ServerEventHandler stuff 
-	 * [@note this could be a lot cleaner if we derived from the dispatcher, and made dispatcher derive from handler]
-	 */
-	public override function onEvent(event:ServerEvent):Bool {
-		// interception here
-		if (event.target != this) {
-			return event.target.onEvent(event);
-		}
-		// personal handling here
-		return true;
-	}
+	// /**** ServerEventHandler stuff 
+	//  * [@note this could be a lot cleaner if we derived from the dispatcher, and made dispatcher derive from handler]
+	//  */
+	// public override function onEvent(event:ServerEvent):Bool {
+	// 	// interception here
+	// 	if (event.target != this) {
+	// 		return event.target.onEvent(event);
+	// 	}
+	// 	// personal handling here
+	// 	return true;
+	// }
 
 	/* These are event-forwarders, but can also be used to track actions on the player
 	 * eg.
