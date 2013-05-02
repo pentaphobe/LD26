@@ -5,6 +5,7 @@ import utils.AgentTemplate;
 import utils.AgentFactory;
 import utils.MapPoint;
 
+
 import scenes.PlayScene;
 import server.ServerEventHandler;
 import server.ServerEvent;
@@ -102,10 +103,16 @@ class Player implements Orderable, implements ServerEventHandler {
 	 */
 	public function onEvent(event:ServerEvent):Bool {
 		// interception here
+
+		// cancel the event if it's not relevant to us or our agents
+		if (event.target != this && (Std.is(event.target, Agent) && cast(event.target, Agent).player != this)) {
+			return false;
+		}
+
 		if (event.target != this) {
 			return event.target.onEvent(event);
-		}
-		// personal handling here
+		} 
+		// allow this event to be forwarded to our fine-grained controls
 		return true;
 	}
 
