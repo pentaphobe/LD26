@@ -33,7 +33,9 @@
 	// a sequence of textual hints and which events cancel them
 	tutorial:[
 		{
-			text:"Themed welcome text"
+			text:"Welcome to Cyberspace,
+where information is truly power.
+Allow me to show you around..."
 			pause:true,
 		},
 		{
@@ -44,7 +46,9 @@ the edge of the screen"
 		},
 		{
 			text:"Pressing 'C' or 'E' will center the camera on
-your team, or the enemies respectively",
+your team, or the enemies respectively.
+Access the in-game menu at any time 
+with the ESC or TAB keys",
 			pause:true,
 		},
 		{
