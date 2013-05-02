@@ -37,6 +37,16 @@ class ParticleController extends Entity {
 		emitter.setMotion("red_hurt", 0, 25, 0.5, 360, -40, 1, Ease.quadOut);
 		emitter.setAlpha("red_hurt", 1, 0.1);
 
+		emitter.newType("green_finish", [0,1,2,3,4,5,6,7]);
+		emitter.setMotion("green_finish", 0, 100, 2, 360, -30, 1, Ease.quadOut);
+		emitter.setGravity("green_finish", 2);
+		emitter.setAlpha("green_finish", 1, 0.1);
+
+		emitter.newType("red_finish", [8,9,10,11,12,13]);
+		emitter.setMotion("red_finish", 0, 100, 2, 360, -30, 1, Ease.quadOut);
+		emitter.setGravity("red_finish", 2);
+		emitter.setAlpha("red_finish", 1, 0.1);		
+
 		x = -PlayScene.HTILE_SIZE;
 		y = -PlayScene.HTILE_SIZE;
 
@@ -75,4 +85,19 @@ class ParticleController extends Entity {
 			emitter.emit("green_hurt", x, y);
 		}
 	}
+
+	public function greenFinish(x:Float, y:Float, count:Int=20) {
+		if (emitter == null) return;
+		// HXP.log("emitting");
+		for (i in 0...count) {			
+			emitter.emit("green_finish", x, y);
+		}
+	}	
+	public function redFinish(x:Float, y:Float, count:Int=20) {
+		if (emitter == null) return;
+		// HXP.log("emitting");
+		for (i in 0...count) {			
+			emitter.emit("red_finish", x, y);
+		}
+	}		
 }

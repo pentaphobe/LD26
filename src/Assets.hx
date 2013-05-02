@@ -8,6 +8,8 @@ class Assets {
 	public static var sfxSuwip:Sfx;
 	public static var sfxMenuMusic:Sfx;
 	public static var sfxGameMusic:Sfx;
+	public static var sfxLevelWinMusic:Sfx;
+
 	public static var sfxShoot:Sfx;
 	public static var sfxExplosion:Sfx;
 
@@ -30,7 +32,7 @@ class Assets {
 		sfxGameMusic = new Sfx(nme.Assets.getSound("sfx/game_music." + extension));		
 		sfxShoot = new Sfx(nme.Assets.getSound("sfx/shoot." + extension));		
 		sfxExplosion = new Sfx(nme.Assets.getSound("sfx/explosion." + extension));		
-
+		sfxLevelWinMusic = new Sfx(nme.Assets.getSound("sfx/level_win_music." + extension));
 	}
 
 	public static function loadGraphics() {

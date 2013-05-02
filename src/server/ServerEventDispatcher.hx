@@ -55,8 +55,11 @@ class ServerEventDispatcher extends BasicServerEventHandler {
 				continue;
 			}
 
-			// [@note currently ignores return value, potentially should skip the switch sometimes]
-			handler.onEvent(evt);
+			// [@note @done currently ignores return value, potentially should skip the switch sometimes]
+			// [@note now cancels the event if the main handler returns false]
+			if (!handler.onEvent(evt)) {
+				continue;
+			}
 			switch (evt.type) {
 				case PathArrived:
 					handler.onPathArrived(evt);

@@ -54,10 +54,10 @@
 
 ### To Do (misc QA as I find it)
 	- "back" option in About menu takes you to the game instead of back to the Main Menu
-	- entities aren't checking map coords properly, unify that stuff
-	- attacks
-		- melee (strength, speed, meleeBonus)
-		- ranged (dexterity, rangedBonus)
+	- TutorialController isnt' hooked into the server as I rushed through and used string events instead should follow the original design:
+		- is a ServerEventHandler and registers with the server
+		- also provides a function for receiving client events
+		- now go delete all that cruft from elsewhere :)
 
 ### Notes
 

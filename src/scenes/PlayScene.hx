@@ -12,6 +12,7 @@ import com.haxepunk.graphics.Backdrop;
 import com.haxepunk.graphics.Stamp;
 import com.haxepunk.graphics.Text;
 import com.haxepunk.graphics.Emitter;
+import com.haxepunk.graphics.Graphiclist;
 import com.haxepunk.tweens.motion.LinearMotion;
 import com.haxepunk.utils.Draw;
 import nme.filters.GlowFilter;
@@ -51,6 +52,9 @@ class PlayScene extends Scene {
 	var background:Entity;
 	public var emitter:ParticleController;
 	public static var tutorialController:TutorialController;
+
+	var startedVictoryDance:Bool = false;
+
 	//***** /TEMPORARY ******
 
 	public var menu:Menu;
@@ -267,26 +271,45 @@ class PlayScene extends Scene {
 		}
 
 		server.update();
+
+		doLevelEnd();
 	}
 
-	// public function doAiMove(event:Dynamic) {
-	// 	if (menu.isActive) {
-	// 		return;
-	// 	}
-	// 	// HXP.log("Ai update");
-	// 	// if (testEntity.tween != null && !testEntity.tween.active) {
-	// 	// 	var newX:Int = level.toMapX(testEntity.x) + cast((HXP.random-0.5) * 2);
-	// 	// 	var newY:Int = level.toMapY(testEntity.y) + cast((HXP.random-0.5) * 2);
-	// 	// 	testEntity.setTarget(newX, newY);
-	// 	// }
-	// }
+	// checks for and updates level ending
+	public function doLevelEnd() {
+		if (server.levelComplete && server.winner.name == "human") {
+			for (i in 0...3) {
+				emitter.redFinish(HXP.random*HXP.screen.width, HXP.random*HXP.screen.height, 10);
+			}			
+			if (!startedVictoryDance) {
+				startedVictoryDance = true;
+				var winBoxImage:Image = new Image("gfx/end_level_bg.png");
+				winBoxImage.scrollX = 0;//.01;
+				winBoxImage.scrollY = 0;//.01;
+				winBoxImage.layer = 1;
+				var winBoxText:Image = new Image("gfx/win_text.png");
+				winBoxText.centerOrigin();
+				winBoxText.x = (winBoxImage.width / 2);
+				winBoxText.y = (winBoxImage.y + winBoxText.height/2);
+				winBoxText.scrollX = 0;//.05;
+				winBoxText.scrollY = 0;//.05;
+				var gList:Graphiclist = new Graphiclist([winBoxImage, winBoxText]);
 
-	// public function doAgentMove(event:Dynamic) {
-
-	// }
-
-	public function tweenComplete(event:Dynamic) {
-		HXP.log("Tween complete");
+				var winBox:Entity = new Entity((HXP.screen.width-winBoxImage.width)/2, (HXP.screen.height-winBoxImage.height)/2, gList);
+				// add(winTextEntity);
+				add(winBox);
+				Assets.sfxGameMusic.stop();
+				Assets.sfxLevelWinMusic.play();
+				HXP.alarm(6, function (_) {
+					remove(winBox);
+					Assets.sfxGameMusic.resume();
+					Assets.sfxLevelWinMusic.stop();
+					startedVictoryDance = false;
+					HXP.log("loading!");
+					setupLevel(1);
+				});
+			}
+		}		
 	}
 
 	public override function update() {
