@@ -299,6 +299,12 @@ enum AgentState {
 		return true;
 	}
 
+	public override function onWasKilled(evt:ServerEvent):Bool {
+		isAlive = false;
+		HXP.log("I got killed!");
+		return true;
+	}
+
 	// [@note that there is no notification here as that comes via the event]
 	// [@... this is just a convenience function for Server]
 	public function hurt(amount:Float=0) {
