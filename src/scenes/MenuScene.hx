@@ -28,6 +28,8 @@ class MenuScene extends Scene {
 	public override function begin() {
 		super.begin();
 		menu.enter();
+		Assets.sfxGameMusic.stop();
+		Assets.sfxLevelWinMusic.stop();
 		Assets.sfxMenuMusic.loop(0.1);
 		var fader:SfxFader = new SfxFader(Assets.sfxMenuMusic /*, function (_) { Assets.sfxMenuMusic.stop(); } */ );
 		fader.fadeTo(0.7, 4);

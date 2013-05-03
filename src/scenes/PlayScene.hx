@@ -23,6 +23,8 @@ import states.PrototypeState;
 import states.UIState;
 import ui.Menu;
 import ui.UIEntity;
+import ui.LevelEndDialog;
+import ui.TextButton;
 import entities.Actor;
 import utils.AgentFactory;
 import entities.Level;
@@ -161,7 +163,7 @@ class PlayScene extends Scene {
 	}
 
 	public override function end() {
-		Assets.sfxGameMusic.stop();
+		Assets.sfxGameMusic.stop();		
 	}
 
 	public function setupLevel(?levelChangeDirection:Int=0) {
@@ -283,32 +285,47 @@ class PlayScene extends Scene {
 			}			
 			if (!startedVictoryDance) {
 				startedVictoryDance = true;
-				var winBoxImage:Image = new Image("gfx/end_level_bg.png");
-				winBoxImage.scrollX = 0;//.01;
-				winBoxImage.scrollY = 0;//.01;
-				winBoxImage.layer = 1;
-				var winBoxText:Image = new Image("gfx/win_text.png");
-				winBoxText.centerOrigin();
-				winBoxText.x = (winBoxImage.width / 2);
-				winBoxText.y = (winBoxImage.y + winBoxText.height/2);
-				winBoxText.scrollX = 0;//.05;
-				winBoxText.scrollY = 0;//.05;
-				var gList:Graphiclist = new Graphiclist([winBoxImage, winBoxText]);
 
-				var winBox:Entity = new Entity((HXP.screen.width-winBoxImage.width)/2, (HXP.screen.height-winBoxImage.height)/2, gList);
-				// add(winTextEntity);
-				add(winBox);
 				Assets.sfxGameMusic.stop();
 				Assets.sfxLevelWinMusic.play(1, 0, function (_) {
+					HXP.log("finished");
 					Assets.sfxGameMusic.resume();
 					Assets.sfxLevelWinMusic.stop();
 					startedVictoryDance = false;					
 				});
-				HXP.alarm(8, function (_) {
-					remove(winBox);
-					HXP.log("loading!");
-					setupLevel(1);
+
+				var cleanup:Void->Void = function() {
+					HXP.log("CLEANING UP");
+					Assets.sfxGameMusic.resume();
+					Assets.sfxLevelWinMusic.stop();
+					startedVictoryDance = false;					
+				};
+
+				var winBox:LevelEndDialog=null;
+				winBox = new LevelEndDialog(160, 50, 
+					function (type:String, widget:UIEntity):Void {
+						HXP.log(type + " " + widget);
+						if (type == "onClick") {
+							if (widget.uiName == "continue") {
+								remove(winBox);
+								cleanup();
+								setupLevel(1);
+							}
+							if (widget.uiName == "retry") {
+								remove(winBox);
+								cleanup();
+								setupLevel(0);
+							}
+							if (widget.uiName == "exit") {
+								remove(winBox);
+								cleanup();
+								HXP.scene = new MenuScene();
+							}
+
+						}		
 				});
+				add(winBox);
+
 			}
 		}		
 	}
@@ -399,41 +416,42 @@ class PlayScene extends Scene {
 
 		var centroidX:Float = 0;
 		var centroidY:Float = 0;
-		for ( entity in selectedEntities) {
-			// selectedEntities is an array returned by HaxePunk, rather than rebuild the array every time a selected
-			// entity dies, we're just skipping it here
-			if (!cast(entity, Actor).agent.isAlive) {
-				continue;
+
+		if (!startedVictoryDance) {
+			for ( entity in selectedEntities) {
+				// selectedEntities is an array returned by HaxePunk, rather than rebuild the array every time a selected
+				// entity dies, we're just skipping it here
+				if (!cast(entity, Actor).agent.isAlive) {
+					continue;
+				}
+				// Draw.hitbox(entity, true, 0x00ff00, 0.5);
+				Draw.circlePlus(cast entity.x, cast entity.y, TILE_SIZE+2, 0x00FF00, 0.2, false, 2);
+				centroidX += entity.x;
+				centroidY += entity.y;
 			}
-			// Draw.hitbox(entity, true, 0x00ff00, 0.5);
-			Draw.circlePlus(cast entity.x, cast entity.y, TILE_SIZE+2, 0x00FF00, 0.2, false, 2);
-			centroidX += entity.x;
-			centroidY += entity.y;
-		}
-		if (selectedEntities.length > 0) {
-			centroidX /= selectedEntities.length;
-			centroidY /= selectedEntities.length;
+			if (selectedEntities.length > 0) {
+				centroidX /= selectedEntities.length;
+				centroidY /= selectedEntities.length;
 
-			// HXP.log("centroid:" + centroidX + ", " + centroidY);
-			var aX:Float = centroidX - camera.x;			
-			var aY:Float = centroidY - camera.y;
-			// HXP.log("  absolut:" + aX + ", " + aY);
-			if (aX < SCREEN_SCROLL_EDGE || aY < SCREEN_SCROLL_EDGE 
-					|| aX > HXP.screen.width-SCREEN_SCROLL_EDGE
-					|| aY > HXP.screen.height-SCREEN_SCROLL_EDGE) {
-				Draw.circlePlus(cast centroidX, cast centroidY, 4, 0xFF00FF, 0.1, false, 2);
-				setCameraTarget(centroidX, centroidY);
+				// HXP.log("centroid:" + centroidX + ", " + centroidY);
+				var aX:Float = centroidX - camera.x;			
+				var aY:Float = centroidY - camera.y;
+				// HXP.log("  absolut:" + aX + ", " + aY);
+				if (aX < SCREEN_SCROLL_EDGE || aY < SCREEN_SCROLL_EDGE 
+						|| aX > HXP.screen.width-SCREEN_SCROLL_EDGE
+						|| aY > HXP.screen.height-SCREEN_SCROLL_EDGE) {
+					Draw.circlePlus(cast centroidX, cast centroidY, 4, 0xFF00FF, 0.1, false, 2);
+					setCameraTarget(centroidX, centroidY);
+				}
+			}
+
+			var actors:Array<Actor> = new Array<Actor>();
+			getClass(Actor, actors);
+			// HXP.log("rendering overlays for " + actors.length + " actors");
+			for (actor in actors) {
+				actor.renderOverlay();
 			}
 		}
-
-		var actors:Array<Actor> = new Array<Actor>();
-		getClass(Actor, actors);
-		// HXP.log("rendering overlays for " + actors.length + " actors");
-		for (actor in actors) {
-			actor.renderOverlay();
-		}
-
-
 		var sX:Int = cast camera.x;
 		var sY:Int = cast camera.y;
 		var txt:String = (world.currentLevel + 1) + " - " + level.title;
@@ -602,7 +620,15 @@ class PlayScene extends Scene {
 
 		var testState:UIState = new UIState("select");
 		testState.setOverride(CustomUpdate, function (owner:PrototypeState) {
-			// HXP.log("updating select");
+			// allow re-clicking to signify attack
+			if (Input.mousePressed || Input.mouseReleased) {
+				var actor:Entity = collideRect("computer", mouseX-5, mouseY-5, 10, 10);				
+				if (actor != null) {
+					HXP.log("ordering attack");
+					giveOrder("attack", "orderAttack	");
+					return;
+				}
+			}
 			if (Input.mousePressed) {
 				startDragPoint = new Point(mouseX, mouseY);
 				if (!Input.check(Key.SHIFT)) {
@@ -630,13 +656,7 @@ class PlayScene extends Scene {
 				
 				owner.isDone = true;
 				// HXP.log("Attempting to order " + selectedEntities.length + " entities");
-				for (entity in selectedEntities) {
-					var actor:Actor = cast entity;
-					// HXP.log("ordered movement of " + entity + " to " + mouseX + ", " + mouseY);
-					server.sendLocalOrder("move", actor.toMapX(mouseX), actor.toMapY(mouseY), actor.agent);
-					// cast(entity, Actor).setTarget( level.toMapX(mouseX), level.toMapY(mouseY));
-					tutorialController.sendEvent("orderMove");
-				}
+				giveOrder("move", "orderMove");
 			}
 		});
 		uiStates.addState(testState);	
@@ -648,17 +668,22 @@ class PlayScene extends Scene {
 				
 				owner.isDone = true;
 				// HXP.log("Attempting to order " + selectedEntities.length + " entities");
-				for (entity in selectedEntities) {
-					var actor:Actor = cast entity;
-					// HXP.log("ordered movement of " + entity + " to " + mouseX + ", " + mouseY);
-					server.sendLocalOrder("attack", actor.toMapX(mouseX), actor.toMapY(mouseY), actor.agent);
-					// cast(entity, Actor).setTarget( level.toMapX(mouseX), level.toMapY(mouseY));
-					tutorialController.sendEvent("orderAttack");
-				}
+				giveOrder("attack","orderAttack");
 			}
 		});
 		uiStates.addState(testState);
 	}
+
+	public function giveOrder(orderName:String, tutorialOrderName:String) {
+		for (entity in selectedEntities) {
+			var actor:Actor = cast entity;
+			// HXP.log("ordered movement of " + entity + " to " + mouseX + ", " + mouseY);
+			server.sendLocalOrder(orderName, actor.toMapX(mouseX), actor.toMapY(mouseY), actor.agent);
+			// cast(entity, Actor).setTarget( level.toMapX(mouseX), level.toMapY(mouseY));
+			tutorialController.sendEvent(tutorialOrderName);
+		}
+	}
+
 
 	public static function get_instance():PlayScene {
 		if (instance == null) {

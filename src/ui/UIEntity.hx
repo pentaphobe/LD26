@@ -13,7 +13,7 @@ typedef UICallback = String->UIEntity->Void;
  */
 class UIEntity extends Entity {
 	public var uiName:String;
-	var handler:String->UIEntity->Void;
+	public var handler:UICallback;
 	var hasMouse:Bool = false;
 	var key:Dynamic;
 

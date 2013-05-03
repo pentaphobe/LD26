@@ -15,6 +15,7 @@ import server.ServerEvent;
 import ui.UIDialog;
 import ui.UIEntity;
 import ui.TextButton;
+import ui.LevelEndDialog;
 
 /** This class just intercepts events and dumps them out
  */
@@ -56,19 +57,24 @@ class ServerTestScene extends Scene {
 		// server interaction
 		HXP.alarm(0.5, serverTick, TweenType.Looping);
 
-		dialog = new UIDialog(50, 50, 400, 50);
+		// dialog = new UIDialog(50, 50, 20, 20);
+		dialog = new LevelEndDialog(50, 50);
 		add(dialog);
 
-		dialog.add(new TextButton("hello there", "hello_button", 10, 10, function (s:String, ent:UIEntity):Void {
-			HXP.log(s);
-			if (s == "onClick") {
-				HXP.log("HELLO");
-			}
-		}));
+		// dialog.add(new TextButton("hello there", "hello_button", 10, 10, function (s:String, ent:UIEntity):Void {
+		// 	HXP.log(s);
+		// 	if (s == "onClick") {
+		// 		HXP.log("HELLO");
+		// 	}
+		// }, true, true, false));
+		// dialog.add(new TextButton("florkers", "biggles_button", 0, 40, function (s:String, ent:UIEntity):Void {
+		// 	HXP.log(s);
+		// 	if (s == "onClick") {
+		// 		HXP.log("BIGGLES!");
+		// 	}
+		// }, true, true, false));
 
-		if (HXP.renderMode.has(RenderMode.HARDWARE)) {
-			HXP.log("Hardware available");
-		}
+
 	}
 
 	public override function update() {
@@ -79,11 +85,12 @@ class ServerTestScene extends Scene {
 			// server.sendLocalOrder("hedge-trimmer");
 			// server.sendLocalOrder("well-formed", 23, 23);
 		}
-		if (Input.mouseDown) {
-			var dx:Float = Input.mouseX - dialog.x;
-			var dy:Float = Input.mouseY - dialog.y;
-			dialog.setSize(dx, dy);
-		}
+		// if (Input.mouseDown) {
+		// 	var dx:Float = Input.mouseX - dialog.x;
+		// 	var dy:Float = Input.mouseY - dialog.y;
+		// 	dialog.setSize(dx, dy);
+		// }
+		super.update();
 	}
 
 	public override function render() {

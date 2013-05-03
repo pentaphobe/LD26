@@ -51,7 +51,7 @@ class ParticleController extends Entity {
 		y = -PlayScene.HTILE_SIZE;
 
 		graphic = emitter;
-		layer = 4;
+		layer = 5;
 	}
 
 	public function greenExplode(x:Float, y:Float, count:Int=20) {

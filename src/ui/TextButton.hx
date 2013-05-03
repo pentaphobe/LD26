@@ -51,7 +51,10 @@ class TextButton extends UIEntity {
 		// 	setHitbox(cast background.width, cast background.heigh, cast background.x, cast background.y);
 		// }
 		setHitbox(text.width, text.height, cast text.originX, cast text.originY);
-
+		this.originX = cast text.originX;
+		this.originY = cast text.originY;
+		width = text.width;
+		height = text.height;
 		// [@note not sure why this is necessary - I'm setting the color above, but somewhere the items are initialising to hover state]
 		onLostMouse(0, 0);
 	}

@@ -14,6 +14,10 @@ class EntityGroup<E:Entity> extends Entity {
 		HXP.scene.add(e);
 		return e;
 	}
+
+	public override function removed() {
+		clearEntities();
+	}
 	
 	public function clearEntities() {
 		if (entities == null) {
