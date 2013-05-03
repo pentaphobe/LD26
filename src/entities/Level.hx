@@ -10,7 +10,7 @@ import scenes.PlayScene;
 import server.ComputerPlayer;
 import server.Agent;
 
-class Level extends EntityGroup {
+class Level extends EntityGroup<Entity> {
 	public var jsonData:Dynamic;
 	public var mapWidth(default, default):Int;
 	private function set_mapWidth(w:Int):Int { mapWidth = w; return mapWidth; }
