@@ -299,12 +299,13 @@ class PlayScene extends Scene {
 				// add(winTextEntity);
 				add(winBox);
 				Assets.sfxGameMusic.stop();
-				Assets.sfxLevelWinMusic.play();
-				HXP.alarm(6, function (_) {
-					remove(winBox);
+				Assets.sfxLevelWinMusic.play(1, 0, function (_) {
 					Assets.sfxGameMusic.resume();
 					Assets.sfxLevelWinMusic.stop();
-					startedVictoryDance = false;
+					startedVictoryDance = false;					
+				});
+				HXP.alarm(8, function (_) {
+					remove(winBox);
 					HXP.log("loading!");
 					setupLevel(1);
 				});
