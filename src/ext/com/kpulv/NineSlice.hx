@@ -16,11 +16,11 @@ import com.haxepunk.graphics.Image;
  */
 class NineSlice extends Image {
 	
-	private var _width:UInt;
-	private var _height:UInt;
+	private var _width:Int;
+	private var _height:Int;
 	
-	public var gridX:UInt;
-	public var gridY:UInt;
+	public var gridX:Int;
+	public var gridY:Int;
 	
 	public var snapWidth:Bool = false;
 	public var snapHeight:Bool = false;
@@ -44,13 +44,13 @@ class NineSlice extends Image {
 	
 	private var needsRefresh:Bool = false;
 	
-	public function new(sliceSource:Dynamic, width:UInt = 1, height:UInt = 1) {
+	public function new(sliceSource:Dynamic, width:Int = 1, height:Int = 1) {
 		slices = new Array<BitmapData>();
 		_bitmap = new Bitmap();
 		_width = width;
 		_height = height;
 		
-		if (Std.is(sliceSource, Class)) {
+		if (Std.is(sliceSource, String)) {
 			this.sliceSource = HXP.getBitmap(sliceSource);
 		}
 		else {
@@ -79,12 +79,12 @@ class NineSlice extends Image {
 			return;
 		}
 		
-		var i:UInt = 0;
-		var j:UInt = 0;
+		var i:Int = 0;
+		var j:Int = 0;
 		for (i in 0...9) {
 			slices[i] = new BitmapData(gridX, gridY);
-			var xx:UInt = convert2dX(i, 3) * gridX;
-			var yy:UInt = convert2dY(i, 3) * gridY;
+			var xx:Int = convert2dX(i, 3) * gridX;
+			var yy:Int = convert2dY(i, 3) * gridY;
 			slices[i].copyPixels(sliceSource, cacheRect(xx, yy, gridX, gridY), cachePoint(0, 0));
 		}
 		
@@ -221,10 +221,10 @@ class NineSlice extends Image {
 		return sliceSource;
 	}
 	
-	public function set_width(value:UInt):Void {
+	public function set_width(value:Int):Void {
 		if (value == _width) return;
 		
-		var temp:UInt = _width;
+		var temp:Int = _width;
 		_width = value;
 		if (snapWidth) {
 			_width = Math.floor(_width / gridX) * gridX;
@@ -235,10 +235,10 @@ class NineSlice extends Image {
 		updateSliceBuffer();
 	}
 	
-	public function set_height(value:UInt):Void {
+	public function set_height(value:Int):Void {
 		if (value == _height) return;
 		
-		var temp:UInt = _height;
+		var temp:Int = _height;
 		_height = value;
 		if (snapHeight) {
 			_height = Math.floor(_height / gridY) * gridY;
@@ -280,11 +280,11 @@ class NineSlice extends Image {
         return result;
     }
 
-    function convert2dX(i:Int, width:UInt):Int {
+    function convert2dX(i:Int, width:Int):Int {
 		return i % width;
 	}
 
-	function convert2dY(i:Int, width:UInt):Int {
+	function convert2dY(i:Int, width:Int):Int {
 		return Math.floor(i / width);
 	}
 	
