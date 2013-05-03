@@ -58,6 +58,14 @@
 		- is a ServerEventHandler and registers with the server
 		- also provides a function for receiving client events
 		- now go delete all that cruft from elsewhere :)
+	- Need end-stage
+	- perhaps add a list of locks for each level set?  eg. stage2 requires stage1 complete
+	- Obviously a level-select screen
+
+	- eventually:  
+		- some kind of barriers
+		- some kind of static enemies with high power
+		- some limiting of shooting range per unit
 
 ### Notes
 

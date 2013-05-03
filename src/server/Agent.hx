@@ -32,11 +32,14 @@ enum AgentState {
  * (with interpolation etc)
  */ 
  class Agent extends BasicServerEventHandler, implements Orderable {
+ 	// [@todo integrate with actors.json file on a per-unit basis]
  	public static var TICKS_TO_BREED:Int = 20;
  	public static var TICKS_TO_ATTACK:Int = 6;
  	public static var SEEK_TIMEOUT:Int = 100;
  	public static var SEEK_RANGE:Float = 60;
  	public static var FIRE_RANGE:Float = 6;
+	static public var MAX_SPEED:Int = 20;
+
 
 
 	/** TEMPORARY **/
@@ -44,16 +47,17 @@ enum AgentState {
 	/** /TEMPORARY **/
 
  	public var player:Player; 	
- 	// [@note does this need to be here?  NO!]
+ 	// [@note does this need to be here?  NO! @done]
  	// public var actor:Actor;
 	public var hitPoints:Float;
-	public var movementPoints:Float;
+	public var movementPoints:Int = 10;
 	public var actionPoints:Float;
 	public var targetPos:MapPoint;
  	public var pos:MapPoint;
  	public var config:AgentTemplate;
  	public var state(default, set_state):AgentState;
  	public var stateTicks:Int;
+ 	public var tickOffset:Int;
  	public var isAlive:Bool = true;
 
  	// resetting states, these monitor what's happened since the last update
@@ -63,6 +67,7 @@ enum AgentState {
  		pos = new MapPoint(x, y);
 		targetPos = new MapPoint(x, y);
 		path = new List<MapPoint>();	
+		tickOffset = cast (HXP.random * 10);
 		state = Idling;	 		
  	}
 	public function onOrder(order:PlayerOrder):Bool {
@@ -109,7 +114,11 @@ enum AgentState {
 
 		switch (state) {
 			case Moving:
-				updateMovement();
+				// not sure about this timing thing - seems a bit off --- ahhhh
+				// it's because of line 127 in Actor.hx!
+				if ( ((stateTicks+tickOffset) % MAX_SPEED) <= movementPoints ) {
+					updateMovement();
+				}
 			case Breeding:
 				if ( (stateTicks % TICKS_TO_BREED) == TICKS_TO_BREED-1 ) {
 					breed();
@@ -325,7 +334,7 @@ enum AgentState {
 
 	public function reset() {
 		heal();
-		movementPoints = config.get("spd");
+		movementPoints = cast config.get("spd");
 		actionPoints = config.get("dex");
 	}	
 

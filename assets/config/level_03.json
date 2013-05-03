@@ -1,0 +1,37 @@
+{
+	id:'level_03',
+	title:'test zone',
+	map:{
+		size:{x:41, y:10},		
+	},
+	ai:{
+		// higher numbers cause the AI to think more slowly
+		think_delay:2,
+		// if population is below this, breed
+		low_population_thresh:6,
+		// if population is less than 
+		// human_population * desired, breed
+		desired_population_lead:1.5;
+		// how long it takes us to get bored of an agent 
+		// doing the same thing		
+		impatience_delay:30;
+	},
+	teams:{
+		human:{
+			start:{x:2, y:2, x2:4, y2:-1},
+			agents:[
+				{type:'basic', count:2},
+				{type:'scout', count:3},
+				{type:'heavy', count:1}
+			]
+		},
+		computer:{
+			start:{x:-2, y:2, x2:-4, y2:-2},
+			agents:[
+				{type:'basic', count:4},
+				{type:'heavy', count:6},
+				{type:'scout', count:3}
+			]
+		}
+	}
+}

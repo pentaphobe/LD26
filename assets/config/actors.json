@@ -15,8 +15,10 @@
 			// dexterity determines how many ActionPoints you get
 			dex:5,
 			// speed determines how many MovementPoints you get
-			spd:3,
-			aggression:1
+			spd:7,
+			aggression:1,
+			fire_range:5,
+			scan_range:5
 		},
 	},
 	scout:{
@@ -25,17 +27,21 @@
 		stats:{
 			vit:15,
 			dex:3,
-			spd:10
+			spd:20,
+			fire_range:8,
+			scan_range:3
 		}
 	},
 	heavy:{
 		parent:'basic',
 		name:"heavy",
 		stats:{
-			vit:40,
+			vit:50,
 			str:4,
 			dex:3,
-			spd:2
+			spd:2,
+			fire_range:10,
+			scan_range:6
 		}
 	}
 }

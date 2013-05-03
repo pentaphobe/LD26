@@ -55,6 +55,7 @@ class AgentFactory {
 		var agent:Agent = PlayScene.server.createAgent(teamName, x, y);
 		// we duplicate the template since we want to potentially allow individual progression 
 		agent.config = template.clone();
+		agent.movementPoints = cast(HXP.clamp(agent.config.get("spd"), 1, Agent.MAX_SPEED-1));
 		actor.agent = agent;
 		actor.setLabel(actor.teamName + "\n" + agent.config.parent.typeName);			
 		agent.reset();
