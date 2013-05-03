@@ -14,7 +14,7 @@
 				{label:"start", action:"start"},				
 				{label:"about", action:"@about"},
 				//{label:"how to play", action:"@howToPlay"},
-				//{label:"Server test", action:":scene ServerTestScene"}
+				{label:"Server test", action:":scene ServerTestScene"}
 			]
 		},
 		about:{
