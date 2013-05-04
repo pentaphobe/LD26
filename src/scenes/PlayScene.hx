@@ -307,18 +307,18 @@ class PlayScene extends Scene {
 						HXP.log(type + " " + widget);
 						if (type == "onClick") {
 							if (widget.uiName == "continue") {
-								remove(winBox);
 								cleanup();
+								remove(winBox);								
 								setupLevel(1);
 							}
 							if (widget.uiName == "retry") {
-								remove(winBox);
 								cleanup();
+								remove(winBox);								
 								setupLevel(0);
 							}
 							if (widget.uiName == "exit") {
-								remove(winBox);
 								cleanup();
+								remove(winBox);								
 								HXP.scene = new MenuScene();
 							}
 
@@ -625,7 +625,7 @@ class PlayScene extends Scene {
 				var actor:Entity = collideRect("computer", mouseX-5, mouseY-5, 10, 10);				
 				if (actor != null) {
 					HXP.log("ordering attack");
-					giveOrder("attack", "orderAttack	");
+					giveOrder("attack", "orderAttack");
 					return;
 				}
 			}
