@@ -56,6 +56,7 @@ class PlayScene extends Scene {
 	public static var tutorialController:TutorialController;
 
 	var startedVictoryDance:Bool = false;
+	var doneVictoryDance:Bool = false;
 
 	//***** /TEMPORARY ******
 
@@ -168,7 +169,12 @@ class PlayScene extends Scene {
 
 	public function setupLevel(?levelChangeDirection:Int=0) {
 		/* clear the previous level */
+
+		// we use a consistent seed here just so I can have predictable levels
+		// not an ideal solution [@note put seed in level configuration file]
 		HXP.randomSeed = 31337;
+
+		doneVictoryDance = false;
 
 		var oldArray:Array<Entity> = new Array<Entity>();
 		getType("human", oldArray);
@@ -279,6 +285,11 @@ class PlayScene extends Scene {
 
 	// checks for and updates level ending
 	public function doLevelEnd() {
+		// [@note this is a hacky way to prevent re-instantiating the win music etc and gets reset on level load]
+		if (doneVictoryDance) {
+			return;
+		}
+
 		if (server.levelComplete && server.winner.name == "human") {
 			for (i in 0...3) {
 				emitter.redFinish(HXP.random*HXP.screen.width, HXP.random*HXP.screen.height, 10);
@@ -287,19 +298,20 @@ class PlayScene extends Scene {
 				startedVictoryDance = true;
 
 				Assets.sfxGameMusic.stop();
-				Assets.sfxLevelWinMusic.play(1, 0, function (_) {
-					HXP.log("finished");
-					Assets.sfxGameMusic.resume();
-					Assets.sfxLevelWinMusic.stop();
-					startedVictoryDance = false;					
-				});
 
 				var cleanup:Void->Void = function() {
 					HXP.log("CLEANING UP");
 					Assets.sfxGameMusic.resume();
 					Assets.sfxLevelWinMusic.stop();
-					startedVictoryDance = false;					
+					startedVictoryDance = false;	
+					doneVictoryDance = true;				
 				};
+
+				Assets.sfxLevelWinMusic.play(1, 0, function (_) {
+					cleanup();				
+				});
+
+
 
 				var winBox:LevelEndDialog=null;
 				winBox = new LevelEndDialog(160, 50, 

@@ -27,7 +27,7 @@
 		stats:{
 			vit:15,
 			dex:3,
-			spd:20,
+			spd:10,
 			fire_range:8,
 			scan_range:3
 		}

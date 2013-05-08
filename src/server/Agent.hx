@@ -38,7 +38,7 @@ enum AgentState {
  	public static var SEEK_TIMEOUT:Int = 100;
  	public static var SEEK_RANGE:Float = 60;
  	public static var FIRE_RANGE:Float = 6;
-	static public var MAX_SPEED:Int = 20;
+	static public var MAX_SPEED:Int = 10;
 
 
 
@@ -67,7 +67,7 @@ enum AgentState {
  		pos = new MapPoint(x, y);
 		targetPos = new MapPoint(x, y);
 		path = new List<MapPoint>();	
-		tickOffset = cast (HXP.random * 10);
+		tickOffset = cast (HXP.random * MAX_SPEED);
 		state = Idling;	 		
  	}
 	public function onOrder(order:PlayerOrder):Bool {

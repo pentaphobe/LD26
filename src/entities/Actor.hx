@@ -124,7 +124,7 @@ class Actor extends Entity {
 
 		var dx:Float = (toScreenX(agent.pos.x) - x + PlayScene.HTILE_SIZE);
 		var dy:Float = (toScreenY(agent.pos.y) - y + PlayScene.HTILE_SIZE);
-		var spd:Float = agent.config.get("spd") * 4;
+		var spd:Float = 16; //agent.config.get("spd") * 4;
 		dx = HXP.clamp(dx, -spd, spd);
 		dy = HXP.clamp(dy, -spd, spd);
 		x += dx;
