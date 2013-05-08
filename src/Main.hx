@@ -13,7 +13,7 @@ class Main extends Engine
 	public static inline var kClearColor:Int = 0x222222;
 	public static inline var kUseFixedUpdate:Bool = false;
 
-	public static var VERSION:String = "Jam/Post-Compo 0.0.8";
+	public static var VERSION:String = "Jam/Post-Compo 0.0.9";
 
 	public override function new() {
 		//super(kScreenWidth, kScreenHeight, kFrameRate, kUseFixedUpdate);

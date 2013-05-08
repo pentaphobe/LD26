@@ -429,7 +429,7 @@ class PlayScene extends Scene {
 		var centroidX:Float = 0;
 		var centroidY:Float = 0;
 
-		if (!startedVictoryDance) {
+		if (!startedVictoryDance && !doneVictoryDance) {
 			for ( entity in selectedEntities) {
 				// selectedEntities is an array returned by HaxePunk, rather than rebuild the array every time a selected
 				// entity dies, we're just skipping it here
