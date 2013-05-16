@@ -181,7 +181,10 @@ class PlayScene extends Scene {
 		getType("computer", oldArray);
 		getType("gameMap",oldArray);		
 		removeList(oldArray);		
-		server.reset(levelChangeDirection);
+		if (!server.reset(levelChangeDirection)) {
+			levelSetComplete();
+			return;			
+		}
 		server.addPlayer(new ComputerPlayer());
 
 
@@ -242,6 +245,10 @@ class PlayScene extends Scene {
 		}
 
 		centerOnPlayer("human");
+	}
+
+	public function levelSetComplete() {
+		HXP.scene = new MenuScene();
 	}
 
 	public function centerOnPlayer(teamName:String) {

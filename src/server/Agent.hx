@@ -1,13 +1,14 @@
 package server;
 import com.haxepunk.HXP;
 
+import Globals;
 import utils.AgentTemplate;
 import utils.AgentFactory;
 import utils.MapPoint;
 
+
 import entities.Actor;
 import entities.Level;
-
 import server.ServerEventHandler;
 import server.ServerEvent;
 import server.Server;
@@ -116,7 +117,11 @@ enum AgentState {
 			case Moving:
 				// not sure about this timing thing - seems a bit off --- ahhhh
 				// it's because of line 127 in Actor.hx!
-				if ( ((stateTicks+tickOffset) % MAX_SPEED) <= movementPoints ) {
+				if (Globals.USE_MOVEMENT_SPEED) {
+					if ( ((stateTicks+tickOffset) % MAX_SPEED) <= movementPoints ) {
+						updateMovement();
+					}
+				} else {
 					updateMovement();
 				}
 			case Breeding:
@@ -296,7 +301,7 @@ enum AgentState {
 	public override function onWasHit(evt:ServerEvent):Bool {
 		// HXP.log("OUCH!  I got hit by " + evt.source);
 		wasHit = true;		
-		var aggr:Float = config.get("aggression");
+		var aggr:Float = cast config.get("aggression");
 
 		if (aggr > 0) {
 			// don't override player orders

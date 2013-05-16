@@ -18,7 +18,7 @@
 			spd:7,
 			aggression:1,
 			fire_range:5,
-			scan_range:5
+			scan_range:6
 		},
 	},
 	scout:{
@@ -29,7 +29,7 @@
 			dex:3,
 			spd:10,
 			fire_range:8,
-			scan_range:3
+			scan_range:6
 		}
 	},
 	heavy:{

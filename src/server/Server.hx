@@ -83,7 +83,7 @@ class Server extends ServerEventDispatcher, implements Orderable {
 		}
 	}
 
-	public function reset(?existingLocalPlayer:Player = null, ?levelChangeDirection:Int=0) {
+	public function reset(?existingLocalPlayer:Player = null, ?levelChangeDirection:Int=0):Bool {
 		winner = null;
 		levelComplete = false;
 
@@ -105,11 +105,16 @@ class Server extends ServerEventDispatcher, implements Orderable {
 		}		
 
 		if (levelChangeDirection < 0) {
-			world.prevLevel();
+			if (!world.prevLevel()) {
+				return false;
+			}
 		} else if (levelChangeDirection > 0) {
-			world.nextLevel();
+			if (!world.nextLevel()) {
+				return false;
+			}
 		}
 		world.loadCurrentLevel();
+		return true;
 	}
 
 	public function sendLocalOrder(type:String, ?x:Int=0, ?y:Int=0, ?agent:Agent) {

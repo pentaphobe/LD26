@@ -23,7 +23,7 @@ import utils.MapPoint;
 import scenes.PlayScene;
 import server.Player;
 import server.Agent;
-
+import Globals;
 
 
 class Actor extends Entity {
@@ -124,7 +124,10 @@ class Actor extends Entity {
 
 		var dx:Float = (toScreenX(agent.pos.x) - x + PlayScene.HTILE_SIZE);
 		var dy:Float = (toScreenY(agent.pos.y) - y + PlayScene.HTILE_SIZE);
-		var spd:Float = 16; //agent.config.get("spd") * 4;
+		var spd:Float = 16; 
+		if (!Globals.USE_MOVEMENT_SPEED) {
+			agent.config.get("spd") * 4;
+		}
 		dx = HXP.clamp(dx, -spd, spd);
 		dy = HXP.clamp(dy, -spd, spd);
 		x += dx;
